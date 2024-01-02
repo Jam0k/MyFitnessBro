@@ -16,7 +16,7 @@ app = Flask(__name__)
 db_user = os.environ.get('POSTGRES_USER')
 db_password = os.environ.get('POSTGRES_PASSWORD')
 db_name = os.environ.get('POSTGRES_DB')
-db_host = 'db'  # Docker service name for the database
+db_host = os.environ.get('POSTGRES_ENV')  # Docker service name for the database. Change to db for docker, and localhost for local testing.
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
