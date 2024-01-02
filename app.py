@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import os
@@ -48,7 +48,7 @@ def test_db_connection():
 @app.route('/')
 def index():
     test_db_connection()
-    return "Hello, World!"
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
