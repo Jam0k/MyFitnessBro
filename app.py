@@ -46,6 +46,10 @@ def test_db_connection():
     except Exception as e:
         app.logger.error(f"Database connection failed: {e}")
 
+@app.route('/node_modules/<path:filename>')
+def node_modules(filename):
+    return send_from_directory('node_modules', filename)
+
 @app.route('/')
 def index():
     test_db_connection()
