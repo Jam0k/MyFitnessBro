@@ -1,0 +1,25 @@
+{
+  "name": "myfitnessbro",
+  "version": "1.0.0",
+  "description": "MyFitnessBro is a Python (Flask) based web app that is designed to run on a local server and provide fitness and nutrition tracking. It is an open-source, free alternative to MyFitnessPal.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jam0k/MyFitnessBro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jam0k/MyFitnessBro/issues"
+  },
+  "homepage": "https://github.com/Jam0k/MyFitnessBro#readme",
+  "dependencies": {
+    "bootstrap": "^4.6.2",
+    "jquery": "^3.7.1",
+    "popper.js": "^1.16.1"
+  }
+}

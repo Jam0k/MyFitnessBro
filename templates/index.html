@@ -1,15 +1,57 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>My Homepage</title>
-    <!-- Include Bootstrap CSS -->
-    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
-</head>
-<body>
-    <h1>Welcome to My Homepage</h1>
-    <p>This is a simple Flask application.</p>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyFitnessBro</title>
+    <link href="{{ url_for('node_modules', filename='bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Include Bootstrap JS -->
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-</body>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">
+        <!-- Placeholder for an icon -->
+        <img
+          src="{{ url_for('static', filename='icon.png') }}"
+          width="30"
+          height="30"
+          class="d-inline-block align-top"
+          alt=""
+        />
+        MyFitnessBro
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Navigation links can be added here -->
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <!-- More nav items here -->
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container">
+      <h1>Welcome to My Homepage</h1>
+      <p>This is a simple Flask application.</p>
+    </div>
+
+    <!-- Include Bootstrap JS and its dependencies -->
+    <script src="{{ url_for('node_modules', filename='jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('node_modules', filename='popper.js/dist/umd/popper.min.js') }}"></script>
+    <script src="{{ url_for('node_modules', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+  </body>
 </html>

@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import os
 from dotenv import load_dotenv
 import logging
 from logging.handlers import RotatingFileHandler
+
 
 # Load environment variables
 load_dotenv()
