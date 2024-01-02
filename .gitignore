@@ -164,4 +164,3 @@ __pycache__
 data
 app.log
 node_modules
-package-lock.json
