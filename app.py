@@ -53,7 +53,22 @@ def node_modules(filename):
 @app.route('/')
 def index():
     test_db_connection()
-    return render_template('index.html')
+    return render_template('dashboard.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/nutrition')
+def nutrition():
+    return render_template('nutrition.html')
+
+@app.route('/fitness')
+def fitness():
+    return render_template('fitness.html')
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

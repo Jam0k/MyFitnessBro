@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome to MyFitnessBro</h1>
+    <p>This is a simple Flask application focused on health and fitness.</p>
+
+    <!-- Section Buttons -->
+    <div class="row mt-4">
+      <div class="col-sm-4 mb-3">
+        <a href="/nutrition" class="btn btn-primary btn-block" style="padding: 20px; border-radius: 0;">Nutrition</a>
+      </div>
+      <div class="col-sm-4 mb-3">
+        <a href="/fitness" class="btn btn-success btn-block" style="padding: 20px; border-radius: 0;">Fitness</a>
+      </div>
+      <div class="col-sm-4 mb-3">
+        <a href="/progress" class="btn btn-warning btn-block" style="padding: 20px; border-radius: 0;">Progress & Insights</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
