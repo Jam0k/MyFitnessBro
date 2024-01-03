@@ -11,11 +11,15 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . .
 
+# Navigate to static directory and install npm packages
+WORKDIR /app/static
+RUN npm install
+
+# Return to the app directory
+WORKDIR /app
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install npm dependencies
-RUN npm install
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
