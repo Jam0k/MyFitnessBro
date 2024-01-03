@@ -2,9 +2,6 @@ version: '3.8'
 services:
   web:
     build: .
-    volumes:
-      - .:/app
-      - /static/node_modules
     ports:
       - "8000:8000"
     depends_on:
