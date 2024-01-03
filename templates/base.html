@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyFitnessBro</title>
+    <script src="{{ url_for('node_modules', filename='jquery/dist/jquery.min.js') }}"></script>
     <link href="{{ url_for('node_modules', filename='bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
-</head>
+    <link href="{{ url_for('node_modules', filename='datatables.net-dt/css/jquery.dataTables.css') }}"rel="stylesheet">
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -44,9 +45,9 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-
-    <script src="{{ url_for('node_modules', filename='jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ url_for('node_modules', filename='popper.js/dist/umd/popper.min.js') }}"></script>
     <script src="{{ url_for('node_modules', filename='bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('node_modules', filename='datatables.net/js/jquery.dataTables.js') }}"></script>
+
 </body>
 </html>

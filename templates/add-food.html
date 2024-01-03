@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Add Food</h1>
+    <p>Enter the details of the food item you want to add.</p>
+
+    <form action="/add-food" method="post">
+        <div class="form-group">
+            <label for="name">Food Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="serving_size">Serving Size (g)</label>
+            <input type="text" class="form-control" id="serving_size" name="serving_size">
+        </div>
+        <div class="form-group">
+            <label for="calories">Calories</label>
+            <input type="number" class="form-control" id="calories" name="calories">
+        </div>
+        <div class="form-group">
+            <label for="total_fat">Total Fat (g)</label>
+            <input type="number" step="0.01" class="form-control" id="total_fat" name="total_fat">
+        </div>
+        <div class="form-group">
+            <label for="total_carbohydrate">Total Carbohydrate (g)</label>
+            <input type="number" step="0.01" class="form-control" id="total_carbohydrate" name="total_carbohydrate">
+        </div>
+        <div class="form-group">
+            <label for="total_sugars">Total Sugars (g)</label>
+            <input type="number" step="0.01" class="form-control" id="total_sugars" name="total_sugars">
+        </div>
+        <div class="form-group">
+            <label for="total_protein">Total Protein (g)</label>
+            <input type="number" step="0.01" class="form-control" id="total_protein" name="total_protein">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Food</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,6 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Nutrition Page</h1>
-    <!-- Page specific content here -->
+<div class="container mt-4">
+    <h1>Nutrition</h1>
+    <p>Track and analyze your nutritional intake to maintain a healthy lifestyle.</p>
+
+    <div class="row">
+        <!-- Tracking Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tracking</h5>
+                    <p class="card-text">Monitor your daily, weekly, and monthly nutritional intake.</p>
+                    <a href="/nutrition/tracking" class="btn btn-primary">View Tracking</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meals and Foods Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Meals and Foods</h5>
+                    <p class="card-text">Log your meals and explore our food database for nutritional info.</p>
+                    <a href="/nutrition/meals" class="btn btn-secondary">View Meals</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Goals</h5>
+                    <p class="card-text">Set and track your nutritional targets based on dietary guidelines.</p>
+                    <a href="/nutrition/goals" class="btn btn-success">View Goals</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -19,6 +19,7 @@ services:
       POSTGRES_DB: myfitnessbro
     volumes:
       - ./data/db:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
   pgadmin:
