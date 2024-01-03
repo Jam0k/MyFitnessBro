@@ -85,9 +85,23 @@ def editFoodItem(id):
 
     return jsonify({'message': 'Food item updated successfully'})
 
+@nutrition_blueprint.route('/meals-and-foods/get-food/<int:id>')
+def getFoodItem(id):
+    food_item = FoodItem.query.get_or_404(id)
+    return jsonify(food_item.to_dict())
+
 @nutrition_blueprint.route('/meals-and-foods/add-food')
 def addFood():
     return render_template('nutrition/meals-and-food/food/add-food.html')
+
+
+
+
+
+
+
+
+
 
 # Define meal routes
 
