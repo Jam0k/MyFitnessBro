@@ -72,7 +72,7 @@ def editFoodItem(id):
     data = request.get_json()  # Assuming you're sending JSON data
     food_item = FoodItem.query.get_or_404(id)
     
-    # Update the food item with the data received
+    # Update the food item with the data received   
     food_item.name = data['name']
     food_item.serving_size = data['serving_size']
     food_item.calories = data['calories']
@@ -89,6 +89,15 @@ def editFoodItem(id):
 def getFoodItem(id):
     food_item = FoodItem.query.get_or_404(id)
     return jsonify(food_item.to_dict())
+
+
+@nutrition_blueprint.route('/meals-and-foods/delete-food/<int:id>', methods=['POST'])
+def deleteFoodItem(id):
+    food_item = FoodItem.query.get_or_404(id)
+    db.session.delete(food_item)
+    db.session.commit()
+    return jsonify({'message': 'Food item deleted successfully'})
+
 
 @nutrition_blueprint.route('/meals-and-foods/add-food')
 def addFood():
