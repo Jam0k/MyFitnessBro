@@ -6,6 +6,6 @@ dashboard_blueprint = Blueprint('dashboard', __name__)
 # Define routes within the dashboard blueprint
 @dashboard_blueprint.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template('dashboard/dashboard.html')
 
 # You can add more routes here for the dashboard if needed

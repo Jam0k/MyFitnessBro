@@ -64,7 +64,7 @@ def test_db_connection():
 @app.route('/')
 def index():
     test_db_connection()
-    return render_template('dashboard.html')
+    return render_template('dashboard/dashboard.html')
 
 # Register blueprints
 app.register_blueprint(nutrition_blueprint)

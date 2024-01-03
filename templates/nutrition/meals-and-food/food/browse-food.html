@@ -1,52 +1,181 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
-    <h1>Browse Food Items</h1>
-    <p>List of all food items in the database.</p>
+  <h1>Browse Food Items</h1>
+  <p>List of all food items in the database.</p>
 
-    {% if error %}
-        <div class="alert alert-danger">
-            Error: {{ error }}
-        </div>
-    {% endif %}
+  {% if error %}
+  <div class="alert alert-danger">Error: {{ error }}</div>
+  {% endif %}
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Serving Size</th>
-                <th>Calories</th>
-                <th>Total Fat</th>
-                <th>Total Carbohydrate</th>
-                <th>Total Sugars</th>
-                <th>Total Protein</th>
-                <!-- Add more columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for food in food_items %}
-            <tr>
-                <td>{{ food.name }}</td>
-                <td>{{ food.serving_size }}</td>
-                <td>{{ food.calories }}</td>
-                <td>{{ food.total_fat }}</td>
-                <td>{{ food.total_carbohydrate }}</td>
-                <td>{{ food.total_sugars }}</td>
-                <td>{{ food.total_protein }}</td>
-                <!-- Add more data cells as needed -->
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7">No food items found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Serving Size</th>
+        <th>Calories</th>
+        <th>Total Fat</th>
+        <th>Total Carbohydrate</th>
+        <th>Total Sugars</th>
+        <th>Total Protein</th>
+        <th>Actions</th>
+        <!-- New column for actions -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for food in food_items %}
+      <tr>
+        <td>{{ food.name }}</td>
+        <td>{{ food.serving_size }}</td>
+        <td>{{ food.calories }}</td>
+        <td>{{ food.total_fat }}</td>
+        <td>{{ food.total_carbohydrate }}</td>
+        <td>{{ food.total_sugars }}</td>
+        <td>{{ food.total_protein }}</td>
+        <td>
+          <!-- Edit button -->
+          <button type="button" class="btn btn-primary edit-btn" 
+          data-food='{{ food | tojson | safe }}'>
+      Edit
+  </button>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8">No food items found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+
+<!-- Edit Food Item Modal -->
+<div class="modal fade" id="editFoodModal" tabindex="-1" role="dialog" aria-labelledby="editFoodModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editFoodModalLabel">Edit Food Item</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="editFoodForm">
+          <div class="modal-body">
+            <!-- Hidden ID Field -->
+            <input type="hidden" id="editFoodId">
+  
+            <!-- Name Field -->
+            <div class="form-group">
+              <label for="editName">Name</label>
+              <input type="text" class="form-control" id="editName">
+            </div>
+  
+            <!-- Serving Size Field -->
+            <div class="form-group">
+              <label for="editServingSize">Serving Size</label>
+              <input type="text" class="form-control" id="editServingSize">
+            </div>
+  
+            <!-- Calories Field -->
+            <div class="form-group">
+              <label for="editCalories">Calories</label>
+              <input type="number" class="form-control" id="editCalories">
+            </div>
+  
+            <!-- Total Fat Field -->
+            <div class="form-group">
+              <label for="editTotalFat">Total Fat</label>
+              <input type="text" class="form-control" id="editTotalFat">
+            </div>
+  
+            <!-- Total Carbohydrate Field -->
+            <div class="form-group">
+              <label for="editTotalCarbohydrate">Total Carbohydrate</label>
+              <input type="text" class="form-control" id="editTotalCarbohydrate">
+            </div>
+  
+            <!-- Total Sugars Field -->
+            <div class="form-group">
+              <label for="editTotalSugars">Total Sugars</label>
+              <input type="text" class="form-control" id="editTotalSugars">
+            </div>
+  
+            <!-- Total Protein Field -->
+            <div class="form-group">
+              <label for="editTotalProtein">Total Protein</label>
+              <input type="text" class="form-control" id="editTotalProtein">
+            </div>
+  
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+
 <script>
-    $(document).ready( function () {
-        $('.table').DataTable();
-    } );
+  $(document).ready(function () {
+    $(".table").DataTable();
+  });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // When an edit button is clicked
+        $('.edit-btn').on('click', function() {
+            var food = $(this).data('food');
+            
+            // Populating the modal fields with the food item's data
+            $('#editFoodId').val(food.id);
+            $('#editName').val(food.name);
+            $('#editServingSize').val(food.serving_size);
+            $('#editCalories').val(food.calories);
+            $('#editTotalFat').val(food.total_fat);
+            $('#editTotalCarbohydrate').val(food.total_carbohydrate);
+            $('#editTotalSugars').val(food.total_sugars);
+            $('#editTotalProtein').val(food.total_protein);
+      
+            // Showing the modal
+            $('#editFoodModal').modal('show');
+        });
+      
+        // When the edit form is submitted
+        $('#editFoodForm').on('submit', function(e) {
+            e.preventDefault();
+      
+            var updatedData = {
+              id: $('#editFoodId').val(),
+              name: $('#editName').val(),
+              serving_size: $('#editServingSize').val(),
+              calories: $('#editCalories').val(),
+              total_fat: $('#editTotalFat').val(),
+              total_carbohydrate: $('#editTotalCarbohydrate').val(),
+              total_sugars: $('#editTotalSugars').val(),
+              total_protein: $('#editTotalProtein').val(),
+            };
+      
+            // AJAX request to Flask route for updating the food item
+            $.ajax({
+              url: '/nutrition/meals-and-foods/edit-food/' + updatedData.id,
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(updatedData),
+              success: function(response) {
+                // Actions to perform on successful update
+                $('#editFoodModal').modal('hide');
+                // Optionally, refresh the data on the page or display a success message
+              },
+              error: function() {
+                // Actions to perform on error
+                alert('Error updating food item');
+              }
+            });
+        });
+    });
     </script>
+    
+
 {% endblock %}

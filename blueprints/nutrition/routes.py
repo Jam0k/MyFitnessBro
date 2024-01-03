@@ -59,9 +59,31 @@ def browseFood():
             food_items = FoodItem.query.filter(FoodItem.name.ilike(f"%{search_query}%"))
         else:
             food_items = FoodItem.query.all()
-        return render_template('nutrition/meals-and-food/food/browse-food.html', food_items=food_items, search_query=search_query)
+
+        food_items_data = [item.to_dict() for item in food_items]
+        
+        return render_template('nutrition/meals-and-food/food/browse-food.html', food_items=food_items_data, search_query=search_query)
     except Exception as e:
         return render_template('nutrition/meals-and-food/food/browse-food.html', error=str(e))
+
+    
+@nutrition_blueprint.route('/meals-and-foods/edit-food/<int:id>', methods=['POST'])
+def editFoodItem(id):
+    data = request.get_json()  # Assuming you're sending JSON data
+    food_item = FoodItem.query.get_or_404(id)
+    
+    # Update the food item with the data received
+    food_item.name = data['name']
+    food_item.serving_size = data['serving_size']
+    food_item.calories = data['calories']
+    food_item.total_fat = data['total_fat']
+    food_item.total_carbohydrate = data['total_carbohydrate']
+    food_item.total_sugars = data['total_sugars']
+    food_item.total_protein = data['total_protein']
+
+    db.session.commit()
+
+    return jsonify({'message': 'Food item updated successfully'})
 
 @nutrition_blueprint.route('/meals-and-foods/add-food')
 def addFood():
