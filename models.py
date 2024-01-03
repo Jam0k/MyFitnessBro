@@ -28,3 +28,33 @@ class FoodItem(db.Model):
             "total_sugars": str(self.total_sugars),
             "total_protein": str(self.total_protein)
         }
+
+# New Meal model
+class Meal(db.Model):
+    __tablename__ = 'meals'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    food_items = db.relationship('FoodItem', secondary='meal_food_items', backref=db.backref('meals', lazy='dynamic'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
+# New MealFoodItem model (junction table)
+class MealFoodItem(db.Model):
+    __tablename__ = 'meal_food_items'
+
+    meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'), primary_key=True)
+    food_item_id = db.Column(db.Integer, db.ForeignKey('food_items.id'), primary_key=True)
+    serving_count = db.Column(db.Numeric(5,2))
+
+    meal = db.relationship('Meal', backref=db.backref('meal_food_item_assoc'))
+    food_item = db.relationship('FoodItem', backref=db.backref('meal_food_item_assoc'))

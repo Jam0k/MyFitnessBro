@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
-from models import FoodItem, db
-
+from models import FoodItem, Meal, MealFoodItem, db
 nutrition_blueprint = Blueprint('nutrition', __name__, url_prefix='/nutrition')
 
 # Define nutrition routes
@@ -114,9 +113,55 @@ def addFood():
 
 # Define meal routes
 
+
 @nutrition_blueprint.route('/meals-and-foods/create-meal')
 def createMeal():
-    return render_template('nutrition/meals-and-food/meal/create-meal.html')
+    try:
+        # Fetch all food items from the database
+        food_items = FoodItem.query.all()
+
+        # Convert food items to a format suitable for the template
+        food_items_data = [item.to_dict() for item in food_items]
+
+        # Render the create-meal template with the food items data
+        return render_template('nutrition/meals-and-food/meal/create-meal.html', food_items=food_items_data)
+
+    except Exception as e:
+        # Handle exceptions and possibly return an error message
+        return render_template('nutrition/meals-and-food/meal/create-meal.html', error=str(e))
+    
+@nutrition_blueprint.route('/meals-and-foods/create-new-meal', methods=['POST'])
+def createNewMeal():
+    try:
+        data = request.get_json()
+        meal_name = data['name']
+        food_items_data = data['food_items']
+
+        new_meal = Meal(name=meal_name)
+        db.session.add(new_meal)
+        db.session.flush()  # To get the new meal's ID
+
+        for item in food_items_data:
+            food_id = int(item['id'])
+            serving_count = float(item['serving_count'])  # Convert serving count to float
+
+            meal_food_item = MealFoodItem(
+                meal_id=new_meal.id,
+                food_item_id=food_id,
+                serving_count=serving_count
+            )
+            db.session.add(meal_food_item)
+
+        db.session.commit()
+        return jsonify({'message': 'Meal created successfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+
+
 
 @nutrition_blueprint.route('/meals-and-foods/browse-meal')
 def browseMeal():
