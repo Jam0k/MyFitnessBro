@@ -20,7 +20,7 @@ def createFood():
     return render_template('nutrition/meals-and-food/food/create-food.html')
 
 @nutrition_blueprint.route('/create-new-food-item', methods=['POST'])
-def create_food():
+def createNewFoodItem():
     try:
         # Extract data from form
         name = request.form.get('name')
@@ -53,7 +53,15 @@ def create_food():
 
 @nutrition_blueprint.route('/meals-and-foods/browse-food')
 def browseFood():
-    return render_template('nutrition/meals-and-food/food/browse-food.html')
+    search_query = request.args.get('search', '')
+    try:
+        if search_query:
+            food_items = FoodItem.query.filter(FoodItem.name.ilike(f"%{search_query}%"))
+        else:
+            food_items = FoodItem.query.all()
+        return render_template('nutrition/meals-and-food/food/browse-food.html', food_items=food_items, search_query=search_query)
+    except Exception as e:
+        return render_template('nutrition/meals-and-food/food/browse-food.html', error=str(e))
 
 @nutrition_blueprint.route('/meals-and-foods/add-food')
 def addFood():

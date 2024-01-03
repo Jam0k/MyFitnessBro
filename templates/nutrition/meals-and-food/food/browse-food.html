@@ -1,6 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container mt-4">
+    <h1>Browse Food Items</h1>
+    <p>List of all food items in the database.</p>
 
+    {% if error %}
+        <div class="alert alert-danger">
+            Error: {{ error }}
+        </div>
+    {% endif %}
 
+    <form action="{{ url_for('nutrition.browseFood') }}" method="get" class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" name="search" value="{{ search_query }}" placeholder="Search for food..." aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <br>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Serving Size</th>
+                <th>Calories</th>
+                <th>Total Fat</th>
+                <th>Total Carbohydrate</th>
+                <th>Total Sugars</th>
+                <th>Total Protein</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for food in food_items %}
+            <tr>
+                <td>{{ food.name }}</td>
+                <td>{{ food.serving_size }}</td>
+                <td>{{ food.calories }}</td>
+                <td>{{ food.total_fat }}</td>
+                <td>{{ food.total_carbohydrate }}</td>
+                <td>{{ food.total_sugars }}</td>
+                <td>{{ food.total_protein }}</td>
+                <!-- Add more data cells as needed -->
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">No food items found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
