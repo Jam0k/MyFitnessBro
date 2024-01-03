@@ -93,6 +93,7 @@ def get_foods():
     try:
         foods = FoodItem.query.all()
         foods_data = [{
+            'id': food.id,
             'food_name': food.name,
             'serving_size': food.serving_size,
             'calories': food.calories,
