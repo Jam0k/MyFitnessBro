@@ -7,6 +7,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 
+from models import db
+
 from blueprints.nutrition.routes import nutrition_blueprint
 from blueprints.dashboard.routes import dashboard_blueprint
 from blueprints.fitness.routes import fitness_blueprint
@@ -20,12 +22,13 @@ app = Flask(__name__)
 db_user = os.environ.get('POSTGRES_USER')
 db_password = os.environ.get('POSTGRES_PASSWORD')
 db_name = os.environ.get('POSTGRES_DB')
-db_host = os.environ.get('POSTGRES_ENV')  # Docker service name for the database. Change to db for docker, and localhost for local testing.
+db_host = os.environ.get('POSTGRES_ENV')  # Adjust as per your environment
 
+# Set SQLAlchemy database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db.init_app(app)  # Initialize the db with the app
 
 # Log file size from .env or default to 10MB
 log_file_size = int(os.getenv('LOG_FILE_SIZE', 10485760))

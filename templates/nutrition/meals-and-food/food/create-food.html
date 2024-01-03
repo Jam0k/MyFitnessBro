@@ -5,7 +5,7 @@
     <h1>Create Food</h1>
     <p>Enter the details of the food item you want to add.</p>
 
-    <form action="/create-food" method="post">
+    <form action="/nutrition/create-new-food-item" method="post">
         <div class="form-group">
             <label for="name">Food Name</label>
             <input type="text" class="form-control" id="name" name="name" required>
@@ -36,5 +36,12 @@
         </div>
         <button type="submit" class="btn btn-primary">Add Food</button>
     </form>
+    
 </div>
+{% if request.args.get('message') %}
+    <script>
+        alert("{{ request.args.get('message') }}");
+    </script>
+{% endif %}
+
 {% endblock %}
