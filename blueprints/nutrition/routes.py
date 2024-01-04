@@ -170,17 +170,17 @@ def browseMeal():
         meals_data = []
 
         for meal in meals:
-            # Fetch associated food items for each meal
-            food_items = db.session.query(
-                FoodItem.name
+            # Fetch associated food items and serving counts for each meal
+            food_items_data = db.session.query(
+                FoodItem.name, MealFoodItem.serving_count
             ).join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)\
              .filter(MealFoodItem.meal_id == meal.id).all()
 
-            # Convert food items to a string list
-            food_items_str = ', '.join([fi.name for fi in food_items])
+            # Format the food items and serving counts into a readable string
+            food_items_str = ', '.join([f"{fi.name} ({fi.serving_count} servings)" for fi in food_items_data])
 
             meals_data.append({
-                'id': meal.id,  # Make sure to include the meal id
+                'id': meal.id,
                 'name': meal.name,
                 'food_items': food_items_str
             })
@@ -188,6 +188,7 @@ def browseMeal():
         return render_template('nutrition/meals-and-food/meal/browse-meal.html', meals=meals_data)
     except Exception as e:
         return render_template('nutrition/meals-and-food/meal/browse-meal.html', error=str(e))
+
 
     
 
@@ -207,6 +208,46 @@ def deleteMeal(id):
         return jsonify({'message': 'Meal deleted successfully'})
     except Exception as e:
         db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+
+@nutrition_blueprint.route('/meals-and-foods/get-macros/<int:id>')
+def getMacros(id):
+    try:
+        meal = Meal.query.get_or_404(id)
+
+        # Fetch associated food items
+        food_items_data = db.session.query(
+            FoodItem.name, FoodItem.calories, FoodItem.total_fat, 
+            FoodItem.total_carbohydrate, FoodItem.total_sugars, FoodItem.total_protein, 
+            MealFoodItem.serving_count
+        ).join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)\
+         .filter(MealFoodItem.meal_id == id).all()
+
+        # Initialize total macros
+        macros = {'total_calories': 0, 'total_fat': 0, 'total_carbs': 0, 'total_sugars': 0, 'total_protein': 0}
+
+        # Calculate total macros
+        for item in food_items_data:
+            macros['total_calories'] += item.calories * item.serving_count if item.calories else 0
+            macros['total_fat'] += item.total_fat * item.serving_count if item.total_fat else 0
+            macros['total_carbs'] += item.total_carbohydrate * item.serving_count if item.total_carbohydrate else 0
+            macros['total_sugars'] += item.total_sugars * item.serving_count if item.total_sugars else 0
+            macros['total_protein'] += item.total_protein * item.serving_count if item.total_protein else 0
+
+        # Format the response with rounded numbers and clearer formatting
+        formatted_response = f"""
+            <strong>Calories:</strong> {round(macros['total_calories'], 1)}<br>
+            <strong>Fat:</strong> {round(macros['total_fat'], 1)}g<br>
+            <strong>Carbs:</strong> {round(macros['total_carbs'], 1)}g<br>
+            <strong>Sugars:</strong> {round(macros['total_sugars'], 1)}g<br>
+            <strong>Protein:</strong> {round(macros['total_protein'], 1)}g
+        """
+
+        return formatted_response
+
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
