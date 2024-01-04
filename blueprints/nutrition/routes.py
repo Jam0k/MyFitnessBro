@@ -283,24 +283,31 @@ def updateMeal(id):
         # Update meal name
         meal.name = data['name']
 
-        # Keep track of food items to be updated or added
-        updated_food_item_ids = [item['id'] for item in data['food_items']]
+        # IDs of food items to be updated or added
+        updated_or_new_food_item_ids = {item['id'] for item in data['food_items']}
+        
+        # IDs of food items to be deleted
+        deleted_food_item_ids = set(data['deleted_food_items'])
 
-        # Update existing MealFoodItem entries and mark them as updated
-        for meal_food_item in meal.meal_food_item_assoc:
-            if meal_food_item.food_item_id in updated_food_item_ids:
-                for item_data in data['food_items']:
-                    if item_data['id'] == meal_food_item.food_item_id:
-                        meal_food_item.serving_count = item_data['serving_count']
-                        updated_food_item_ids.remove(item_data['id'])
+        # Delete MealFoodItem records for deleted food items
+        MealFoodItem.query.filter(
+            MealFoodItem.meal_id == id,
+            MealFoodItem.food_item_id.in_(deleted_food_item_ids)
+        ).delete(synchronize_session='fetch')
 
-        # Add new MealFoodItem entries
-        for item_data in data['food_items']:
-            if item_data['id'] in updated_food_item_ids:
+        # Update existing and add new MealFoodItem records
+        for item in data['food_items']:
+            meal_food_item = MealFoodItem.query.filter_by(
+                meal_id=id, food_item_id=item['id']
+            ).first()
+
+            if meal_food_item:
+                meal_food_item.serving_count = item['serving_count']
+            else:
                 new_meal_food_item = MealFoodItem(
                     meal_id=id,
-                    food_item_id=item_data['id'],
-                    serving_count=item_data['serving_count']
+                    food_item_id=item['id'],
+                    serving_count=item['serving_count']
                 )
                 db.session.add(new_meal_food_item)
 
@@ -310,6 +317,7 @@ def updateMeal(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 
 

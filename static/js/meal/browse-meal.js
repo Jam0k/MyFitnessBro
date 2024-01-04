@@ -1,6 +1,8 @@
 $(document).ready(function () {
     $("#mealsTable").DataTable();
 
+    let deletedFoodItemIds = []; // Array to keep track of deleted food items
+
     // Bind click event to delete buttons dynamically
     $("#mealsTable").on("click", ".delete-meal-btn", function () {
       var mealId = $(this).data("id");
@@ -21,37 +23,61 @@ $(document).ready(function () {
     });
   });
 
+  let deletedFoodItemIds = []; // Array to keep track of deleted food items
+
+    // Delete button for existing food items
+    $('#editMealContent').on('click', '.delete-existing-food-item-btn', function() {
+      var row = $(this).closest('.existing-food-item-row');
+      var foodId = row.data('food-id');
+      if (confirm('Are you sure you want to remove this item from the meal?')) {
+          deletedFoodItemIds.push(foodId);
+          row.fadeOut(300, function() { $(this).remove(); });
+      }
+  });
+
   function populateEditModal(mealData) {
-    var editContent = $("#editMealContent");
+    var editContent = $('#editMealContent');
     editContent.empty(); // Clear existing content
 
-    var htmlContent =
-      '<div class="form-group"><label><b>Meal Name</b></label><input type="text" class="form-control" id="editMealName" value="' +
-      mealData.name +
-      '"></div>';
-    htmlContent += '<div class="form-group"><label><b>Food Items</b></label>';
+    var htmlContent = `
+        <div class="form-group">
+            <label><b>Meal Name</b></label>
+            <input type="text" class="form-control" id="editMealName" value="${mealData.name}">
+        </div>
+        <div class="form-group">
+            <label><b>Current Food Items</b></label>
+            <ul class="list-group mb-3">`;
 
-    mealData.food_items.forEach(function (foodItem) {
-      htmlContent +=
-        '<div class="row mb-2"><div class="col-8">' + foodItem.name + "</div>";
-      htmlContent +=
-        '<div class="col-4"><input type="number" class="form-control" value="' +
-        foodItem.serving_count +
-        '" data-food-id="' +
-        foodItem.id +
-        '"></div></div>';
+    mealData.food_items.forEach(foodItem => {
+        htmlContent += `
+            <li class="list-group-item d-flex justify-content-between align-items-center existing-food-item-row" data-food-id="${foodItem.id}">
+                ${foodItem.name}
+                <div>
+                    <input type="number" class="form-control mr-2" style="width: 80px; display: inline-block;" value="${foodItem.serving_count}">
+                    <button type="button" class="btn btn-danger btn-sm delete-existing-food-item-btn">Delete</button>
+                </div>
+            </li>`;
     });
 
-    // Dropdown for selecting food items
-    htmlContent +=
-      '<div class="form-group mt-3"><label><b>Add Food Item</b></label><div class="input-group">';
-    htmlContent +=
-      '<select id="foodItemSelector" class="form-control"></select>';
-    htmlContent +=
-      '<div class="input-group-append"><button type="button" class="btn btn-success" id="addFoodItemBtn">Add</button></div></div>';
+    htmlContent += `
+            </ul>
+            <label><b>Add New Food Item</b></label>
+            <div class="input-group mb-3">
+                <select id="foodItemSelector" class="form-control"></select>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-success" id="addFoodItemBtn">Add</button>
+                </div>
+            </div>
+            <div id="newFoodItemsList" class="list-group"></div>`;
 
     editContent.html(htmlContent);
-  }
+}
+
+  // Handle delete button click for existing food items
+$('#editMealContent').on('click', '.delete-existing-food-item-btn', function() {
+  $(this).closest('.existing-food-item-row').remove();
+  // Potentially mark this item for deletion in the database
+});
 
   $("#mealsTable").on("click", ".show-macros-btn", function () {
     var mealId = $(this).data("id");
@@ -111,37 +137,32 @@ $(document).ready(function () {
     });
   }
 
-  // Handle the 'Add' button click
-  $("#editMealContent").on("click", "#addFoodItemBtn", function () {
-    var selectedFoodId = $("#foodItemSelector").val();
-    var alreadyAdded =
-      $("#editMealContent").find('[data-food-id="' + selectedFoodId + '"]')
-        .length > 0;
+    // Add button for new food items
+    $("#editMealContent").on("click", "#addFoodItemBtn", function () {
+      var selectedFoodId = $("#foodItemSelector").val();
+      var alreadyAdded = $("#newFoodItemsList").find(`[data-food-id="${selectedFoodId}"]`).length > 0;
 
-    if (alreadyAdded) {
-      alert("This food item has already been added.");
-      return; // Prevent adding the duplicate item
-    }
+      if (alreadyAdded) {
+          alert("This food item has already been added.");
+          return;
+      }
 
-    var selectedFoodText = $("#foodItemSelector option:selected").text();
-
-    // Append the selected food item to a list or table in the modal
-    var newItemHtml =
-      '<div class="row mb-2 food-item-row" data-food-id="' +
-      selectedFoodId +
-      '">';
-    newItemHtml += '<div class="col-6">' + selectedFoodText + "</div>";
-    newItemHtml +=
-      '<div class="col-4"><input type="number" class="form-control serving-count" value="1"></div>'; // Default serving count as 1
-    newItemHtml +=
-      '<div class="col-2"><button type="button" class="btn btn-danger remove-food-item-btn">Remove</button></div>';
-    newItemHtml += "</div>";
-    $("#editMealContent").append(newItemHtml);
+      var selectedFoodText = $("#foodItemSelector option:selected").text();
+      var newItemHtml = `
+          <li class="list-group-item d-flex justify-content-between align-items-center food-item-row" data-food-id="${selectedFoodId}">
+              ${selectedFoodText}
+              <div>
+                  <input type="number" class="form-control mr-2" style="width: 80px; display: inline-block;" value="1">
+                  <button type="button" class="btn btn-danger btn-sm remove-food-item-btn">Remove</button>
+              </div>
+          </li>`;
+      $("#newFoodItemsList").append(newItemHtml);
   });
 
-  // Handle removing a food item
-  $("#editMealContent").on("click", ".remove-food-item-btn", function () {
-    $(this).closest(".food-item-row").remove();
+
+    // Remove button for new food items
+    $("#editMealContent").on("click", ".remove-food-item-btn", function () {
+      $(this).closest(".food-item-row").fadeOut(300, function() { $(this).remove(); });
   });
 
   $("#editMealForm").on("submit", function (e) {
@@ -151,34 +172,43 @@ $(document).ready(function () {
     var updatedMealName = $("#editMealName").val();
     var foodItems = [];
 
-    // Get existing and newly added food items
+    // Get serving count for existing food items
+    $(".existing-food-item-row").each(function () {
+        var foodId = $(this).data("food-id");
+        var servingCount = $(this).find('input[type="number"]').val();
+        foodItems.push({ id: foodId, serving_count: parseFloat(servingCount) });
+    });
+
+    // Get serving count for newly added food items
     $(".food-item-row").each(function () {
-      var foodId = $(this).data("food-id");
-      var servingCount = $(this).find(".serving-count").val();
-      foodItems.push({ id: foodId, serving_count: servingCount });
+        var foodId = $(this).data("food-id");
+        var servingCount = $(this).find('input[type="number"]').val();
+        foodItems.push({ id: foodId, serving_count: parseFloat(servingCount) });
     });
 
     var updatedMealData = {
-      name: updatedMealName,
-      food_items: foodItems,
+        name: updatedMealName,
+        food_items: foodItems,
+        deleted_food_items: deletedFoodItemIds // Include deleted food items
     };
 
     // AJAX call to update the meal
     $.ajax({
-      url: "/nutrition/meals-and-foods/update-meal/" + mealId,
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify(updatedMealData),
-      success: function (response) {
-        alert("Meal updated successfully");
-        $("#editMealModal").modal("hide");
-        location.reload(); // Reload the page to reflect the changes
-      },
-      error: function () {
-        alert("Error updating meal");
-      },
+        url: "/nutrition/meals-and-foods/update-meal/" + mealId,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(updatedMealData),
+        success: function (response) {
+            alert("Meal updated successfully");
+            $("#editMealModal").modal("hide");
+            location.reload(); // Reload the page to reflect the changes
+        },
+        error: function (xhr) {
+            alert("Error updating meal: " + xhr.responseText);
+        }
     });
-  });
+});
+
 
   function collectUpdatedMealData() {
     // Code to collect updated meal data from the form...
