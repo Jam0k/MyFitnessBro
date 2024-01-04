@@ -254,17 +254,25 @@ def getMacros(id):
 def getMeal(id):
     try:
         meal = Meal.query.get_or_404(id)
-        meal_data = {
+        food_items = MealFoodItem.query.filter_by(meal_id=id).join(FoodItem, MealFoodItem.food_item_id == FoodItem.id).all()
+
+        food_items_data = []
+        for fi in food_items:
+            food_items_data.append({
+                'id': fi.food_item_id,
+                'name': fi.food_item.name,
+                'serving_count': str(fi.serving_count),
+                'serving_size': fi.food_item.serving_size
+            })
+
+        return jsonify({
+            'id': meal.id,
             'name': meal.name,
-            # Fetch associated food items and serving counts
-            'food_items': [
-                {'id': fi.food_item_id, 'name': fi.food_item.name, 'serving_count': fi.serving_count}
-                for fi in meal.meal_food_item_assoc
-            ]
-        }
-        return jsonify(meal_data)
+            'food_items': food_items_data
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @nutrition_blueprint.route('/meals-and-foods/update-meal/<int:id>', methods=['POST'])
 def updateMeal(id):

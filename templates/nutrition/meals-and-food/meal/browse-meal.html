@@ -148,6 +148,9 @@
 $("#mealsTable").on("click", ".edit-meal-btn", function () {
     var mealId = $(this).data("id");
 
+    // Store mealId in the modal's data
+    $('#editMealModal').data('meal-id', mealId);
+
     // AJAX request to fetch meal data for editing
     $.ajax({
         url: "/nutrition/meals-and-foods/get-meal/" + mealId,
@@ -199,7 +202,8 @@ $("#mealsTable").on("click", ".edit-meal-btn", function () {
 $('#editMealForm').on('submit', function(e) {
     e.preventDefault();
 
-    var mealId = $('#editMealModal').data('meal-id'); // Assuming you store the meal ID here when opening the modal
+    // Retrieve mealId from the modal's data
+    var mealId = $('#editMealModal').data('meal-id');
     var updatedMealName = $('#editMealName').val();
     var updatedFoodItems = [];
 
