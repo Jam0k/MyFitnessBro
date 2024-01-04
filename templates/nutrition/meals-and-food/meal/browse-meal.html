@@ -158,8 +158,6 @@
     });
   });
 
-// Existing JavaScript code...
-
 // Bind click event to edit buttons dynamically
 $("#mealsTable").on("click", ".edit-meal-btn", function () {
     var mealId = $(this).data("id");
@@ -200,7 +198,60 @@ function fetchFoodItemsForDropdown() {
     });
 }
 
+// Handle the 'Add' button click
+$('#editMealContent').on('click', '#addFoodItemBtn', function() {
+    var selectedFoodId = $('#foodItemSelector').val();
+    var selectedFoodText = $('#foodItemSelector option:selected').text();
 
+    // Append the selected food item to a list or table in the modal
+    var newItemHtml = '<div class="row mb-2 food-item-row" data-food-id="' + selectedFoodId + '">';
+    newItemHtml += '<div class="col-6">' + selectedFoodText + '</div>';
+    newItemHtml += '<div class="col-4"><input type="number" class="form-control serving-count" value="1"></div>'; // Default serving count as 1
+    newItemHtml += '<div class="col-2"><button type="button" class="btn btn-danger remove-food-item-btn">Remove</button></div>';
+    newItemHtml += '</div>';
+    $('#editMealContent').append(newItemHtml);
+});
+
+// Handle removing a food item
+$('#editMealContent').on('click', '.remove-food-item-btn', function() {
+    $(this).closest('.food-item-row').remove();
+});
+
+$('#editMealForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var mealId = $('#editMealModal').data('meal-id');
+    var updatedMealName = $('#editMealName').val();
+    var foodItems = [];
+
+    // Get existing and newly added food items
+    $('.food-item-row').each(function() {
+        var foodId = $(this).data('food-id');
+        var servingCount = $(this).find('.serving-count').val();
+        foodItems.push({ id: foodId, serving_count: servingCount });
+    });
+
+    var updatedMealData = {
+        name: updatedMealName,
+        food_items: foodItems
+    };
+
+    // AJAX call to update the meal
+    $.ajax({
+        url: "/nutrition/meals-and-foods/update-meal/" + mealId,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(updatedMealData),
+        success: function(response) {
+            alert("Meal updated successfully");
+            $('#editMealModal').modal('hide');
+            location.reload(); // Reload the page to reflect the changes
+        },
+        error: function() {
+            alert("Error updating meal");
+        }
+    });
+});
 
 $('#editMealForm').on('submit', function(e) {
     e.preventDefault();

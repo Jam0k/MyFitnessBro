@@ -283,11 +283,26 @@ def updateMeal(id):
         # Update meal name
         meal.name = data['name']
 
-        # Update serving counts for each food item
+        # Keep track of food items to be updated or added
+        updated_food_item_ids = [item['id'] for item in data['food_items']]
+
+        # Update existing MealFoodItem entries and mark them as updated
+        for meal_food_item in meal.meal_food_item_assoc:
+            if meal_food_item.food_item_id in updated_food_item_ids:
+                for item_data in data['food_items']:
+                    if item_data['id'] == meal_food_item.food_item_id:
+                        meal_food_item.serving_count = item_data['serving_count']
+                        updated_food_item_ids.remove(item_data['id'])
+
+        # Add new MealFoodItem entries
         for item_data in data['food_items']:
-            meal_food_item = MealFoodItem.query.filter_by(meal_id=id, food_item_id=item_data['id']).first()
-            if meal_food_item:
-                meal_food_item.serving_count = item_data['serving_count']
+            if item_data['id'] in updated_food_item_ids:
+                new_meal_food_item = MealFoodItem(
+                    meal_id=id,
+                    food_item_id=item_data['id'],
+                    serving_count=item_data['serving_count']
+                )
+                db.session.add(new_meal_food_item)
 
         db.session.commit()
         return jsonify({'message': 'Meal updated successfully'})
@@ -295,6 +310,7 @@ def updateMeal(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 
 @nutrition_blueprint.route('/meals-and-foods/get-all-food-items', methods=['GET'])
