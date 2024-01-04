@@ -1,6 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h1>Browse Meals</h1>
+  <table id="mealsTable" class="display">
+    <thead>
+      <tr>
+        <th>Meal Name</th>
+        <th>Food Items</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for meal in meals %}
+        <tr>
+            <td>{{ meal.name }}</td>
+            <td>{{ meal.food_items }}</td>
+            <td>
+                <!-- Action buttons (Edit, Delete, etc.) -->
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    
+    
+  </table>
+</div>
 
-{% block content %}
-
-
+<script>
+  $(document).ready(function () {
+    $("#mealsTable").DataTable();
+  });
+</script>
 {% endblock %}

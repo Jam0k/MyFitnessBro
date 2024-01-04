@@ -60,7 +60,6 @@
     // Initialize DataTables
     var table = $("#foodItemsTable").DataTable();
 
-    // Rest of your existing script...
   });
 
   $(document).ready(function () {
@@ -83,10 +82,11 @@
       };
 
       $(".food-item-checkbox:checked").each(function () {
-        var foodId = $(this).val();
-        var servingCount = $(this).siblings(".serving-count-input").val();
-        mealData.food_items.push({ id: foodId, serving_count: servingCount });
-      });
+    var foodId = $(this).val();
+    var servingCount = $(this).closest("tr").find(".serving-count-input").val();
+    mealData.food_items.push({ id: foodId, serving_count: servingCount });
+});
+
 
       $.ajax({
         url: "/nutrition/meals-and-foods/create-new-meal",
