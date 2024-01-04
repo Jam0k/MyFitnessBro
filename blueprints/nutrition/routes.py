@@ -171,14 +171,18 @@ def browseMeal():
 
         for meal in meals:
             # Fetch associated food items for each meal
-            food_items = db.session.query(FoodItem.name, MealFoodItem.serving_count)\
-                                   .join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)\
-                                   .filter(MealFoodItem.meal_id == meal.id).all()
+            food_items = db.session.query(
+                FoodItem.name
+            ).join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)\
+             .filter(MealFoodItem.meal_id == meal.id).all()
 
-            # Format the food items into a string
-            food_items_str = ', '.join([f"{fi.name} ({fi.serving_count} servings)" for fi in food_items])
-            
-            meals_data.append({'name': meal.name, 'food_items': food_items_str})
+            # Convert food items to a string list
+            food_items_str = ', '.join([fi.name for fi in food_items])
+
+            meals_data.append({
+                'name': meal.name,
+                'food_items': food_items_str
+            })
 
         return render_template('nutrition/meals-and-food/meal/browse-meal.html', meals=meals_data)
     except Exception as e:

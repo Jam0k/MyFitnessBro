@@ -25,29 +25,29 @@
         <tbody>
           {% for food in food_items %}
           <tr>
-            <td>
-              <input
-                type="checkbox"
-                class="food-item-checkbox"
-                value="{{ food.id }}"
-                id="foodItem{{ food.id }}"
-              />
-              <label for="foodItem{{ food.id }}">{{ food.name }}</label>
-            </td>
-            <td>
-              <input
-                type="number"
-                min="0"
-                step="any"
-                class="form-control serving-count-input"
-                placeholder="Serving count"
-                data-food-id="{{ food.id }}"
-                style="display: none"
-              />
-            </td>
+              <td>
+                  <input
+                      type="checkbox"
+                      class="food-item-checkbox"
+                      value="{{ food.id }}"
+                      id="foodItem{{ food.id }}"
+                  />
+                  <label for="foodItem{{ food.id }}">{{ food.name }} (Serving Size: {{ food.serving_size }}g)</label>
+              </td>
+              <td>
+                  <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      class="form-control serving-count-input"
+                      placeholder="Serving count"
+                      data-food-id="{{ food.id }}"
+                      style="display: none"
+                  />
+              </td>
           </tr>
           {% endfor %}
-        </tbody>
+      </tbody>      
       </table>
     </div>
 
