@@ -199,8 +199,16 @@ function fetchFoodItemsForDropdown() {
 }
 
 // Handle the 'Add' button click
+// Handle the 'Add' button click
 $('#editMealContent').on('click', '#addFoodItemBtn', function() {
     var selectedFoodId = $('#foodItemSelector').val();
+    var alreadyAdded = $('#editMealContent').find('[data-food-id="' + selectedFoodId + '"]').length > 0;
+
+    if (alreadyAdded) {
+        alert('This food item has already been added.');
+        return; // Prevent adding the duplicate item
+    }
+
     var selectedFoodText = $('#foodItemSelector option:selected').text();
 
     // Append the selected food item to a list or table in the modal
@@ -211,6 +219,7 @@ $('#editMealContent').on('click', '#addFoodItemBtn', function() {
     newItemHtml += '</div>';
     $('#editMealContent').append(newItemHtml);
 });
+
 
 // Handle removing a food item
 $('#editMealContent').on('click', '.remove-food-item-btn', function() {
@@ -253,40 +262,6 @@ $('#editMealForm').on('submit', function(e) {
     });
 });
 
-$('#editMealForm').on('submit', function(e) {
-    e.preventDefault();
-
-    // Retrieve mealId from the modal's data
-    var mealId = $('#editMealModal').data('meal-id');
-    var updatedMealName = $('#editMealName').val();
-    var updatedFoodItems = [];
-
-    $('#editMealContent').find('input[data-food-id]').each(function() {
-        var foodId = $(this).data('food-id');
-        var servingCount = $(this).val();
-        updatedFoodItems.push({ id: foodId, serving_count: servingCount });
-    });
-
-    var updatedMealData = {
-        name: updatedMealName,
-        food_items: updatedFoodItems
-    };
-
-    $.ajax({
-        url: "/nutrition/meals-and-foods/update-meal/" + mealId,
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(updatedMealData),
-        success: function(response) {
-            alert("Meal updated successfully");
-            $('#editMealModal').modal('hide');
-            location.reload(); // Reload the page to reflect the changes
-        },
-        error: function() {
-            alert("Error updating meal");
-        }
-    });
-});
 
 
 function collectUpdatedMealData() {
