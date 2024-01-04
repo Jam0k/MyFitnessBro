@@ -120,9 +120,27 @@
       }
     });
   });
-</script>
 
-<script>
+  function populateEditModal(mealData) {
+    var editContent = $('#editMealContent');
+    editContent.empty();  // Clear existing content
+
+    var htmlContent = '<div class="form-group"><label><b>Meal Name</b></label><input type="text" class="form-control" id="editMealName" value="' + mealData.name + '"></div>';
+    htmlContent += '<div class="form-group"><label><b>Food Items</b></label>';
+
+    mealData.food_items.forEach(function(foodItem) {
+        htmlContent += '<div class="row mb-2"><div class="col-8">' + foodItem.name + '</div>';
+        htmlContent += '<div class="col-4"><input type="number" class="form-control" value="' + foodItem.serving_count + '" data-food-id="' + foodItem.id + '"></div></div>';
+    });
+
+    // Dropdown for selecting food items
+    htmlContent += '<div class="form-group mt-3"><label><b>Add Food Item</b></label><div class="input-group">';
+    htmlContent += '<select id="foodItemSelector" class="form-control"></select>';
+    htmlContent += '<div class="input-group-append"><button type="button" class="btn btn-success" id="addFoodItemBtn">Add</button></div></div>';
+
+    editContent.html(htmlContent);
+}
+
   $("#mealsTable").on("click", ".show-macros-btn", function () {
     var mealId = $(this).data("id");
 
@@ -139,16 +157,12 @@
       },
     });
   });
-</script>
 
-<script>
 // Existing JavaScript code...
 
 // Bind click event to edit buttons dynamically
 $("#mealsTable").on("click", ".edit-meal-btn", function () {
     var mealId = $(this).data("id");
-
-    // Store mealId in the modal's data
     $('#editMealModal').data('meal-id', mealId);
 
     // AJAX request to fetch meal data for editing
@@ -156,9 +170,9 @@ $("#mealsTable").on("click", ".edit-meal-btn", function () {
         url: "/nutrition/meals-and-foods/get-meal/" + mealId,
         method: "GET",
         success: function (mealData) {
-            // Populate the edit modal
             populateEditModal(mealData);
             $('#editMealModal').modal('show');
+            fetchFoodItemsForDropdown(); // Call this after the modal is shown
         },
         error: function () {
             alert("Error fetching meal data for editing");
@@ -166,37 +180,26 @@ $("#mealsTable").on("click", ".edit-meal-btn", function () {
     });
 });
 
-function populateEditModal(mealData) {
-    var editContent = $('#editMealContent');
-    editContent.empty();  // Clear existing content
+function fetchFoodItemsForDropdown() {
+    $.ajax({
+        url: '/nutrition/meals-and-foods/get-all-food-items',
+        method: 'GET',
+        success: function (data) {
+            var dropdown = $('#foodItemSelector');
+            dropdown.empty(); // Clear existing options
 
-    var htmlContent = '<div class="form-group"><label>Meal Name</label><input type="text" class="form-control" id="editMealName" value="' + mealData.name + '"></div>';
-    htmlContent += '<div class="form-group"><label>Food Items</label>';
-
-    mealData.food_items.forEach(function(foodItem) {
-        htmlContent += '<div class="row mb-2"><div class="col-6">' + foodItem.name + '</div>';
-        htmlContent += '<div class="col-6"><input type="number" class="form-control" value="' + foodItem.serving_count + '" data-food-id="' + foodItem.id + '"></div></div>';
+            data.forEach(function(item) {
+                // Concatenate the item name and serving size
+                var optionText = item.name + ' (Serving Size: ' + item.serving_size + 'g)';
+                dropdown.append(new Option(optionText, item.id));
+            });
+        },
+        error: function () {
+            alert('Error fetching food items');
+        }
     });
-
-    htmlContent += '</div>';
-    editContent.html(htmlContent);
 }
 
-$("#mealsTable").on("click", ".edit-meal-btn", function () {
-    var mealId = $(this).data("id");
-
-    $.ajax({
-        url: "/nutrition/meals-and-foods/get-meal/" + mealId,
-        method: "GET",
-        success: function (mealData) {
-            populateEditModal(mealData);
-            $('#editMealModal').modal('show');
-        },
-        error: function () {
-            alert("Error fetching meal data for editing");
-        }
-    });
-});
 
 
 $('#editMealForm').on('submit', function(e) {
@@ -240,6 +243,8 @@ function collectUpdatedMealData() {
     // This includes the meal name and updated food items and serving sizes
     return updatedMealData;
 }
+
+
 
 </script>
 

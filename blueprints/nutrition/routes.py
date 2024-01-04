@@ -297,6 +297,14 @@ def updateMeal(id):
         return jsonify({'error': str(e)}), 500
 
 
+@nutrition_blueprint.route('/meals-and-foods/get-all-food-items', methods=['GET'])
+def getAllFoodItems():
+    try:
+        food_items = FoodItem.query.all()
+        food_items_data = [item.to_dict() for item in food_items]
+        return jsonify(food_items_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @nutrition_blueprint.route('/meals-and-foods/add-meal')
