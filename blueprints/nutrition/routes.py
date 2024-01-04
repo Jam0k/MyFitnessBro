@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, jsonify
 from models import FoodItem, Meal, MealFoodItem, db
+import json
+from decimal import Decimal
 nutrition_blueprint = Blueprint('nutrition', __name__, url_prefix='/nutrition')
 
 # Define nutrition routes
@@ -228,27 +230,53 @@ def getMacros(id):
         # Initialize total macros
         macros = {'total_calories': 0, 'total_fat': 0, 'total_carbs': 0, 'total_sugars': 0, 'total_protein': 0}
 
-        # Calculate total macros
+        # Data for the table
+        table_data = []
+
         for item in food_items_data:
-            macros['total_calories'] += item.calories * item.serving_count if item.calories else 0
-            macros['total_fat'] += item.total_fat * item.serving_count if item.total_fat else 0
-            macros['total_carbs'] += item.total_carbohydrate * item.serving_count if item.total_carbohydrate else 0
-            macros['total_sugars'] += item.total_sugars * item.serving_count if item.total_sugars else 0
-            macros['total_protein'] += item.total_protein * item.serving_count if item.total_protein else 0
+            item_macros = {
+                'calories': item.calories * item.serving_count if item.calories else 0,
+                'fat': item.total_fat * item.serving_count if item.total_fat else 0,
+                'carbs': item.total_carbohydrate * item.serving_count if item.total_carbohydrate else 0,
+                'sugars': item.total_sugars * item.serving_count if item.total_sugars else 0,
+                'protein': item.total_protein * item.serving_count if item.total_protein else 0
+            }
 
-        # Format the response with rounded numbers and clearer formatting
-        formatted_response = f"""
-            <strong>Calories:</strong> {round(macros['total_calories'], 1)}<br>
-            <strong>Fat:</strong> {round(macros['total_fat'], 1)}g<br>
-            <strong>Carbs:</strong> {round(macros['total_carbs'], 1)}g<br>
-            <strong>Sugars:</strong> {round(macros['total_sugars'], 1)}g<br>
-            <strong>Protein:</strong> {round(macros['total_protein'], 1)}g
-        """
+            # Convert Decimal to float for JSON serialization
+            for key in item_macros:
+                if isinstance(item_macros[key], Decimal):
+                    item_macros[key] = float(item_macros[key])
 
-        return formatted_response
+            # Add to total macros
+            for key, value in item_macros.items():
+                macros[f'total_{key}'] += value
+
+            # Add item to table data
+            table_data.append({
+                'name': item.name,
+                'calories': round(item_macros['calories'], 1),
+                'fat': round(item_macros['fat'], 1),
+                'carbs': round(item_macros['carbs'], 1),
+                'sugars': round(item_macros['sugars'], 1),
+                'protein': round(item_macros['protein'], 1)
+            })
+
+        # Prepare JSON data for the pie chart
+        chart_data = {
+            'labels': ['Fat', 'Carbs', 'Sugars', 'Protein'],
+            'datasets': [{
+                'data': [float(macros['total_fat']), float(macros['total_carbs']), 
+                         float(macros['total_sugars']), float(macros['total_protein'])],
+                'backgroundColor': ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+            }]
+        }
+
+        # Return combined JSON data
+        return jsonify({'chartData': chart_data, 'tableData': table_data})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @nutrition_blueprint.route('/meals-and-foods/get-meal/<int:id>', methods=['GET'])
 def getMeal(id):
