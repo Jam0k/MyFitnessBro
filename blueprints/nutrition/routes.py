@@ -250,6 +250,44 @@ def getMacros(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@nutrition_blueprint.route('/meals-and-foods/get-meal/<int:id>', methods=['GET'])
+def getMeal(id):
+    try:
+        meal = Meal.query.get_or_404(id)
+        meal_data = {
+            'name': meal.name,
+            # Fetch associated food items and serving counts
+            'food_items': [
+                {'id': fi.food_item_id, 'name': fi.food_item.name, 'serving_count': fi.serving_count}
+                for fi in meal.meal_food_item_assoc
+            ]
+        }
+        return jsonify(meal_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@nutrition_blueprint.route('/meals-and-foods/update-meal/<int:id>', methods=['POST'])
+def updateMeal(id):
+    try:
+        data = request.get_json()
+        meal = Meal.query.get_or_404(id)
+
+        # Update meal name
+        meal.name = data['name']
+
+        # Update serving counts for each food item
+        for item_data in data['food_items']:
+            meal_food_item = MealFoodItem.query.filter_by(meal_id=id, food_item_id=item_data['id']).first()
+            if meal_food_item:
+                meal_food_item.serving_count = item_data['serving_count']
+
+        db.session.commit()
+        return jsonify({'message': 'Meal updated successfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 
 
 

@@ -141,4 +141,102 @@
   });
 </script>
 
+<script>
+// Existing JavaScript code...
+
+// Bind click event to edit buttons dynamically
+$("#mealsTable").on("click", ".edit-meal-btn", function () {
+    var mealId = $(this).data("id");
+
+    // AJAX request to fetch meal data for editing
+    $.ajax({
+        url: "/nutrition/meals-and-foods/get-meal/" + mealId,
+        method: "GET",
+        success: function (mealData) {
+            // Populate the edit modal
+            populateEditModal(mealData);
+            $('#editMealModal').modal('show');
+        },
+        error: function () {
+            alert("Error fetching meal data for editing");
+        }
+    });
+});
+
+function populateEditModal(mealData) {
+    var editContent = $('#editMealContent');
+    editContent.empty();  // Clear existing content
+
+    var htmlContent = '<div class="form-group"><label>Meal Name</label><input type="text" class="form-control" id="editMealName" value="' + mealData.name + '"></div>';
+    htmlContent += '<div class="form-group"><label>Food Items</label>';
+
+    mealData.food_items.forEach(function(foodItem) {
+        htmlContent += '<div class="row mb-2"><div class="col-6">' + foodItem.name + '</div>';
+        htmlContent += '<div class="col-6"><input type="number" class="form-control" value="' + foodItem.serving_count + '" data-food-id="' + foodItem.id + '"></div></div>';
+    });
+
+    htmlContent += '</div>';
+    editContent.html(htmlContent);
+}
+
+$("#mealsTable").on("click", ".edit-meal-btn", function () {
+    var mealId = $(this).data("id");
+
+    $.ajax({
+        url: "/nutrition/meals-and-foods/get-meal/" + mealId,
+        method: "GET",
+        success: function (mealData) {
+            populateEditModal(mealData);
+            $('#editMealModal').modal('show');
+        },
+        error: function () {
+            alert("Error fetching meal data for editing");
+        }
+    });
+});
+
+
+$('#editMealForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var mealId = $('#editMealModal').data('meal-id'); // Assuming you store the meal ID here when opening the modal
+    var updatedMealName = $('#editMealName').val();
+    var updatedFoodItems = [];
+
+    $('#editMealContent').find('input[data-food-id]').each(function() {
+        var foodId = $(this).data('food-id');
+        var servingCount = $(this).val();
+        updatedFoodItems.push({ id: foodId, serving_count: servingCount });
+    });
+
+    var updatedMealData = {
+        name: updatedMealName,
+        food_items: updatedFoodItems
+    };
+
+    $.ajax({
+        url: "/nutrition/meals-and-foods/update-meal/" + mealId,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(updatedMealData),
+        success: function(response) {
+            alert("Meal updated successfully");
+            $('#editMealModal').modal('hide');
+            location.reload(); // Reload the page to reflect the changes
+        },
+        error: function() {
+            alert("Error updating meal");
+        }
+    });
+});
+
+
+function collectUpdatedMealData() {
+    // Code to collect updated meal data from the form...
+    // This includes the meal name and updated food items and serving sizes
+    return updatedMealData;
+}
+
+</script>
+
 {% endblock %}
