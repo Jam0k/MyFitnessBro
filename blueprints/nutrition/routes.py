@@ -180,6 +180,7 @@ def browseMeal():
             food_items_str = ', '.join([fi.name for fi in food_items])
 
             meals_data.append({
+                'id': meal.id,  # Make sure to include the meal id
                 'name': meal.name,
                 'food_items': food_items_str
             })
@@ -187,6 +188,27 @@ def browseMeal():
         return render_template('nutrition/meals-and-food/meal/browse-meal.html', meals=meals_data)
     except Exception as e:
         return render_template('nutrition/meals-and-food/meal/browse-meal.html', error=str(e))
+
+    
+
+    
+@nutrition_blueprint.route('/meals-and-foods/delete-meal/<int:id>', methods=['POST'])
+def deleteMeal(id):
+    try:
+        meal = Meal.query.get_or_404(id)
+        
+        # Delete associated MealFoodItem entries
+        MealFoodItem.query.filter_by(meal_id=id).delete()
+
+        # Delete the meal itself
+        db.session.delete(meal)
+        db.session.commit()
+
+        return jsonify({'message': 'Meal deleted successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 
 
 
