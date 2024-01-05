@@ -59,8 +59,8 @@ function populateEditModal(mealData) {
             <li class="list-group-item d-flex justify-content-between align-items-center existing-food-item-row" data-food-id="${foodItem.id}">
                 ${foodItem.name}
                 <div>
-                    <input type="number" class="form-control mr-2" style="width: 80px; display: inline-block;" value="${foodItem.serving_count}">
-                    <button type="button" class="btn btn-danger btn-sm delete-existing-food-item-btn">Delete</button>
+                <input type="number" class="form-control mr-2" style="width: 80px; display: inline-block;" value="${foodItem.serving_count}" step="0.01">
+                <button type="button" class="btn btn-danger btn-sm delete-existing-food-item-btn">Delete</button>
                 </div>
             </li>`;
   });
@@ -252,9 +252,3 @@ $("#editMealForm").on("submit", function (e) {
     },
   });
 });
-
-function collectUpdatedMealData() {
-  // Code to collect updated meal data from the form...
-  // This includes the meal name and updated food items and serving sizes
-  return updatedMealData;
-}

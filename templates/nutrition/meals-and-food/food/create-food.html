@@ -3,7 +3,11 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Create Food</h1>
-    <p>Enter the details of the food item you want to add.</p>
+    <p class="lead">Enter the details of the food item you want to add.</p>
+
+    {% if request.args.get('message') %}
+        <div class="alert alert-info">{{ request.args.get('message') }}</div>
+    {% endif %}
 
     <form action="/nutrition/create-new-food-item" method="post">
         <div class="form-group">
@@ -36,12 +40,5 @@
         </div>
         <button type="submit" class="btn btn-primary">Add Food</button>
     </form>
-    
 </div>
-{% if request.args.get('message') %}
-    <script>
-        alert("{{ request.args.get('message') }}");
-    </script>
-{% endif %}
-
 {% endblock %}

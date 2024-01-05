@@ -1,6 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container mt-4">
+    <h1>Log Meal</h1>
+    <form id="logMealForm">
+        <!-- Meal Selector -->
+        <div class="form-group">
+            <label for="mealSelector">Select Meal</label>
+            <select id="mealSelector" class="form-control"></select>
+        </div>
 
+        <!-- Meal Type -->
+        <div class="form-group">
+            <label for="mealType">Meal Type</label>
+            <select id="mealType" class="form-control">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+            </select>
+        </div>
 
+        <!-- Date Picker -->
+        <div class="form-group">
+            <label for="logDate">Date</label>
+            <input type="date" class="form-control" id="logDate" name="logDate" value="{{ today }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Log Meal</button>
+    </form>
+</div>
+<script src="{{ url_for('static', filename='js/logMeal.js') }}"></script>
 {% endblock %}

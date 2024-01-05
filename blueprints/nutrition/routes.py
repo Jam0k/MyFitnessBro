@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from models import FoodItem, Meal, MealFoodItem, db
 import json
 from decimal import Decimal
+from datetime import datetime
 nutrition_blueprint = Blueprint('nutrition', __name__, url_prefix='/nutrition')
 
 # Define nutrition routes
@@ -102,12 +103,8 @@ def deleteFoodItem(id):
 
 @nutrition_blueprint.route('/meals-and-foods/add-food')
 def addFood():
-    return render_template('nutrition/meals-and-food/food/add-food.html')
-
-
-
-
-
+    today = datetime.now().strftime("%Y-%m-%d")
+    return render_template('nutrition/meals-and-food/food/add-food.html', today=today)
 
 
 
@@ -361,4 +358,5 @@ def getAllFoodItems():
 
 @nutrition_blueprint.route('/meals-and-foods/add-meal')
 def addMeal():
-    return render_template('nutrition/meals-and-food/meal/add-meal.html')
+    today = datetime.now().strftime("%Y-%m-%d")
+    return render_template('nutrition/meals-and-food/meal/add-meal.html', today=today)
