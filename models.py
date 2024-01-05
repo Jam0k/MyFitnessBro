@@ -58,3 +58,26 @@ class MealFoodItem(db.Model):
 
     meal = db.relationship('Meal', backref=db.backref('meal_food_item_assoc'))
     food_item = db.relationship('FoodItem', backref=db.backref('meal_food_item_assoc'))
+
+class FoodMealLog(db.Model):
+    __tablename__ = 'food_meal_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    food_item_id = db.Column(db.Integer, db.ForeignKey('food_items.id'))
+    meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'))  # Add this line
+    serving_count = db.Column(db.Numeric(5, 2))
+    log_date = db.Column(db.Date, nullable=False)
+    meal_type = db.Column(db.String(50))  # Type of meal (breakfast, lunch, etc.)
+
+    food_item = db.relationship('FoodItem', backref=db.backref('logs', lazy='dynamic'))
+    meal = db.relationship('Meal', backref=db.backref('meal_logs', lazy='dynamic'))  # Add this relationship
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'food_item_id': self.food_item_id,
+            'meal_id': self.meal_id,  # Include this field
+            'serving_count': str(self.serving_count),
+            'log_date': self.log_date.isoformat(),
+            'meal_type': self.meal_type
+        }

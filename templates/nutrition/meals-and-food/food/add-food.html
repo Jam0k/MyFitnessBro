@@ -4,26 +4,35 @@
 <div class="container mt-4">
     <h1>Log Food Item</h1>
     <form id="logFoodForm">
-        <!-- Food Item Selector -->
         <div class="form-group">
             <label for="foodItemSelector">Select Food Item</label>
-            <select id="foodItemSelector" class="form-control"></select>
+            <select class="form-control" id="foodItemSelector" required>
+                <!-- Options will be populated here -->
+            </select>
         </div>
-
-        <!-- Serving Count -->
         <div class="form-group">
             <label for="servingCount">Serving Count</label>
-            <input type="number" class="form-control" id="servingCount" step="0.01">
+            <input type="number" class="form-control" id="servingCount" min="0.01" step="0.01" required>
         </div>
-
-        <!-- Date Picker -->
         <div class="form-group">
             <label for="logDate">Date</label>
-            <input type="date" class="form-control" id="logDate" name="logDate" value="{{ today }}">
+            <input type="date" class="form-control" id="logDate" required>
         </div>
-
+        <div class="form-group">
+            <label for="mealType">Meal Type</label>
+            <select class="form-control" id="mealType" required>
+                <option value="">Select Meal Type</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Log Food</button>
     </form>
 </div>
-<script src="{{ url_for('static', filename='js/logFood.js') }}"></script>
+<script src="{{ url_for('static', filename='js/food/log-food.js') }}"></script>
 {% endblock %}
+
+
+

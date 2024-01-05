@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, jsonify
-from models import FoodItem, Meal, MealFoodItem, db
+from models import FoodItem, Meal, MealFoodItem, FoodMealLog, db
 import json
 from decimal import Decimal
 from datetime import datetime
@@ -107,6 +107,30 @@ def addFood():
     return render_template('nutrition/meals-and-food/food/add-food.html', today=today)
 
 
+@nutrition_blueprint.route('/meals-and-foods/log-food', methods=['POST'])
+def logFood():
+    try:
+        data = request.get_json()
+        new_log = FoodMealLog(
+            food_item_id=data['food_item_id'],
+            serving_count=data['serving_count'],
+            log_date=datetime.strptime(data['log_date'], '%Y-%m-%d'),
+            meal_type=data['meal_type']  # Include meal_type in the logged data
+        )
+        db.session.add(new_log)
+        db.session.commit()
+        return jsonify({'message': 'Food logged successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@nutrition_blueprint.route('/meals-and-foods/get-all-food-items', methods=['GET'])
+def getAllFoodItems():
+    try:
+        food_items = FoodItem.query.all()
+        food_items_data = [item.to_dict() for item in food_items]
+        return jsonify(food_items_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 
@@ -344,14 +368,38 @@ def updateMeal(id):
         return jsonify({'error': str(e)}), 500
 
 
-
-
-@nutrition_blueprint.route('/meals-and-foods/get-all-food-items', methods=['GET'])
-def getAllFoodItems():
+@nutrition_blueprint.route('/meals-and-foods/log-meal', methods=['POST'])
+def logMeal():
     try:
-        food_items = FoodItem.query.all()
-        food_items_data = [item.to_dict() for item in food_items]
-        return jsonify(food_items_data)
+        # Parse data from the incoming request
+        data = request.get_json()
+        meal_id = data['meal_id']
+        meal_type = data['meal_type']
+        log_date = datetime.strptime(data['log_date'], '%Y-%m-%d')
+
+        # Create a new MealLog instance
+        new_meal_log = FoodMealLog(
+            meal_id=meal_id,
+            meal_type=meal_type,
+            log_date=log_date
+        )
+
+        # Add to the database and commit
+        db.session.add(new_meal_log)
+        db.session.commit()
+
+        return jsonify({'message': 'Meal logged successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@nutrition_blueprint.route('/meals-and-foods/get-all-meals', methods=['GET'])
+def getAllMeals():
+    try:
+        meals = Meal.query.all()
+        meals_data = [meal.to_dict() for meal in meals]
+        return jsonify(meals_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
