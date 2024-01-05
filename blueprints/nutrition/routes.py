@@ -398,10 +398,23 @@ def logMeal():
 def getAllMeals():
     try:
         meals = Meal.query.all()
-        meals_data = [meal.to_dict() for meal in meals]
-        return jsonify(meals_data)
+        meals_data = []
+        for meal in meals:
+            food_items_data = db.session.query(
+                FoodItem.name, MealFoodItem.serving_count
+            ).join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)\
+             .filter(MealFoodItem.meal_id == meal.id).all()
+
+            meal_dict = meal.to_dict()
+            meal_dict['food_items'] = [
+                {'name': fi.name, 'serving_count': str(fi.serving_count)} for fi in food_items_data
+            ]
+            meals_data.append(meal_dict)
+        
+        return jsonify({'meals': meals_data})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 @nutrition_blueprint.route('/meals-and-foods/add-meal')
