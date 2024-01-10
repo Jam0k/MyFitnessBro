@@ -430,10 +430,6 @@ def tracking():
     meal_type_data = {mt: {'meals': [], 'foods': []} for mt in meal_type_order}
     grand_total = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
 
-    # Initialize a structure to hold the data categorized by meal type
-    meal_type_data = defaultdict(lambda: {'meals': [], 'foods': []})
-
-    # Fetch all logs (meals and foods) for today
     logs = db.session.query(
         FoodMealLog.meal_type,
         Meal.name.label('meal_name'),
@@ -450,36 +446,35 @@ def tracking():
      .filter(FoodMealLog.log_date == today)\
      .all()
 
-    # Process each log entry
     for log in logs:
         if log.meal_id:  # It's a meal
-            # Calculate nutritional info for the meal
             meal = Meal.query.get(log.meal_id)
-            total_nutrition = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
-            total_serving_count = 0
+            if meal:
+                total_nutrition = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
 
-            for mfi in meal.meal_food_item_assoc:
-                food_item = mfi.food_item
-                serving_count = mfi.serving_count
-                total_serving_count += serving_count
-                total_nutrition['calories'] += (food_item.calories * serving_count) if food_item.calories else 0
-                total_nutrition['total_fat'] += (food_item.total_fat * serving_count) if food_item.total_fat else 0
-                total_nutrition['total_carbohydrate'] += (food_item.total_carbohydrate * serving_count) if food_item.total_carbohydrate else 0
-                total_nutrition['total_sugars'] += (food_item.total_sugars * serving_count) if food_item.total_sugars else 0
-                total_nutrition['total_protein'] += (food_item.total_protein * serving_count) if food_item.total_protein else 0
+                for mfi in meal.meal_food_item_assoc:
+                    food_item = mfi.food_item
+                    serving_count = mfi.serving_count
+                    total_nutrition['calories'] += (food_item.calories * serving_count) if food_item.calories else 0
+                    total_nutrition['total_fat'] += (food_item.total_fat * serving_count) if food_item.total_fat else 0
+                    total_nutrition['total_carbohydrate'] += (food_item.total_carbohydrate * serving_count) if food_item.total_carbohydrate else 0
+                    total_nutrition['total_sugars'] += (food_item.total_sugars * serving_count) if food_item.total_sugars else 0
+                    total_nutrition['total_protein'] += (food_item.total_protein * serving_count) if food_item.total_protein else 0
 
-            log_data = log._asdict()
-            log_data.update(total_nutrition)
-            log_data['serving_count'] = total_serving_count
-            meal_type_data[log.meal_type]['meals'].append(log_data)
+                log_data = log._asdict()
+                log_data.update(total_nutrition)
+                meal_type_data[log.meal_type]['meals'].append(log_data)
+
+                # Update grand total
+                for key in total_nutrition:
+                    grand_total[key] += round(total_nutrition[key], 1)
 
         elif log.food_item_name:  # It's a food item
             food_log_data = log._asdict()
             meal_type_data[log.meal_type]['foods'].append(food_log_data)
-
-    # Update grand total
-    for key in total_nutrition:
-        grand_total[key] += round(total_nutrition[key], 1)
+            # Update grand total for food items
+            for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
+                grand_total[key] += round(food_log_data[key] * food_log_data['serving_count'], 1)
 
     # Round grand total values
     for key in grand_total:
