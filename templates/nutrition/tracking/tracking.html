@@ -1,98 +1,112 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 <div class="container mt-4">
-    <!-- Display grand totals in Bootstrap cards -->
-    <h1>Grand Totals</h1>
-    <div class="row">
-        {% for key, value in grand_total.items() %}
-        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
-                    <p class="card-text">{{ value }}</p>
-                </div>
-            </div>
+  <!-- Display grand totals in Bootstrap cards -->
+  <h1>Grand Totals</h1>
+  <div class="row">
+    {% for key, value in grand_total.items() %}
+    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
+          <p class="card-text">{{ value }}</p>
         </div>
-        {% endfor %}
+      </div>
     </div>
+    {% endfor %}
+  </div>
 </div>
 
 <div class="container mt-4">
-    {% for meal_type, data in meal_type_data.items() %}
-    <h2>{{ meal_type.title() }}</h2>
-    <div class="accordion" id="mealTypeAccordion{{ loop.index }}">
-        <div class="card">
-            <div class="card-header" id="mealTypeHeading{{ loop.index }}">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#mealTypeCollapse{{ loop.index }}" aria-expanded="true" aria-controls="mealTypeCollapse{{ loop.index }}">
-                        {{ meal_type.title() }}
-                    </button>
-                </h2>
-            </div>
-            <div id="mealTypeCollapse{{ loop.index }}" class="collapse" aria-labelledby="mealTypeHeading{{ loop.index }}" data-parent="#mealTypeAccordion{{ loop.index }}">
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Name</th>
-                                <th>Calories</th>
-                                <th>Total Fat</th>
-                                <th>Total Carbohydrates</th>
-                                <th>Total Sugars</th>
-                                <th>Total Protein</th>
-                                <th>Serving Count</th>
-                                <th>Action</th> <!-- Add a new column for the Delete button -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for meal in data.meals %}
-                            <tr>
-                                <td>Meal</td>
-                                <td>{{ meal.meal_name }}</td>
-                                <td>{{ meal.calories }}</td>
-                                <td>{{ meal.total_fat }}</td>
-                                <td>{{ meal.total_carbohydrate }}</td>
-                                <td>{{ meal.total_sugars }}</td>
-                                <td>{{ meal.total_protein }}</td>
-                                <td>{{ meal.serving_count }}</td>
-                                <td>
-                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            
-                            {% for food in data.foods %}
-                            <tr>
-                                <td>Food</td>
-                                <td>{{ food.food_item_name }}</td>
-                                <td>{{ food.calories }}</td>
-                                <td>{{ food.total_fat }}</td>
-                                <td>{{ food.total_carbohydrate }}</td>
-                                <td>{{ food.total_sugars }}</td>
-                                <td>{{ food.total_protein }}</td>
-                                <td>{{ food.serving_count }}</td>
-                                <td>
-                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  {% for meal_type, data in meal_type_data.items() %}
+  <h2>{{ meal_type.title() }}</h2>
+  <div class="accordion" id="mealTypeAccordion{{ loop.index }}">
+    <div class="card">
+      <div class="card-header" id="mealTypeHeading{{ loop.index }}">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link"
+            type="button"
+            data-toggle="collapse"
+            data-target="#mealTypeCollapse{{ loop.index }}"
+            aria-expanded="true"
+            aria-controls="mealTypeCollapse{{ loop.index }}"
+          >
+            {{ meal_type.title() }}
+          </button>
+        </h2>
+      </div>
+      <div
+        id="mealTypeCollapse{{ loop.index }}"
+        class="collapse"
+        aria-labelledby="mealTypeHeading{{ loop.index }}"
+        data-parent="#mealTypeAccordion{{ loop.index }}"
+      >
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Calories</th>
+                <th>Total Fat</th>
+                <th>Total Carbohydrates</th>
+                <th>Total Sugars</th>
+                <th>Total Protein</th>
+                <th>Serving Count</th>
+                <th>Action</th>
+                <!-- Add a new column for the Delete button -->
+              </tr>
+            </thead>
+            <tbody>
+              {% for meal in data.meals %}
+              <tr>
+                <td>Meal</td>
+                <td>{{ meal.meal_name }}</td>
+                <td>{{ meal.calories }}</td>
+                <td>{{ meal.total_fat }}</td>
+                <td>{{ meal.total_carbohydrate }}</td>
+                <td>{{ meal.total_sugars }}</td>
+                <td>{{ meal.total_protein }}</td>
+                <td>{{ meal.serving_count }}</td>
+                <td>
+                  <form
+                    method="POST"
+                    action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}"
+                  >
+                    <input type="hidden" name="_method" value="DELETE" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %} {% for food in data.foods %}
+              <tr>
+                <td>Food</td>
+                <td>{{ food.food_item_name }}</td>
+                <td>{{ food.calories }}</td>
+                <td>{{ food.total_fat }}</td>
+                <td>{{ food.total_carbohydrate }}</td>
+                <td>{{ food.total_sugars }}</td>
+                <td>{{ food.total_protein }}</td>
+                <td>{{ food.serving_count }}</td>
+                <td>
+                  <form
+                    method="POST"
+                    action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}"
+                  >
+                    <input type="hidden" name="_method" value="DELETE" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
-    {% endfor %}
+  </div>
+  {% endfor %}
 </div>
 
 <script src="{{ url_for('static', filename='js/tracking/tracking.js') }}"></script>

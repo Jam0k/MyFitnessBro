@@ -2,75 +2,108 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Meals & Food</h1>
-    <p>Manage your meals and food items to maintain a balanced diet.</p>
+    <h1><i class="fas fa-utensils"></i> Meals & Food</h1>
+    <p>Effortlessly manage your meals and food items to maintain a balanced diet.</p>
 
     <div class="row">
-        <!-- Add Meal Card -->
-        <div class="col-md-4 mb-4">
+        <!-- Log Section -->
+        <section class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Add Meal</h5>
-                    <p class="card-text">Log your meals to keep track of your dietary habits.</p>
-                    <a href="/nutrition/meals-and-foods/add-meal" class="btn btn-primary">Add Meal</a>
+                    <h5 class="card-title"><i class="fas fa-clipboard-list"></i> Log</h5>
+                    <p class="card-text">Track your daily food and meal intake here.</p>
+                    <div class="row">
+                        <!-- Add Meal Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-plus"></i> Add Meal</h6>
+                                    <p class="card-text">Log meals to your daily intake.</p>
+                                    <a href="/nutrition/meals-and-foods/add-meal" class="btn btn-primary">Add Meal</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add Food Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-plus"></i> Add Food</h6>
+                                    <p class="card-text">Log individual food items to your daily intake.</p>
+                                    <a href="/nutrition/meals-and-foods/add-food" class="btn btn-primary">Add Food</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Create Meal Card -->
-        <div class="col-md-4 mb-4">
+        <!-- Create Section -->
+        <section class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Create Meal</h5>
-                    <p class="card-text">Create custom meal plans for your dietary needs.</p>
-                    <a href="/nutrition/meals-and-foods/create-meal" class="btn btn-primary">Create Meal</a>
-                </div>
-            </div>
-        </div>
+                    <h5 class="card-title"><i class="fas fa-plus-circle"></i> Create</h5>
+                    <p class="card-text">Add and customize your own meals and food items.</p>
+                    <div class="row">
+                        <!-- Create Meal Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-utensils"></i> Create Meal</h6>
+                                    <p class="card-text">Combine food items to create custom meals.</p>
+                                    <a href="/nutrition/meals-and-foods/create-meal" class="btn btn-primary">Create Meal</a>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Browse Meals Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Browse Meals</h5>
-                    <p class="card-text">Explore a variety of meal options and recipes.</p>
-                    <a href="/nutrition/meals-and-foods/browse-meal" class="btn btn-primary">Browse Meals</a>
+                        <!-- Create Food Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-apple-alt"></i> Create Food</h6>
+                                    <p class="card-text">Create custom food items with nutritional information.</p>
+                                    <a href="/nutrition/meals-and-foods/create-food" class="btn btn-primary">Create Food</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Add Food Card -->
-        <div class="col-md-4 mb-4">
+        <!-- Browse Section -->
+        <section class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Add Food</h5>
-                    <p class="card-text">Add individual food items to your daily intake log.</p>
-                    <a href="/nutrition/meals-and-foods/add-food" class="btn btn-primary">Add Food</a>
-                </div>
-            </div>
-        </div>
+                    <h5 class="card-title"><i class="fas fa-search"></i> Browse</h5>
+                    <p class="card-text">Discover and explore meals and food items.</p>
+                    <div class="row">
+                        <!-- Browse Meals Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-eye"></i> Browse Meals</h6>
+                                    <p class="card-text">Explore created meals.</p>
+                                    <a href="/nutrition/meals-and-foods/browse-meal" class="btn btn-primary">Browse Meals</a>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Create Food Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Create Food</h5>
-                    <p class="card-text">Create custom food items with nutritional information.</p>
-                    <a href="/nutrition/meals-and-foods/create-food" class="btn btn-primary">Create Food</a>
+                        <!-- Browse Foods Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-eye"></i> Browse Foods</h6>
+                                    <p class="card-text">Discover various food items and their nutrients.</p>
+                                    <a href="/nutrition/meals-and-foods/browse-food" class="btn btn-primary">Browse Foods</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Browse Foods Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Browse Foods</h5>
-                    <p class="card-text">Discover and learn about various food items and their nutrients.</p>
-                    <a href="/nutrition/meals-and-foods/browse-food" class="btn btn-primary">Browse Foods</a>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 </div>
 {% endblock %}
