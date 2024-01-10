@@ -454,27 +454,34 @@ def tracking():
 
                 for mfi in meal.meal_food_item_assoc:
                     food_item = mfi.food_item
-                    serving_count = mfi.serving_count
-                    total_nutrition['calories'] += (food_item.calories * serving_count) if food_item.calories else 0
-                    total_nutrition['total_fat'] += (food_item.total_fat * serving_count) if food_item.total_fat else 0
-                    total_nutrition['total_carbohydrate'] += (food_item.total_carbohydrate * serving_count) if food_item.total_carbohydrate else 0
-                    total_nutrition['total_sugars'] += (food_item.total_sugars * serving_count) if food_item.total_sugars else 0
-                    total_nutrition['total_protein'] += (food_item.total_protein * serving_count) if food_item.total_protein else 0
+                    serving_count = Decimal(1.0)  # Convert serving count to Decimal
+
+                    # Convert all calculations to use Decimal type
+                    total_nutrition['calories'] += round(food_item.calories * serving_count, 1) if food_item.calories else Decimal(0)
+                    total_nutrition['total_fat'] += round(food_item.total_fat * serving_count, 1) if food_item.total_fat else Decimal(0)
+                    total_nutrition['total_carbohydrate'] += round(food_item.total_carbohydrate * serving_count, 1) if food_item.total_carbohydrate else Decimal(0)
+                    total_nutrition['total_sugars'] += round(food_item.total_sugars * serving_count, 1) if food_item.total_sugars else Decimal(0)
+                    total_nutrition['total_protein'] += round(food_item.total_protein * serving_count, 1) if food_item.total_protein else Decimal(0)
 
                 log_data = log._asdict()
                 log_data.update(total_nutrition)
+                log_data['serving_count'] = 1.0  # Set serving count for the meal
                 meal_type_data[log.meal_type]['meals'].append(log_data)
 
-                # Update grand total
                 for key in total_nutrition:
-                    grand_total[key] += round(total_nutrition[key], 1)
+                    grand_total[key] += total_nutrition[key]
 
         elif log.food_item_name:  # It's a food item
             food_log_data = log._asdict()
-            meal_type_data[log.meal_type]['foods'].append(food_log_data)
-            # Update grand total for food items
+            serving_count = Decimal(food_log_data['serving_count'])  # Convert serving count to Decimal
+
+            # Convert calculations for food items to use Decimal
             for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
-                grand_total[key] += round(food_log_data[key] * food_log_data['serving_count'], 1)
+                food_log_data[key] = round(Decimal(food_log_data[key]) * serving_count, 1)
+            meal_type_data[log.meal_type]['foods'].append(food_log_data)
+
+            for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
+                grand_total[key] += food_log_data[key]
 
     # Round grand total values
     for key in grand_total:
