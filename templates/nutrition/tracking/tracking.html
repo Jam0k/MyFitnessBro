@@ -1,21 +1,49 @@
-{% extends 'base.html' %} {% block content %}
-
+{% extends 'base.html' %}
+{% block content %}
 <div class="container mt-4">
-  <!-- Display grand totals in Bootstrap cards -->
-  <h1>Grand Totals</h1>
-  <div class="row">
-    {% for key, value in grand_total.items() %}
-    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
-          <p class="card-text">{{ value }}</p>
+    <!-- Buttons for Logging Food and Meal -->
+    <div class="mb-4">
+      <button type="button" class="btn btn-primary mr-2">Log Food</button>
+      <button type="button" class="btn btn-secondary">Log Meal</button>
+    </div>
+  
+    <!-- Display grand totals in Bootstrap cards -->
+    <h1>Grand Totals</h1>
+    <div class="row">
+      {% for key, value in grand_total.items() %}
+      <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
+            <p class="card-text">{{ value }}g</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  
+    <!-- Button to Open Modal -->
+    <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#macrosModal">
+      View Macros
+    </button>
+  
+    <!-- Modal for Pie Chart -->
+    <div class="modal fade" id="macrosModal" tabindex="-1" role="dialog" aria-labelledby="macrosModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="macrosModalLabel">Macro Nutrient Distribution</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <canvas id="grandTotalPieChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    {% endfor %}
-  </div>
-</div>
+
 
 <div class="container mt-4">
   {% for meal_type, data in meal_type_data.items() %}
@@ -32,7 +60,7 @@
             aria-expanded="true"
             aria-controls="mealTypeCollapse{{ loop.index }}"
           >
-            {{ meal_type.title() }}
+            {{ meal_type.title() }} <i class="fas fa-chevron-down"></i>
           </button>
         </h2>
       </div>
@@ -46,15 +74,15 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Calories</th>
-                <th>Total Fat</th>
-                <th>Total Carbohydrates</th>
-                <th>Total Sugars</th>
-                <th>Total Protein</th>
-                <th>Serving Count</th>
-                <th>Action</th>
+                <th><i class="fas fa-tag"></i> Type</th>
+                <th><i class="fas fa-utensils"></i> Name</th>
+                <th><i class="fas fa-fire"></i> Calories</th>
+                <th><i class="fas fa-tint"></i> Total Fat</th>
+                <th><i class="fas fa-bread-slice"></i> Total Carbohydrates</th>
+                <th><i class="fas fa-cookie"></i> Total Sugars</th>
+                <th><i class="fas fa-drumstick-bite"></i> Total Protein</th>
+                <th><i class="fas fa-utensil-spoon"></i> Serving Count</th>
+                <th><i class="fas fa-trash"></i> Action</th>
                 <!-- Add a new column for the Delete button -->
               </tr>
             </thead>
@@ -75,7 +103,7 @@
                     action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}"
                   >
                     <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
                   </form>
                 </td>
               </tr>
@@ -95,7 +123,7 @@
                     action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}"
                   >
                     <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
                   </form>
                 </td>
               </tr>
@@ -111,4 +139,9 @@
 
 <script src="{{ url_for('static', filename='js/tracking/tracking.js') }}"></script>
 
+<script type="text/javascript">
+    var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
+</script>
+
 {% endblock %}
+
