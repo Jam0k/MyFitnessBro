@@ -63,10 +63,10 @@
                                         <input type="hidden" name="_method" value="DELETE">
                                         <button type="submit" class="btn btn-danger">Delete</button>
                                     </form>
-                                    
                                 </td>
                             </tr>
                             {% endfor %}
+                            
                             {% for food in data.foods %}
                             <tr>
                                 <td>Food</td>
@@ -78,14 +78,14 @@
                                 <td>{{ food.total_protein }}</td>
                                 <td>{{ food.serving_count }}</td>
                                 <td>
-                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}">
+                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <button type="submit" class="btn btn-danger">Delete</button>
                                     </form>
-                                    
                                 </td>
                             </tr>
                             {% endfor %}
+                            
                         </tbody>
                     </table>
                 </div>

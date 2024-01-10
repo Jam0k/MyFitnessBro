@@ -467,6 +467,11 @@ def tracking():
                 log_data = log._asdict()
                 log_data.update(total_nutrition)
                 log_data['serving_count'] = 1.0  # Set serving count for the meal
+
+                # Check if the meal_type exists in meal_type_data, and create it if it doesn't
+                if log.meal_type not in meal_type_data:
+                    meal_type_data[log.meal_type] = {'meals': [], 'foods': []}
+                
                 meal_type_data[log.meal_type]['meals'].append(log_data)
 
                 for key in total_nutrition:
