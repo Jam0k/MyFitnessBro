@@ -431,6 +431,7 @@ def tracking():
     grand_total = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
 
     logs = db.session.query(
+        FoodMealLog.id.label('food_meal_log_id'),  # Include the 'id' column
         FoodMealLog.meal_type,
         Meal.name.label('meal_name'),
         Meal.id.label('meal_id'),
@@ -442,9 +443,9 @@ def tracking():
         FoodItem.total_protein,
         FoodMealLog.serving_count
     ).outerjoin(Meal, FoodMealLog.meal_id == Meal.id)\
-     .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)\
-     .filter(FoodMealLog.log_date == today)\
-     .all()
+    .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)\
+    .filter(FoodMealLog.log_date == today)\
+    .all()
 
     for log in logs:
         if log.meal_id:  # It's a meal
@@ -488,3 +489,18 @@ def tracking():
         grand_total[key] = round(grand_total[key], 1)
 
     return render_template('nutrition/tracking/tracking.html', meal_type_data=meal_type_data, grand_total=grand_total)
+
+from flask import request, redirect, url_for
+
+@nutrition_blueprint.route('/delete_entry/<int:id>', methods=['POST'])
+def delete_entry(id):
+    # Assuming you have a model for your 'FoodMealLog' table
+    entry_to_delete = FoodMealLog.query.get(id)
+
+    if entry_to_delete:
+        # Delete the entry from the database
+        db.session.delete(entry_to_delete)
+        db.session.commit()
+
+    # Redirect back to the tracking page or any other appropriate page
+    return redirect(url_for('nutrition.tracking'))

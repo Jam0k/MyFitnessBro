@@ -44,6 +44,7 @@
                                 <th>Total Sugars</th>
                                 <th>Total Protein</th>
                                 <th>Serving Count</th>
+                                <th>Action</th> <!-- Add a new column for the Delete button -->
                             </tr>
                         </thead>
                         <tbody>
@@ -57,6 +58,13 @@
                                 <td>{{ meal.total_sugars }}</td>
                                 <td>{{ meal.total_protein }}</td>
                                 <td>{{ meal.serving_count }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                    
+                                </td>
                             </tr>
                             {% endfor %}
                             {% for food in data.foods %}
@@ -69,6 +77,13 @@
                                 <td>{{ food.total_sugars }}</td>
                                 <td>{{ food.total_protein }}</td>
                                 <td>{{ food.serving_count }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                    
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
