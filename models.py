@@ -66,7 +66,6 @@ class FoodMealLog(db.Model):
     food_item_id = db.Column(db.Integer, db.ForeignKey('food_items.id'))
     meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'))  # Add this line
     serving_count = db.Column(db.Numeric(5, 2))
-    log_date = db.Column(db.Date, nullable=False)
     meal_type = db.Column(db.String(50))  # Type of meal (breakfast, lunch, etc.)
 
     food_item = db.relationship('FoodItem', backref=db.backref('logs', lazy='dynamic'))
@@ -78,7 +77,6 @@ class FoodMealLog(db.Model):
             'food_item_id': self.food_item_id,
             'meal_id': self.meal_id,  # Include this field
             'serving_count': str(self.serving_count),
-            'log_date': self.log_date.isoformat(),
             'meal_type': self.meal_type
         }
 
@@ -95,7 +93,7 @@ class Exercise(db.Model):
     weight_lifted = db.Column(db.Numeric(5, 2))
     calories_burned = db.Column(db.Integer)
     notes = db.Column(db.Text)
-    log_date = db.Column(db.Date, nullable=False)
+    log_date = db.Column(db.Date, nullable=False, default=db.func.current_date())
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
@@ -110,7 +108,6 @@ class Exercise(db.Model):
             'weight_lifted': str(self.weight_lifted),
             'calories_burned': self.calories_burned,
             'notes': self.notes,
-            'log_date': self.log_date.isoformat(),
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

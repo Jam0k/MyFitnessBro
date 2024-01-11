@@ -13,7 +13,7 @@
                 <th>Reps</th>
                 <th>Weight Lifted (kg)</th>
                 <th>Calories Burned</th>
-                <th>Log Date</th>
+                <th>Notes</th> <!-- Add the Notes column here -->
             </tr>
         </thead>
         <tbody>
@@ -27,15 +27,16 @@ $(document).ready(function() {
     $('#exerciseTable').DataTable({
         ajax: '/fitness/exercises-and-workouts/get-exercises', // URL to fetch data
         columns: [
-            { data: 'name' },
-            { data: 'category' },
-            { data: 'duration_minutes' },
-            { data: 'sets' },
-            { data: 'reps' },
-            { data: 'weight_lifted' },
-            { data: 'calories_burned' },
-            { data: 'log_date' }
-        ]
+    { data: 'name' },
+    { data: 'category' },
+    { data: 'duration_minutes' },
+    { data: 'sets' },
+    { data: 'reps' },
+    { data: 'weight_lifted' },
+    { data: 'calories_burned' },
+    { data: 'notes' }, // Include the 'notes' column here
+]
+
     });
 });
 </script>

@@ -31,7 +31,6 @@ def create_exercise():
         weight_lifted = request.form.get('weight_lifted', type=Decimal)
         calories_burned = request.form.get('calories_burned', type=int)
         notes = request.form['notes']
-        log_date = datetime.strptime(request.form['log_date'], '%Y-%m-%d').date()
 
         # Create a new exercise object and save it to the database
         exercise = Exercise(
@@ -43,7 +42,6 @@ def create_exercise():
             weight_lifted=weight_lifted,
             calories_burned=calories_burned,
             notes=notes,
-            log_date=log_date
         )
         db.session.add(exercise)
         db.session.commit()
@@ -68,7 +66,9 @@ def get_exercises():
             'reps': exercise.reps,
             'weight_lifted': str(exercise.weight_lifted),
             'calories_burned': exercise.calories_burned,
-            'log_date': exercise.log_date.isoformat()
+            'notes': exercise.notes,  # Include the notes field
+            'created_at': exercise.created_at.isoformat(),  # Include the created_at field
+            'updated_at': exercise.updated_at.isoformat(),  # Include the updated_at field
         }
         for exercise in exercises
     ]
