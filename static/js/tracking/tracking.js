@@ -1,12 +1,24 @@
 $(document).ready(function () {
-    // Set the date input to the selected date from the server
-    $('#dateFilter').val(selectedDate);
+    // Set the initial date inputs to the selected date from the server
+    $('#startDateFilter').val(selectedStartDate);
+    $('#endDateFilter').val(selectedEndDate);
 
-    // Event listener for date change
-    $('#dateFilter').on('change', function() {
-        var newSelectedDate = $(this).val();
-        window.location.href = '/nutrition/tracking?date=' + newSelectedDate;
+    // Event listener for start date change
+    $('#startDateFilter').on('change', function() {
+        updateDateFilter();
     });
+
+    // Event listener for end date change
+    $('#endDateFilter').on('change', function() {
+        updateDateFilter();
+    });
+
+    function updateDateFilter() {
+        var newStartDate = $('#startDateFilter').val();
+        var newEndDate = $('#endDateFilter').val();
+        window.location.href = '/nutrition/tracking?start_date=' + newStartDate + '&end_date=' + newEndDate;
+    }
+    
         // Loop through each table with an ID that starts with 'mealTypeTable'
     $("table[id^='mealTypeTable']").each(function () {
         // Initialize DataTables on each table

@@ -13,13 +13,18 @@
                  
     </div>
 
-    <!-- Date Selector for Filtering -->
-<div class="container mt-4">
-  <div class="form-group">
-      <label for="dateFilter">Select Date:</label>
-      <input type="date" class="form-control" id="dateFilter" name="dateFilter">
-  </div>
+<!-- Start Date Selector for Filtering -->
+<div class="form-group">
+  <label for="startDateFilter">Select Start Date:</label>
+  <input type="date" class="form-control" id="startDateFilter" name="startDateFilter">
 </div>
+
+<!-- End Date Selector for Filtering -->
+<div class="form-group">
+  <label for="endDateFilter">Select End Date:</label>
+  <input type="date" class="form-control" id="endDateFilter" name="endDateFilter">
+</div>
+
   
     <!-- Display grand totals in Bootstrap cards -->
     <h1>Grand Totals</h1>
@@ -151,14 +156,17 @@
   {% endfor %}
 </div>
 
+
 <script type="text/javascript">
-  var selectedDate = "{{ selected_date.isoformat() }}";
+  // Pass the selected dates from Flask to JavaScript
+  var selectedStartDate = "{{ selected_start_date.isoformat() }}";
+  var selectedEndDate = "{{ selected_end_date.isoformat() }}";
 </script>
 
 <script src="{{ url_for('static', filename='js/tracking/tracking.js') }}"></script>
 
 <script type="text/javascript">
-    var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
+  var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
 </script>
 
 {% endblock %}

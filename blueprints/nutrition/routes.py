@@ -425,15 +425,18 @@ def addMeal():
 
 @nutrition_blueprint.route('/tracking', methods=['GET'])
 def tracking():
-    # Get the date from the request or use today's date as default
-    date_str = request.args.get('date', datetime.now().date().isoformat())
+    # Get the start and end dates from the request or use default dates
+    start_date_str = request.args.get('start_date', datetime.now().date().isoformat())
+    end_date_str = request.args.get('end_date', datetime.now().date().isoformat())
 
-    # Convert the string to a datetime object if it's not already
+    # Convert the strings to datetime objects
     try:
-        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        selected_start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        selected_end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
     except ValueError:
-        # If the conversion fails, use today's date
-        selected_date = datetime.now().date()
+        # If the conversion fails, use default dates
+        selected_start_date = datetime.now().date()
+        selected_end_date = datetime.now().date()
 
     meal_type_order = ['breakfast', 'lunch', 'dinner', 'snacks']
     meal_type_data = {mt: {'meals': [], 'foods': []} for mt in meal_type_order}
@@ -453,7 +456,8 @@ def tracking():
         FoodMealLog.serving_count
     ).outerjoin(Meal, FoodMealLog.meal_id == Meal.id)\
     .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)\
-    .filter(FoodMealLog.log_date == selected_date)\
+    .filter(FoodMealLog.log_date >= selected_start_date)\
+    .filter(FoodMealLog.log_date <= selected_end_date)\
     .all()
 
     # Process logs for meals and food items
@@ -493,7 +497,8 @@ def tracking():
     return render_template('nutrition/tracking/tracking.html', 
                            meal_type_data=meal_type_data, 
                            grand_total=grand_total,
-                           selected_date=selected_date)
+                           selected_start_date=selected_start_date,
+                           selected_end_date=selected_end_date)
 
 @nutrition_blueprint.route('/delete_entry/<int:id>', methods=['POST'])
 def delete_entry(id):
