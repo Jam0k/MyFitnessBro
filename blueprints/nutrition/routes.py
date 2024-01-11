@@ -442,7 +442,11 @@ def tracking():
     meal_type_data = {mt: {'meals': [], 'foods': []} for mt in meal_type_order}
     grand_total = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
 
+    # Initialize a dictionary to store daily macro totals
+    daily_macros = defaultdict(lambda: {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0})
+
     logs = db.session.query(
+        FoodMealLog.log_date,
         FoodMealLog.id.label('food_meal_log_id'),
         FoodMealLog.meal_type,
         Meal.name.label('meal_name'),
@@ -477,8 +481,9 @@ def tracking():
                 log_data = log._asdict()
                 log_data.update(total_nutrition)
                 meal_type_data[log.meal_type]['meals'].append(log_data)
-                for key in total_nutrition:
-                    grand_total[key] += total_nutrition[key]
+                for key, value in total_nutrition.items():
+                    grand_total[key] += value
+                    daily_macros[log.log_date.isoformat()][key] += value
         
         # Process food item logs
         elif log.food_item_name:
@@ -487,18 +492,24 @@ def tracking():
             for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
                 food_log_data[key] = round(Decimal(food_log_data[key]) * serving_count, 1)
             meal_type_data[log.meal_type]['foods'].append(food_log_data)
-            for key in grand_total.keys():
-                grand_total[key] += food_log_data[key]
+            for key, value in food_log_data.items():
+                if key in grand_total:
+                    grand_total[key] += value
+                    daily_macros[log.log_date.isoformat()][key] += value
 
     # Round grand total values
     for key in grand_total:
         grand_total[key] = round(grand_total[key], 1)
 
+    # Convert defaultdict to regular dict for JSON serialization
+    daily_macros = dict(daily_macros)
+
     return render_template('nutrition/tracking/tracking.html', 
                            meal_type_data=meal_type_data, 
                            grand_total=grand_total,
                            selected_start_date=selected_start_date,
-                           selected_end_date=selected_end_date)
+                           selected_end_date=selected_end_date,
+                           daily_macros=daily_macros)
 
 @nutrition_blueprint.route('/delete_entry/<int:id>', methods=['POST'])
 def delete_entry(id):

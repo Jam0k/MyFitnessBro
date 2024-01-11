@@ -13,6 +13,8 @@
                  
     </div>
 
+    
+
 <!-- Start Date Selector for Filtering -->
 <div class="form-group">
   <label for="startDateFilter">Select Start Date:</label>
@@ -45,6 +47,12 @@
     <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#macrosModal">
       <i class="fas fa-chart-pie"></i> View Breakdown
     </button>
+
+    <!-- Button to Open Line Chart Modal -->
+<button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#lineChartModal">
+  <i class="fas fa-chart-line"></i> View Line Chart
+</button>
+
   
     <!-- Modal for Pie Chart -->
     <div class="modal fade" id="macrosModal" tabindex="-1" role="dialog" aria-labelledby="macrosModalLabel" aria-hidden="true">
@@ -62,6 +70,24 @@
         </div>
       </div>
     </div>
+
+
+    <!-- Modal for Line Chart -->
+<div class="modal fade" id="lineChartModal" tabindex="-1" role="dialog" aria-labelledby="lineChartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lineChartModalLabel">Macro Trends</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <canvas id="modalMacroTrendsChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <div class="container mt-4">
@@ -168,5 +194,51 @@
 <script type="text/javascript">
   var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
 </script>
+
+
+<script type="text/javascript">
+  // Pass the daily macros data from Flask to JavaScript
+  var dailyMacrosData = JSON.parse('{{ daily_macros | tojson | safe }}');
+
+  // Prepare data for the line chart
+  var dates = Object.keys(dailyMacrosData);
+  var macrosData = {
+      'Calories': dates.map(date => dailyMacrosData[date].calories),
+      'Total Fat': dates.map(date => dailyMacrosData[date].total_fat),
+      'Total Carbohydrate': dates.map(date => dailyMacrosData[date].total_carbohydrate),
+      'Total Sugars': dates.map(date => dailyMacrosData[date].total_sugars),
+      'Total Protein': dates.map(date => dailyMacrosData[date].total_protein)
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var modalCtx = document.getElementById('modalMacroTrendsChart').getContext('2d');
+    var modalChart;
+
+    $('#lineChartModal').on('show.bs.modal', function () {
+        modalChart = new Chart(modalCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: Object.keys(macrosData).map(key => {
+                    return {
+                        label: key,
+                        data: macrosData[key],
+                        // add additional styling as needed
+                    };
+                })
+            },
+            options: {
+                // configure options as needed
+            }
+        });
+    });
+
+    $('#lineChartModal').on('hide.bs.modal', function () {
+        modalChart.destroy();
+    });
+});
+
+</script>
+
 
 {% endblock %}
