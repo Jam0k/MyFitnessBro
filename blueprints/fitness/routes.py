@@ -59,6 +59,7 @@ def get_exercises():
     # Convert exercises to a list of dictionaries
     exercise_data = [
         {
+            'id': exercise.id,  # Include the ID field
             'name': exercise.name,
             'category': exercise.category,
             'duration_minutes': exercise.duration_minutes,
@@ -84,17 +85,19 @@ def browse_exercise():
 @fitness_blueprint.route('/exercises-and-workouts/create-workout-plan', methods=['GET', 'POST'])
 def create_workout_plan():
     if request.method == 'POST':
-        workout_name = request.form.get('workout_name')  # Capture workout plan name
-        selected_exercises_ids = request.form.getlist('selected_exercises')
+        # Parsing JSON data for POST request
+        data = request.get_json()
+        workout_name = data['workout_name']
+        selected_exercises_ids = data['selected_exercises']
         selected_exercises = Exercise.query.filter(Exercise.id.in_(selected_exercises_ids)).all()
 
         if selected_exercises:
-            workout_plan = WorkoutPlan(name=workout_name, exercises=selected_exercises)  # Include the name
+            workout_plan = WorkoutPlan(name=workout_name, exercises=selected_exercises)
             db.session.add(workout_plan)
             db.session.commit()
 
         return redirect(url_for('fitness.exercisesAndWorkoutsHome'))
 
+    # Handling GET request to render the page initially
     exercises = Exercise.query.all()
     return render_template('fitness/exercises-and-workouts/workout/create-workout-plan.html', exercises=exercises)
-
