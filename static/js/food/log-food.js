@@ -1,17 +1,67 @@
 $(document).ready(function() {
-    // Handle the form submission
+    var selectedFoodItemId = null;
+
+    // Set default date to today
+    var today = new Date().toISOString().split('T')[0];
+    $('#logDate').val(today);
+
+    // Fetch and populate food items in DataTables
+    $.ajax({
+        url: '/nutrition/meals-and-foods/get-all-food-items', // Replace with your actual endpoint
+        method: 'GET',
+        success: function(response) {
+            var table = $('#foodItemsTable').DataTable({
+                data: response, // Directly use the response array
+                columns: [
+                    { data: 'name' },
+                    { data: 'calories' },
+                    { data: 'id', render: function(data) {
+                        return `<button class="btn btn-primary select-food-item-btn" data-id="${data}">Select</button>`;
+                    }}
+                ]
+            });
+
+            // Handle food item selection from table
+            $('#foodItemsTable tbody').on('click', '.select-food-item-btn', function() {
+                var foodItemId = $(this).data('id');
+                if(selectedFoodItemId === foodItemId) {
+                    // Deselect the item
+                    selectedFoodItemId = null;
+                    $('#selectedFoodItemId').val('');
+                    table.$('tr.selected').removeClass('selected');
+                    $('.select-food-item-btn').prop('disabled', false);
+                    $('#selectedFoodItemDisplay').text('');
+                } else {
+                    // Select new item
+                    selectedFoodItemId = foodItemId;
+                    $('#selectedFoodItemId').val(foodItemId);
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).closest('tr').addClass('selected');
+                    $('.select-food-item-btn').not(this).prop('disabled', true);
+                    var selectedFoodItemName = table.row($(this).parents('tr')).data().name;
+                    $('#selectedFoodItemDisplay').text('Selected Food Item: ' + selectedFoodItemName);
+                }
+            });
+        },
+        error: function(error) {
+            console.log('Error fetching food items: ' + error.responseText);
+        }
+    });
+
+    // Handle form submission for logging a food item
     $("#logFoodForm").on("submit", function(e) {
         e.preventDefault();
+        if (!selectedFoodItemId) {
+            alert("Please select a food item first.");
+            return;
+        }
 
-        // Gather data from the form
-        var foodItemId = $("#foodItemSelector").val();
         var servingCount = $("#servingCount").val();
         var logDate = $("#logDate").val();
         var mealType = $("#mealType").val();
 
-        // Construct the data object to be sent
         var logData = {
-            food_item_id: foodItemId,
+            food_item_id: selectedFoodItemId,
             serving_count: servingCount,
             log_date: logDate,
             meal_type: mealType
@@ -19,33 +69,16 @@ $(document).ready(function() {
 
         // AJAX request to log the food item
         $.ajax({
-            url: "/nutrition/meals-and-foods/log-food",  // Replace with your actual endpoint
+            url: "/nutrition/meals-and-foods/log-food", // Replace with your actual endpoint
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify(logData),
             success: function(response) {
-                // Handle success - for example, display a success message or redirect
-                alert("Food logged successfully");
+                alert("Food item logged successfully");
             },
             error: function(error) {
-                // Handle error - for example, display an error message
-                alert("Error logging food: " + error.responseText);
+                alert("Error logging food item: " + error.responseText);
             }
         });
-    });
-
-    // Optionally, populate the foodItemSelector dropdown with food items from the server
-    // This part of the code can be modified or expanded based on how you're fetching the food items
-    $.ajax({
-        url: "/nutrition/meals-and-foods/get-all-food-items",  // Replace with your actual endpoint
-        method: "GET",
-        success: function(foodItems) {
-            foodItems.forEach(function(foodItem) {
-                $("#foodItemSelector").append(new Option(foodItem.name, foodItem.id));
-            });
-        },
-        error: function(error) {
-            alert("Error fetching food items");
-        }
     });
 });

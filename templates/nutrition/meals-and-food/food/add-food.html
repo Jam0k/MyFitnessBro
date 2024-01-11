@@ -3,13 +3,29 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Log Food Item</h1>
-    <form id="logFoodForm">
-        <div class="form-group">
-            <label for="foodItemSelector">Select Food Item</label>
-            <select class="form-control" id="foodItemSelector" required>
-                <!-- Options will be populated here -->
-            </select>
-        </div>
+
+    <!-- DataTable for selecting a food item -->
+    <table id="foodItemsTable" class="display">
+        <thead>
+            <tr>
+                <th>Food Name</th>
+                <th>Calories</th>
+                <th>Select</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated dynamically using JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Display selected food item name -->
+    <div id="selectedFoodItemDisplay" class="mt-3"></div>
+
+    <!-- Log Food Item Form -->
+    <form id="logFoodForm" class="mt-4">
+        <!-- Hidden field for selected food item ID -->
+        <input type="hidden" id="selectedFoodItemId">
+
         <div class="form-group">
             <label for="servingCount">Serving Count</label>
             <input type="number" class="form-control" id="servingCount" min="0.01" step="0.01" required>
@@ -33,6 +49,3 @@
 </div>
 <script src="{{ url_for('static', filename='js/food/log-food.js') }}"></script>
 {% endblock %}
-
-
-
