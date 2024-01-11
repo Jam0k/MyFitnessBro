@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, jsonify
-from models import Exercise, FoodItem, Meal, MealFoodItem, FoodMealLog, db
+from models import Exercise, WorkoutPlan, FoodItem, Meal, MealFoodItem, FoodMealLog, db
 import json
 from decimal import Decimal
 from datetime import datetime
@@ -79,4 +79,22 @@ def get_exercises():
 @fitness_blueprint.route('/exercises-and-workouts/browse-exercise')
 def browse_exercise():
     return render_template('fitness/exercises-and-workouts/exercise/browse-exercise.html')
+
+
+@fitness_blueprint.route('/exercises-and-workouts/create-workout-plan', methods=['GET', 'POST'])
+def create_workout_plan():
+    if request.method == 'POST':
+        workout_name = request.form.get('workout_name')  # Capture workout plan name
+        selected_exercises_ids = request.form.getlist('selected_exercises')
+        selected_exercises = Exercise.query.filter(Exercise.id.in_(selected_exercises_ids)).all()
+
+        if selected_exercises:
+            workout_plan = WorkoutPlan(name=workout_name, exercises=selected_exercises)  # Include the name
+            db.session.add(workout_plan)
+            db.session.commit()
+
+        return redirect(url_for('fitness.exercisesAndWorkoutsHome'))
+
+    exercises = Exercise.query.all()
+    return render_template('fitness/exercises-and-workouts/workout/create-workout-plan.html', exercises=exercises)
 

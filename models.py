@@ -111,3 +111,16 @@ class Exercise(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+    
+
+class WorkoutPlan(db.Model):
+    __tablename__ = 'workout_plans'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    exercises = db.relationship('Exercise', secondary='workout_plan_exercises', backref=db.backref('workout_plans', lazy=True))
+
+class WorkoutPlanExercise(db.Model):
+    __tablename__ = 'workout_plan_exercises'
+    workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id'), primary_key=True)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), primary_key=True)
