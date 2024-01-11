@@ -12,6 +12,14 @@
          
                  
     </div>
+
+    <!-- Date Selector for Filtering -->
+<div class="container mt-4">
+  <div class="form-group">
+      <label for="dateFilter">Select Date:</label>
+      <input type="date" class="form-control" id="dateFilter" name="dateFilter">
+  </div>
+</div>
   
     <!-- Display grand totals in Bootstrap cards -->
     <h1>Grand Totals</h1>
@@ -142,6 +150,10 @@
   </div>
   {% endfor %}
 </div>
+
+<script type="text/javascript">
+  var selectedDate = "{{ selected_date.isoformat() }}";
+</script>
 
 <script src="{{ url_for('static', filename='js/tracking/tracking.js') }}"></script>
 

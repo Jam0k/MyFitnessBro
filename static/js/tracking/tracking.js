@@ -1,5 +1,13 @@
 $(document).ready(function () {
-    // Loop through each table with an ID that starts with 'mealTypeTable'
+    // Set the date input to the selected date from the server
+    $('#dateFilter').val(selectedDate);
+
+    // Event listener for date change
+    $('#dateFilter').on('change', function() {
+        var newSelectedDate = $(this).val();
+        window.location.href = '/nutrition/tracking?date=' + newSelectedDate;
+    });
+        // Loop through each table with an ID that starts with 'mealTypeTable'
     $("table[id^='mealTypeTable']").each(function () {
         // Initialize DataTables on each table
         $(this).DataTable();

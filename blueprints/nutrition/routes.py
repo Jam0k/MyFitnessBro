@@ -423,15 +423,24 @@ def addMeal():
 
 # Tracker Routes
 
-@nutrition_blueprint.route('/tracking')
+@nutrition_blueprint.route('/tracking', methods=['GET'])
 def tracking():
-    today = datetime.now().date()
+    # Get the date from the request or use today's date as default
+    date_str = request.args.get('date', datetime.now().date().isoformat())
+
+    # Convert the string to a datetime object if it's not already
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        # If the conversion fails, use today's date
+        selected_date = datetime.now().date()
+
     meal_type_order = ['breakfast', 'lunch', 'dinner', 'snacks']
     meal_type_data = {mt: {'meals': [], 'foods': []} for mt in meal_type_order}
     grand_total = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
 
     logs = db.session.query(
-        FoodMealLog.id.label('food_meal_log_id'),  # Include the 'id' column
+        FoodMealLog.id.label('food_meal_log_id'),
         FoodMealLog.meal_type,
         Meal.name.label('meal_name'),
         Meal.id.label('meal_id'),
@@ -444,58 +453,47 @@ def tracking():
         FoodMealLog.serving_count
     ).outerjoin(Meal, FoodMealLog.meal_id == Meal.id)\
     .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)\
-    .filter(FoodMealLog.log_date == today)\
+    .filter(FoodMealLog.log_date == selected_date)\
     .all()
 
+    # Process logs for meals and food items
     for log in logs:
-        if log.meal_id:  # It's a meal
+        # Process meal logs
+        if log.meal_id:
             meal = Meal.query.get(log.meal_id)
             if meal:
                 total_nutrition = {'calories': 0, 'total_fat': 0, 'total_carbohydrate': 0, 'total_sugars': 0, 'total_protein': 0}
-
                 for mfi in meal.meal_food_item_assoc:
                     food_item = mfi.food_item
-                    serving_count = Decimal(1.0)  # Convert serving count to Decimal
-
-                    # Convert all calculations to use Decimal type
-                    total_nutrition['calories'] += round(food_item.calories * serving_count, 1) if food_item.calories else Decimal(0)
-                    total_nutrition['total_fat'] += round(food_item.total_fat * serving_count, 1) if food_item.total_fat else Decimal(0)
-                    total_nutrition['total_carbohydrate'] += round(food_item.total_carbohydrate * serving_count, 1) if food_item.total_carbohydrate else Decimal(0)
-                    total_nutrition['total_sugars'] += round(food_item.total_sugars * serving_count, 1) if food_item.total_sugars else Decimal(0)
-                    total_nutrition['total_protein'] += round(food_item.total_protein * serving_count, 1) if food_item.total_protein else Decimal(0)
-
+                    serving_count = Decimal(mfi.serving_count)
+                    # Calculate nutrition values
+                    for key in total_nutrition.keys():
+                        attr_value = getattr(food_item, key, 0) or 0
+                        total_nutrition[key] += round(Decimal(attr_value) * serving_count, 1)
                 log_data = log._asdict()
                 log_data.update(total_nutrition)
-                log_data['serving_count'] = 1.0  # Set serving count for the meal
-
-                # Check if the meal_type exists in meal_type_data, and create it if it doesn't
-                if log.meal_type not in meal_type_data:
-                    meal_type_data[log.meal_type] = {'meals': [], 'foods': []}
-                
                 meal_type_data[log.meal_type]['meals'].append(log_data)
-
                 for key in total_nutrition:
                     grand_total[key] += total_nutrition[key]
-
-        elif log.food_item_name:  # It's a food item
+        
+        # Process food item logs
+        elif log.food_item_name:
             food_log_data = log._asdict()
-            serving_count = Decimal(food_log_data['serving_count'])  # Convert serving count to Decimal
-
-            # Convert calculations for food items to use Decimal
+            serving_count = Decimal(food_log_data['serving_count'])
             for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
                 food_log_data[key] = round(Decimal(food_log_data[key]) * serving_count, 1)
             meal_type_data[log.meal_type]['foods'].append(food_log_data)
-
-            for key in ['calories', 'total_fat', 'total_carbohydrate', 'total_sugars', 'total_protein']:
+            for key in grand_total.keys():
                 grand_total[key] += food_log_data[key]
 
     # Round grand total values
     for key in grand_total:
         grand_total[key] = round(grand_total[key], 1)
 
-    return render_template('nutrition/tracking/tracking.html', meal_type_data=meal_type_data, grand_total=grand_total)
-
-from flask import request, redirect, url_for
+    return render_template('nutrition/tracking/tracking.html', 
+                           meal_type_data=meal_type_data, 
+                           grand_total=grand_total,
+                           selected_date=selected_date)
 
 @nutrition_blueprint.route('/delete_entry/<int:id>', methods=['POST'])
 def delete_entry(id):
