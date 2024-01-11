@@ -3,8 +3,14 @@
 <div class="container mt-4">
     <!-- Buttons for Logging Food and Meal -->
     <div class="mb-4">
-      <button type="button" class="btn btn-primary mr-2">Log Food</button>
-      <button type="button" class="btn btn-secondary">Log Meal</button>
+      <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addFood') }}">
+        <i class="fas fa-apple-whole"></i> Log Food
+    </a>
+    <a class="btn btn-secondary" href="{{ url_for('nutrition.addMeal') }}">
+        <i class="fas fa-utensils"></i> Log Meal
+    </a>
+         
+                 
     </div>
   
     <!-- Display grand totals in Bootstrap cards -->
@@ -24,7 +30,7 @@
   
     <!-- Button to Open Modal -->
     <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#macrosModal">
-      View Macros
+      <i class="fas fa-chart-pie"></i> View Breakdown
     </button>
   
     <!-- Modal for Pie Chart -->
@@ -82,7 +88,7 @@
                 <th><i class="fas fa-cookie"></i> Total Sugars</th>
                 <th><i class="fas fa-drumstick-bite"></i> Total Protein</th>
                 <th><i class="fas fa-utensil-spoon"></i> Serving Count</th>
-                <th><i class="fas fa-trash"></i> Action</th>
+                <th><i class="fas fa-circle-info"></i> Action</th>
                 <!-- Add a new column for the Delete button -->
               </tr>
             </thead>
@@ -144,4 +150,3 @@
 </script>
 
 {% endblock %}
-
