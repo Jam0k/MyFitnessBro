@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Fitness</h1>
+    <p>Track and manage your fitness routines and activities to stay healthy and fit.</p>
+
+    <div class="row">
+        <!-- Tracking Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tracking</h5>
+                    <p class="card-text">Monitor your daily, weekly, and monthly fitness progress.</p>
+                    <a href="/fitness/tracking" class="btn btn-success"><i class="fas fa-chart-line"></i> View Tracking</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercises and Workouts Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Exercises and Workouts</h5>
+                    <p class="card-text">Log your exercises and create personalized workout plans.</p>
+                    <a href="/fitness/exercises-and-workouts" class="btn btn-success"><i class="fas fa-dumbbell"></i> View Exercises</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cardio and Aerobics Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cardio and Aerobics</h5>
+                    <p class="card-text">Record your cardio activities and improve your cardiovascular health.</p>
+                    <a href="/fitness/cardio-and-aerobics" class="btn btn-success"><i class="fas fa-running"></i> View Cardio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
