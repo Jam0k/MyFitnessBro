@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Exercises & Workouts</h1>
+    <p>Effortlessly manage your exercises and workout routines to stay fit and healthy.</p>
+
+    <div class="row">
+        <!-- Log Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-clipboard-list"></i> Log</h5>
+                    <p class="card-text">Track your daily exercise routines and workout logs here.</p>
+                    <div class="row">
+                        <!-- Log Exercise Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-plus"></i> Log Exercise</h6>
+                                    <p class="card-text">Record your exercises and workout details.</p>
+                                    <a href="/exercises-workouts/log-exercise" class="btn btn-success">Log Exercise</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Log Workout Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-plus"></i> Log Workout</h6>
+                                    <p class="card-text">Track your complete workout sessions.</p>
+                                    <a href="/exercises-workouts/log-workout" class="btn btn-success">Log Workout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-plus-circle"></i> Create</h5>
+                    <p class="card-text">Add and customize your own exercises and workout plans.</p>
+                    <div class="row">
+                        <!-- Create Exercise Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-dumbbell"></i> Create Exercise</h6>
+                                    <p class="card-text">Add new exercises to your collection.</p>
+                                    <a href="exercises-and-workouts/create-exercise" class="btn btn-success">Create Exercise</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Create Workout Plan Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-clipboard-check"></i> Create Workout Plan</h6>
+                                    <p class="card-text">Plan and customize your workout routines.</p>
+                                    <a href="/exercises-workouts/create-workout-plan" class="btn btn-success">Create Workout Plan</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browse Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-search"></i> Browse</h5>
+                    <p class="card-text">Discover and explore various exercises and workout plans.</p>
+                    <div class="row">
+                        <!-- Browse Exercises Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-eye"></i> Browse Exercises</h6>
+                                    <p class="card-text">Explore a wide range of exercises.</p>
+                                    <a href="exercises-and-workouts/browse-exercise" class="btn btn-success">Browse Exercises</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Browse Workout Plans Card -->
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-eye"></i> Browse Workout Plans</h6>
+                                    <p class="card-text">Discover workout plans created by others.</p>
+                                    <a href="/exercises-workouts/browse-workout-plans" class="btn btn-success">Browse Workout Plans</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

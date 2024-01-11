@@ -81,3 +81,36 @@ class FoodMealLog(db.Model):
             'log_date': self.log_date.isoformat(),
             'meal_type': self.meal_type
         }
+
+# New Exercise model
+class Exercise(db.Model):
+    __tablename__ = 'exercises'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    category = db.Column(db.String(100))
+    duration_minutes = db.Column(db.Integer)
+    sets = db.Column(db.Integer)
+    reps = db.Column(db.Integer)
+    weight_lifted = db.Column(db.Numeric(5, 2))
+    calories_burned = db.Column(db.Integer)
+    notes = db.Column(db.Text)
+    log_date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'category': self.category,
+            'duration_minutes': self.duration_minutes,
+            'sets': self.sets,
+            'reps': self.reps,
+            'weight_lifted': str(self.weight_lifted),
+            'calories_burned': self.calories_burned,
+            'notes': self.notes,
+            'log_date': self.log_date.isoformat(),
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
