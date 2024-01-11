@@ -1,21 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
+  <h1>Nutrition Tracking</h1>
+  <hr>
     <!-- Buttons for Logging Food and Meal -->
+    <p class="lead">Log Your Nutrition</p>
     <div class="mb-4">
       <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addFood') }}">
         <i class="fas fa-apple-whole"></i> Log Food
     </a>
-    <a class="btn btn-secondary" href="{{ url_for('nutrition.addMeal') }}">
+    <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addMeal') }}">
         <i class="fas fa-utensils"></i> Log Meal
     </a>
          
                  
     </div>
 
-    
+    <hr>
+
 
 <!-- Start Date Selector for Filtering -->
+<p class="lead">Date Selection</p>
 <div class="form-group">
   <label for="startDateFilter">Select Start Date:</label>
   <input type="date" class="form-control" id="startDateFilter" name="startDateFilter">
@@ -27,31 +32,36 @@
   <input type="date" class="form-control" id="endDateFilter" name="endDateFilter">
 </div>
 
-  
-    <!-- Display grand totals in Bootstrap cards -->
-    <h1>Grand Totals</h1>
-    <div class="row">
-      {% for key, value in grand_total.items() %}
-      <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-        <div class="card text-center">
-          <div class="card-body">
-            <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
-            <p class="card-text">{{ value }}g</p>
-          </div>
-        </div>
+<hr>
+
+<p class="lead">Nutrition Summary</p>
+<div class="row">
+  {% for key, value in grand_total.items() %}
+  <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
+        {% if key == 'calories' %}
+          <p class="card-text">{{ value }} kcal</p>
+        {% else %}
+          <p class="card-text">{{ value }}g</p>
+        {% endif %}
       </div>
-      {% endfor %}
     </div>
-  
+  </div>
+  {% endfor %}
+</div>
     <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#macrosModal">
+    <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#macrosModal">
       <i class="fas fa-chart-pie"></i> View Breakdown
     </button>
 
     <!-- Button to Open Line Chart Modal -->
-<button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#lineChartModal">
+<button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#lineChartModal">
   <i class="fas fa-chart-line"></i> View Line Chart
 </button>
+
+<hr>
 
   
     <!-- Modal for Pie Chart -->
@@ -88,26 +98,16 @@
     </div>
   </div>
 </div>
-
-
-<div class="container mt-4">
-  {% for meal_type, data in meal_type_data.items() %}
-  <h2>{{ meal_type.title() }}</h2>
-  <div class="accordion" id="mealTypeAccordion{{ loop.index }}">
-    <div class="card">
-      <div class="card-header" id="mealTypeHeading{{ loop.index }}">
-        <h2 class="mb-0">
-          <button
-            class="btn btn-link"
-            type="button"
-            data-toggle="collapse"
-            data-target="#mealTypeCollapse{{ loop.index }}"
-            aria-expanded="true"
-            aria-controls="mealTypeCollapse{{ loop.index }}"
-          >
-            {{ meal_type.title() }} <i class="fas fa-chevron-down"></i>
-          </button>
-        </h2>
+<p class="lead">Nutrition Log</p>
+{% for meal_type, data in meal_type_data.items() %}
+<div class="accordion nutrition-accordion" id="mealTypeAccordion{{ loop.index }}">
+  <div class="card">
+    <div class="card-header" id="mealTypeHeading{{ loop.index }}">
+      <h2 class="mb-0">
+        <button class="btn btn-link modern-accordion-btn" type="button" data-toggle="collapse" data-target="#mealTypeCollapse{{ loop.index }}" aria-expanded="true" aria-controls="mealTypeCollapse{{ loop.index }}">
+          {{ meal_type.title() }} <i class="fas fa-chevron-down"></i>
+        </button>
+      </h2>
       </div>
       <div
         id="mealTypeCollapse{{ loop.index }}"
@@ -116,6 +116,7 @@
         data-parent="#mealTypeAccordion{{ loop.index }}"
       >
         <div class="card-body">
+          <div class="table-responsive">
           <table class="table">
             <thead>
               <tr>
@@ -240,5 +241,22 @@
 
 </script>
 
+<style>
+  /* Custom CSS for spacing between accordion items */
+.nutrition-accordion .card {
+    margin-bottom: 10px; /* Adjust this value as needed for spacing */
+}
+/* Responsive table */
+.table-responsive {
+  overflow-x: auto; /* Enable horizontal scrolling */
+}
+
+@media screen and (max-width: 768px) { /* Adjust this breakpoint as needed */
+  .table-responsive {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile devices */
+  }
+}
+
+</style>
 
 {% endblock %}
