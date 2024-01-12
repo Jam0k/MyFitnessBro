@@ -10,38 +10,55 @@
     <link href="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/css/all.css') }}" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-          <img
-            src="{{ url_for('static', filename='icon.png') }}"
-            width="30"
-            height="30"
-            class="d-inline-block align-top"
-            alt=""
-          />
-          MyFitnessBro
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img
+      src="{{ url_for('static', filename='icon.png') }}"
+      width="30"
+      height="30"
+      class="d-inline-block align-top"
+      alt=""
+    />
+    MyFitnessBro
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">
+          <i class="fas fa-home"></i> Home
         </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <!-- Additional nav items can be added here -->
-          </ul>
-        </div>
-      </nav>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-primary" href="/nutrition">
+          <i class="fas fa-utensils"></i> Nutrition
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-success" href="/fitness">
+          <i class="fas fa-dumbbell"></i> Fitness
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-warning" href="/progress">
+          <i class="fas fa-chart-line"></i> Progress
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
 
     <!-- Main Content Block -->
     <div class="container">
