@@ -193,3 +193,51 @@ def delete_workout_plan(workout_plan_id):
         db.session.commit()
         return jsonify({'message': 'Workout plan deleted successfully'})
     return jsonify({'error': 'Workout plan not found'}), 404
+
+
+@fitness_blueprint.route('/exercises-and-workouts/delete-exercise/<int:exercise_id>', methods=['DELETE'])
+def delete_exercise(exercise_id):
+    exercise = Exercise.query.get(exercise_id)
+    if exercise:
+        db.session.delete(exercise)
+        db.session.commit()
+        return jsonify({'message': 'Exercise deleted successfully'})
+    return jsonify({'error': 'Exercise not found'}), 404
+
+@fitness_blueprint.route('/exercises-and-workouts/get-exercise/<int:exercise_id>')
+def get_exercise(exercise_id):
+    exercise = Exercise.query.get(exercise_id)
+    if exercise:
+        return jsonify(exercise.to_dict())
+    return jsonify({'error': 'Exercise not found'}), 404
+
+@fitness_blueprint.route('/exercises-and-workouts/update-exercise/<int:exercise_id>', methods=['POST'])
+def update_exercise(exercise_id):
+    data = request.get_json()
+    exercise = Exercise.query.get(exercise_id)
+    if exercise:
+        exercise.name = data.get('name', exercise.name)
+        exercise.category = data.get('category', exercise.category)
+
+        # Handle integer fields with a utility function
+        exercise.duration_minutes = convert_to_int(data.get('duration_minutes'), default=exercise.duration_minutes)
+        exercise.sets = convert_to_int(data.get('sets'), default=exercise.sets)
+        exercise.reps = convert_to_int(data.get('reps'), default=exercise.reps)
+        exercise.calories_burned = convert_to_int(data.get('calories_burned'), default=exercise.calories_burned)
+
+        # For numeric/decimal fields
+        weight_lifted = data.get('weight_lifted')
+        exercise.weight_lifted = Decimal(weight_lifted) if weight_lifted else exercise.weight_lifted
+
+        exercise.notes = data.get('notes', exercise.notes)
+
+        db.session.commit()
+        return jsonify({'message': 'Exercise updated successfully'})
+    return jsonify({'error': 'Exercise not found'}), 404
+
+def convert_to_int(value, default=None):
+    try:
+        return int(value) if value not in ['', None] else default
+    except ValueError:
+        return default
+
