@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, jsonify
-from models import Exercise, WorkoutPlan, FoodItem, Meal, MealFoodItem, FoodMealLog, db
+from models import Exercise, ExerciseLog, WorkoutPlan, FoodItem, Meal, MealFoodItem, FoodMealLog, db
 import json
 from decimal import Decimal
-from datetime import datetime
+from datetime import date, datetime
 from collections import defaultdict
 
 # Create a blueprint for the fitness routes
@@ -241,3 +241,56 @@ def convert_to_int(value, default=None):
     except ValueError:
         return default
 
+
+
+
+@fitness_blueprint.route('/exercises-and-workouts/log-exercise', methods=['GET', 'POST'])
+def logExercise():
+    if request.method == 'POST':
+        # Parse JSON data from the request
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'Invalid JSON data'}), 400
+
+        exercise_ids = data.get('exercise_ids', [])
+        log_date = data.get('date')
+
+        if not exercise_ids or not log_date:
+            return jsonify({'error': 'Missing required data'}), 400
+
+        # Create ExerciseLog entries for the selected exercises and log date
+        for exercise_id in exercise_ids:
+            exercise_log = ExerciseLog(exercise_id=exercise_id, log_date=log_date)
+            db.session.add(exercise_log)
+
+        db.session.commit()
+        return jsonify({'message': 'Exercise(s) logged successfully'}), 200
+
+    # Fetch exercises from the database
+    exercises = Exercise.query.all()
+
+    # Get today's date as a default date
+    today_date = date.today().isoformat()
+
+    return render_template('fitness/exercises-and-workouts/exercise/log-exercise.html', exercises=exercises, today_date=today_date)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Define routes within the fitness blueprint
+@fitness_blueprint.route('/exercises-and-workouts/log-workout')
+def logWorkout():
+    return render_template('fitness/exercises-and-workouts/exercise/log-workout.html')

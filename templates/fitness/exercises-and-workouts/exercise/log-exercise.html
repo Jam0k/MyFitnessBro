@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h1>Log Single Exercise</h1>
+  <form id="logExerciseForm">
+    <div class="mb-3">
+      <label for="exerciseDate" class="form-label">Date</label>
+      <input type="date" class="form-control" id="exerciseDate" value="{{ today_date }}">
+    </div>
+    <table id="exerciseTable" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Select</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Exercise data will be loaded here -->
+      </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Log Exercise</button>
+  </form>
+</div>
+
+<script>
+$(document).ready(function() {
+  // DataTable initialization
+  var exerciseTable = $('#exerciseTable').DataTable({
+    ajax: '/fitness/exercises-and-workouts/get-exercises', // Adjust the URL
+    columns: [
+      { data: 'name' },
+      { data: 'category' },
+      {
+        data: 'id',
+        render: function(data, type, row) {
+          return '<input type="checkbox" class="exercise-select" value="' + data + '">';
+        },
+        orderable: false
+      }
+    ]
+  });
+
+  // Form submission handling
+  $('#logExerciseForm').submit(function(e) {
+    e.preventDefault();
+
+    // Get selected exercise IDs
+    var selectedExerciseIds = $('.exercise-select:checked').map(function() {
+      return $(this).val();
+    }).get();
+
+    // Get the selected date
+    var logDate = $('#exerciseDate').val();
+
+    // Prepare the data to be submitted
+    var logData = {
+      date: logDate,
+      exercise_ids: selectedExerciseIds
+    };
+
+    // Submit the log data to your Flask route
+    $.ajax({
+      url: '/fitness/exercises-and-workouts/log-exercise',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(logData),
+      success: function(response) {
+        // Handle success, e.g., show a success message
+        alert('Exercise(s) logged successfully');
+      },
+      error: function(xhr, status, error) {
+        // Handle errors, e.g., display an error message
+        alert('Error logging exercise(s): ' + status);
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

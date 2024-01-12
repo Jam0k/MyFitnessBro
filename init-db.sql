@@ -62,3 +62,9 @@ CREATE TABLE workout_plan_exercises (
     exercise_id INTEGER REFERENCES exercises(id),
     PRIMARY KEY (workout_plan_id, exercise_id)
 );
+
+CREATE TABLE exercise_logs (
+    id SERIAL PRIMARY KEY,
+    exercise_id INTEGER REFERENCES exercises(id) NOT NULL,
+    log_date DATE NOT NULL DEFAULT CURRENT_DATE
+);
