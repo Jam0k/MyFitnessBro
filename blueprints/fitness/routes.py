@@ -137,3 +137,42 @@ def get_workout_plans():
     ]
 
     return jsonify({'data': workout_plan_data})
+
+
+@fitness_blueprint.route('/exercises-and-workouts/get-workout-plan/<int:workout_plan_id>')
+def get_workout_plan(workout_plan_id):
+    workout_plan = WorkoutPlan.query.get(workout_plan_id)
+    if workout_plan:
+        workout_plan_data = {
+            'id': workout_plan.id,
+            'name': workout_plan.name,
+            'created_at': workout_plan.created_at.isoformat(),
+            'exercises': [
+                exercise.to_dict() for exercise in workout_plan.exercises
+            ]
+        }
+        return jsonify(workout_plan_data)
+    return jsonify({'error': 'Workout plan not found'}), 404
+
+
+@fitness_blueprint.route('/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>', methods=['POST'])
+def update_workout_plan(workout_plan_id):
+    data = request.get_json()
+    workout_plan = WorkoutPlan.query.get(workout_plan_id)
+    if workout_plan:
+        workout_plan.name = data.get('name', workout_plan.name)
+        # Update exercises list as needed
+        # Example: workout_plan.exercises = [Exercise.query.get(ex_id) for ex_id in data['exercise_ids']]
+        db.session.commit()
+        return jsonify({'message': 'Workout plan updated successfully'})
+    return jsonify({'error': 'Workout plan not found'}), 404
+
+
+@fitness_blueprint.route('/exercises-and-workouts/delete-workout-plan/<int:workout_plan_id>', methods=['DELETE'])
+def delete_workout_plan(workout_plan_id):
+    workout_plan = WorkoutPlan.query.get(workout_plan_id)
+    if workout_plan:
+        db.session.delete(workout_plan)
+        db.session.commit()
+        return jsonify({'message': 'Workout plan deleted successfully'})
+    return jsonify({'error': 'Workout plan not found'}), 404
