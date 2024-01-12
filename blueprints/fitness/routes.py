@@ -78,7 +78,7 @@ def get_exercises():
 
 # Define routes within the fitness blueprint
 @fitness_blueprint.route('/exercises-and-workouts/browse-exercise')
-def browse_exercise():
+def browseExercise():
     return render_template('fitness/exercises-and-workouts/exercise/browse-exercise.html')
 
 
@@ -101,3 +101,39 @@ def create_workout_plan():
     # Handling GET request to render the page initially
     exercises = Exercise.query.all()
     return render_template('fitness/exercises-and-workouts/workout/create-workout-plan.html', exercises=exercises)
+
+
+# Define routes within the fitness blueprint
+@fitness_blueprint.route('/exercises-and-workouts/browse-workout-plans')
+def browseWorkout():
+    return render_template('fitness/exercises-and-workouts/workout/browse-workout-plan.html')
+
+
+@fitness_blueprint.route('/exercises-and-workouts/get-workout-plans')
+def get_workout_plans():
+    workout_plans = WorkoutPlan.query.all()
+
+    workout_plan_data = [
+        {
+            'id': workout_plan.id,
+            'name': workout_plan.name,
+            'created_at': workout_plan.created_at.isoformat(),
+            'exercises': [
+                {
+                    'id': exercise.id,
+                    'name': exercise.name,
+                    'category': exercise.category,
+                    'duration_minutes': exercise.duration_minutes,
+                    'sets': exercise.sets,
+                    'reps': exercise.reps,
+                    'weight_lifted': str(exercise.weight_lifted),
+                    'calories_burned': exercise.calories_burned,
+                    'notes': exercise.notes
+                }
+                for exercise in workout_plan.exercises
+            ]
+        }
+        for workout_plan in workout_plans
+    ]
+
+    return jsonify({'data': workout_plan_data})

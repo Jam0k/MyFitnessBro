@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Browse Workout Plans</h1>
+    <table id="workoutPlanTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Exercises</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Workout plan data will be loaded here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#workoutPlanTable').DataTable({
+        ajax: '/fitness/exercises-and-workouts/get-workout-plans',
+        columns: [
+            { data: 'name' },
+            {
+                data: 'exercises',
+                render: function(data, type, row) {
+                    return data.map(exercise => exercise.name).join(', ');
+                }
+            }
+        ]
+    });
+});
+</script>
+{% endblock %}
