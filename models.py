@@ -67,9 +67,9 @@ class FoodMealLog(db.Model):
     meal_id = db.Column(db.Integer, db.ForeignKey('meals.id'))  # Add this line
     serving_count = db.Column(db.Numeric(5, 2))
     meal_type = db.Column(db.String(50))  # Type of meal (breakfast, lunch, etc.)
-
     food_item = db.relationship('FoodItem', backref=db.backref('logs', lazy='dynamic'))
     meal = db.relationship('Meal', backref=db.backref('meal_logs', lazy='dynamic'))  # Add this relationship
+    log_date = db.Column(db.Date)  # Ensure this line is present and correctly defined
 
     def to_dict(self):
         return {
@@ -77,7 +77,9 @@ class FoodMealLog(db.Model):
             'food_item_id': self.food_item_id,
             'meal_id': self.meal_id,  # Include this field
             'serving_count': str(self.serving_count),
-            'meal_type': self.meal_type
+            'meal_type': self.meal_type,
+            'log_date': self.log_date,
+
         }
 
 # New Exercise model
