@@ -161,11 +161,28 @@ def update_workout_plan(workout_plan_id):
     workout_plan = WorkoutPlan.query.get(workout_plan_id)
     if workout_plan:
         workout_plan.name = data.get('name', workout_plan.name)
+        
         # Update exercises list as needed
-        # Example: workout_plan.exercises = [Exercise.query.get(ex_id) for ex_id in data['exercise_ids']]
+        if 'exercises' in data:
+            updated_exercise_ids = set(map(int, data['exercises']))
+            current_exercise_ids = set(exercise.id for exercise in workout_plan.exercises)
+            
+            # Add new exercises to the workout plan
+            for exercise_id in updated_exercise_ids - current_exercise_ids:
+                exercise = Exercise.query.get(exercise_id)
+                if exercise:
+                    workout_plan.exercises.append(exercise)
+            
+            # Remove exercises that are no longer in the updated list
+            for exercise_id in current_exercise_ids - updated_exercise_ids:
+                exercise = Exercise.query.get(exercise_id)
+                if exercise:
+                    workout_plan.exercises.remove(exercise)
+
         db.session.commit()
         return jsonify({'message': 'Workout plan updated successfully'})
     return jsonify({'error': 'Workout plan not found'}), 404
+
 
 
 @fitness_blueprint.route('/exercises-and-workouts/delete-workout-plan/<int:workout_plan_id>', methods=['DELETE'])
