@@ -29,6 +29,21 @@
                 <form id="editWorkoutPlanForm">
                     <!-- Form fields will be dynamically populated here -->
                 </form>
+                <hr>
+                <h5>Add Exercises to Workout Plan</h5>
+                <table id="allExercisesTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <!-- Add other relevant columns -->
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Exercise data will be loaded here -->
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -54,7 +69,7 @@
                 {
                     data: 'id',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-primary edit-btn" data-id="' + data + '" data-bs-toggle="modal" data-bs-target="#editWorkoutPlanModal">Edit</button>' +
+                        return '<button class="btn btn-primary edit-btn" data-id="' + data + '">Edit</button>' +
                                '<button class="btn btn-danger delete-btn" data-id="' + data + '">Delete</button>';
                     },
                     orderable: false
@@ -62,10 +77,18 @@
             ]
         });
     
-        // Open edit modal and load data
-        $('#workoutPlanTable').on('click', '.edit-btn', function() {
+        var allExercisesTableInitialized = false;
+
+        // Use document-level event delegation for dynamically loaded content
+        $(document).on('click', '.edit-btn', function() {
             var workoutPlanId = $(this).data('id');
+            openEditModal(workoutPlanId);
+        });
+
+        function openEditModal(workoutPlanId) {
             $('#editWorkoutPlanModal').data('workoutPlanId', workoutPlanId);
+            
+            // Fetch workout plan details from the server
             $.ajax({
                 url: '/fitness/exercises-and-workouts/get-workout-plan/' + workoutPlanId,
                 type: 'GET',
@@ -77,28 +100,57 @@
                     response.exercises.forEach(function(exercise) {
                         formHtml += '<div class="form-check">' +
                                     '<input class="form-check-input" type="checkbox" value="' + exercise.id + '" id="exercise' + exercise.id + '" name="exercises" checked>' +
-                                    '<label class="form-check-label" for="exercise' + exercise.id + '">' +
-                                    exercise.name +
-                                    '</label></div>';
+                                    '<label class="form-check-label" for="exercise' + exercise.id + '">' + exercise.name + '</label></div>';
                     });
                     formHtml += '</div>';
                     $('#editWorkoutPlanModal').find('#editWorkoutPlanForm').html(formHtml);
+
+                    // Manually show the modal
                     $('#editWorkoutPlanModal').modal('show');
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching workout plan:', status, error);
                 }
             });
-        });
-    
+
+            // Initialize or reload the allExercisesTable
+            if (!allExercisesTableInitialized) {
+                allExercisesTableInitialized = true;
+                $('#allExercisesTable').DataTable({
+                    ajax: '/fitness/exercises-and-workouts/get-exercises',
+                    columns: [
+                        { data: 'name' },
+                        { data: 'category' },
+                        // ... other columns ...
+                        {
+                            data: 'id',
+                            render: function(data, type, row) {
+                                return '<input type="checkbox" class="exercise-select" value="' + data + '">';
+                            },
+                            orderable: false
+                        }
+                    ]
+                });
+            } else {
+                $('#allExercisesTable').DataTable().ajax.reload();
+            }
+        }
+
         // Handle form submission for saving changes
         $('#saveWorkoutPlanChanges').click(function() {
             var workoutPlanId = $('#editWorkoutPlanModal').data('workoutPlanId');
+            var selectedExerciseIds = $('#editWorkoutPlanForm input[name="exercises"]:checked').map(function() {
+                return $(this).val();
+            }).get();
+            
+            // Add newly selected exercises from the DataTable
+            var newExercises = $('#allExercisesTable .exercise-select:checked').map(function() {
+                return $(this).val();
+            }).get();
+
             var editedData = {
                 name: $('#workoutPlanName').val(),
-                exercises: $('#editWorkoutPlanForm input[name="exercises"]:checked').map(function() {
-                    return $(this).val();
-                }).get()
+                exercises: selectedExerciseIds.concat(newExercises)
             };
             
             $.ajax({
@@ -115,7 +167,7 @@
                 }
             });
         });
-    
+
         // Event listener for Delete button
         $('#workoutPlanTable').on('click', '.delete-btn', function() {
             var workoutPlanId = $(this).data('id');
@@ -133,6 +185,7 @@
             }
         });
     });
-    </script>
+</script>
+    
     
 {% endblock %}
