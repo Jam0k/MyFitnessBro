@@ -325,20 +325,34 @@ def tracking():
         selected_date_str = request.form.get('date')
         selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d') if selected_date_str else None
 
-        # If a date is provided, filter the exercise logs
+        exercise_logs = []
+        workout_plan_logs = []
+
         if selected_date:
-            exercise_logs = ExerciseLog.query.filter_by(log_date=selected_date).all()
-        else:
-            exercise_logs = []
+            # Query exercise logs
+            exercise_logs = ExerciseLog.query.filter(ExerciseLog.log_date == selected_date, ExerciseLog.exercise_id.isnot(None)).all()
+
+            # Query workout plan logs
+            workout_plan_logs = ExerciseLog.query.filter(ExerciseLog.log_date == selected_date, ExerciseLog.workout_plan_id.isnot(None)).all()
 
         exercise_logs_data = [
             {
-                'exercise_id': log.exercise_id,
-                'workout_plan_id': log.workout_plan_id
+                'exercise': {
+                    'name': log.exercise.name if log.exercise else None
+                }
             }
             for log in exercise_logs
         ]
 
-        return jsonify({'exercise_logs': exercise_logs_data, 'current_date': current_date})
+        workout_plan_logs_data = [
+            {
+                'workout_plan': {
+                    'name': log.workout_plan.name if log.workout_plan else None
+                }
+            }
+            for log in workout_plan_logs
+        ]
+
+        return jsonify({'exercise_logs': exercise_logs_data, 'workout_plan_logs': workout_plan_logs_data, 'current_date': current_date})
 
     return render_template('fitness/tracking/tracking.html', current_date=current_date)

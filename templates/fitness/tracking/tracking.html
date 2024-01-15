@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Exercise Logs</h1>
+<h1>Fitness Tracking</h1>
 
 <div class="form-group">
   <label for="dateFilter">Select a Date:</label>
@@ -8,15 +8,29 @@
 </div>
 
 <div id="exercise-logs">
+  <h2>Exercise Logs</h2>
   <table id="exercise-logs-table" class="table table-striped">
     <thead>
       <tr>
-        <th>Exercise ID</th>
-        <th>Workout Plan ID</th>
+        <th>Exercise Name</th>
       </tr>
     </thead>
     <tbody>
-      <!-- Table rows will be generated here dynamically -->
+      <!-- Table rows for exercise logs will be generated here dynamically -->
+    </tbody>
+  </table>
+</div>
+
+<div id="workout-plan-logs">
+  <h2>Workout Plan Logs</h2>
+  <table id="workout-plan-logs-table" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Workout Plan Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows for workout plan logs will be generated here dynamically -->
     </tbody>
   </table>
 </div>
@@ -26,52 +40,66 @@
     const dateInput = document.getElementById('dateFilter');
     const exerciseLogsDiv = document.getElementById('exercise-logs');
     const exerciseLogsTable = document.getElementById('exercise-logs-table');
+    const workoutPlanLogsDiv = document.getElementById('workout-plan-logs');
+    const workoutPlanLogsTable = document.getElementById('workout-plan-logs-table');
 
-    let dataTable; // Declare the dataTable variable
+    let exerciseDataTable; // Declare the exerciseDataTable variable
+    let workoutPlanDataTable; // Declare the workoutPlanDataTable variable
 
-    function initializeDataTable() {
-      dataTable = $(exerciseLogsTable).DataTable({
+    function initializeDataTables() {
+      exerciseDataTable = $(exerciseLogsTable).DataTable({
         columns: [
-          { data: 'exercise_id' },
-          { data: 'workout_plan_id' }
+          { data: 'exercise.name' },
         ]
-      }); // Initialize DataTables with column definitions
+      });
+
+      workoutPlanDataTable = $(workoutPlanLogsTable).DataTable({
+        columns: [
+          { data: 'workout_plan.name' },
+        ]
+      });
     }
 
-    initializeDataTable(); // Initialize the DataTable on page load
+    initializeDataTables(); // Initialize the DataTables on page load
 
-    function fetchExerciseLogs(date) {
-  fetch('/fitness/tracking', {
-    method: 'POST',
-    body: new URLSearchParams({ date: date }),
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const exerciseLogs = data.exercise_logs;
+    function fetchLogs(date) {
+      fetch('/fitness/tracking', {
+        method: 'POST',
+        body: new URLSearchParams({ date: date }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const exerciseLogs = data.exercise_logs;
+          const workoutPlanLogs = data.workout_plan_logs;
 
-      // Clear existing table data
-      dataTable.clear().draw();
+          // Clear existing table data
+          exerciseDataTable.clear().draw();
+          workoutPlanDataTable.clear().draw();
 
-      if (exerciseLogs.length > 0) {
-        // Add exercise log data to the table
-        dataTable.rows.add(exerciseLogs).draw();
-      }
-    });
-}
+          if (exerciseLogs.length > 0) {
+            // Add exercise log data to the table
+            exerciseDataTable.rows.add(exerciseLogs).draw();
+          }
 
+          if (workoutPlanLogs.length > 0) {
+            // Add workout plan log data to the table
+            workoutPlanDataTable.rows.add(workoutPlanLogs).draw();
+          }
+        });
+    }
 
     dateInput.addEventListener('input', function () {
       const selectedDate = dateInput.value;
-      fetchExerciseLogs(selectedDate);
+      fetchLogs(selectedDate);
     });
 
     // Initial fetch with today's date
     const current_date = '{{ current_date }}';
     dateInput.value = current_date;
-    fetchExerciseLogs(current_date);
+    fetchLogs(current_date);
   });
 </script>
 {% endblock %}
