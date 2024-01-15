@@ -279,33 +279,28 @@ def logExercise():
 @fitness_blueprint.route('/exercises-and-workouts/log-workout', methods=['GET', 'POST'])
 def logWorkout():
     if request.method == 'POST':
-        # Parse JSON data from the request
         data = request.get_json()
 
         if not data:
             return jsonify({'error': 'Invalid JSON data'}), 400
 
-        workout_plan_id = data.get('workout_plan_id')
+        workout_plan_ids = data.get('workout_plan_ids')
         log_date = data.get('date')
 
-        if not workout_plan_id or not log_date:
+        if not workout_plan_ids or not log_date:
             return jsonify({'error': 'Missing required data'}), 400
 
-        # Create an ExerciseLog entry for the selected workout plan and log date
-        exercise_log = ExerciseLog(workout_plan_id=workout_plan_id, log_date=log_date)
-        db.session.add(exercise_log)
+        for workout_plan_id in workout_plan_ids:
+            exercise_log = ExerciseLog(workout_plan_id=workout_plan_id, log_date=log_date)
+            db.session.add(exercise_log)
         db.session.commit()
 
-        return jsonify({'message': 'Workout logged successfully'}), 200
+        return jsonify({'message': 'Workout(s) logged successfully'}), 200
 
-    # Fetch workout plans from the database (you should define your WorkoutPlan model)
     workout_plans = WorkoutPlan.query.all()
-
-    # Get today's date as a default date
     today_date = date.today().isoformat()
 
     return render_template('fitness/exercises-and-workouts/workout/log-workout.html', workout_plans=workout_plans, today_date=today_date)
-
 
 
 
