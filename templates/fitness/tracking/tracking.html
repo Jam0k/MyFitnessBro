@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Exercise Logs</h1>
+
+<form id="date-form">
+  <label for="date">Select a Date:</label>
+  <input type="date" id="date" name="date">
+  <button type="button" id="submit-button">Submit</button>
+</form>
+
+<div id="exercise-logs">
+  <!-- Data will be displayed here -->
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('date-form');
+    const submitButton = document.getElementById('submit-button');
+    const exerciseLogsDiv = document.getElementById('exercise-logs');
+
+    submitButton.addEventListener('click', function () {
+      const selectedDate = document.getElementById('date').value;
+
+      fetch('/fitness/tracking', {
+        method: 'POST',
+        body: new URLSearchParams({ date: selectedDate }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const exerciseLogs = data.exercise_logs;
+
+          if (exerciseLogs.length > 0) {
+            let html = '<table><thead><tr><th>Exercise ID</th><th>Workout Plan ID</th></tr></thead><tbody>';
+
+            exerciseLogs.forEach((log) => {
+              html += `<tr><td>${log.exercise_id}</td><td>${log.workout_plan_id}</td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            exerciseLogsDiv.innerHTML = html;
+          } else {
+            exerciseLogsDiv.innerHTML = '<p>No exercise logs found for the selected date.</p>';
+          }
+        });
+    });
+  });
+</script>
+{% endblock %}

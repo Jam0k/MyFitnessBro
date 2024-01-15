@@ -315,3 +315,28 @@ def updateWorkoutPlan(workout_plan_id):
         db.session.commit()
         return jsonify({'message': 'Workout plan updated successfully'})
     return jsonify({'error': 'Workout plan not found'}), 404
+
+
+@fitness_blueprint.route('/tracking', methods=['GET', 'POST'])
+def tracking():
+    if request.method == 'POST':
+        selected_date_str = request.form.get('date')
+        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d') if selected_date_str else None
+
+        # If a date is provided, filter the exercise logs
+        if selected_date:
+            exercise_logs = ExerciseLog.query.filter_by(log_date=selected_date).all()
+        else:
+            exercise_logs = []
+
+        exercise_logs_data = [
+            {
+                'exercise_id': log.exercise_id,
+                'workout_plan_id': log.workout_plan_id
+            }
+            for log in exercise_logs
+        ]
+
+        return jsonify({'exercise_logs': exercise_logs_data})
+
+    return render_template('fitness/tracking/tracking.html')
