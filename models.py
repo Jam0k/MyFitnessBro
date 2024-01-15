@@ -127,19 +127,24 @@ class WorkoutPlanExercise(db.Model):
     workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id'), primary_key=True)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), primary_key=True)
 
-    # New ExerciseLog model for logging exercises
+
+
+
 class ExerciseLog(db.Model):
     __tablename__ = 'exercise_logs'
 
     id = db.Column(db.Integer, primary_key=True)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
+    workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id'))  # Added workout_plan_id
     log_date = db.Column(db.Date, nullable=False, default=db.func.current_date())
 
     exercise = db.relationship('Exercise', backref=db.backref('exercise_logs', lazy='dynamic'))
+    workout_plan = db.relationship('WorkoutPlan', backref=db.backref('exercise_logs', lazy='dynamic'))  # Added workout_plan relationship
 
     def to_dict(self):
         return {
             'id': self.id,
             'exercise_id': self.exercise_id,
+            'workout_plan_id': self.workout_plan_id,  # Include the workout_plan_id in the to_dict method
             'log_date': self.log_date,
         }
