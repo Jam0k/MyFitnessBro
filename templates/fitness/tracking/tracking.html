@@ -13,8 +13,16 @@
     <thead>
       <tr>
         <th>Exercise Name</th>
+        <th>Category</th>
+        <th>Duration (Minutes)</th>
+        <th>Calories Burned</th>
+        <th>Reps</th>
+        <th>Sets</th>
+        <th>Weight Lifted</th>
+        <th>Notes</th>
       </tr>
     </thead>
+    
     <tbody>
       <!-- Table rows for exercise logs will be generated here dynamically -->
     </tbody>
@@ -38,29 +46,23 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('dateFilter');
-    const exerciseLogsDiv = document.getElementById('exercise-logs');
-    const exerciseLogsTable = document.getElementById('exercise-logs-table');
-    const workoutPlanLogsDiv = document.getElementById('workout-plan-logs');
-    const workoutPlanLogsTable = document.getElementById('workout-plan-logs-table');
-
-    let exerciseDataTable; // Declare the exerciseDataTable variable
-    let workoutPlanDataTable; // Declare the workoutPlanDataTable variable
-
-    function initializeDataTables() {
-      exerciseDataTable = $(exerciseLogsTable).DataTable({
-        columns: [
-          { data: 'exercise.name' },
-        ]
-      });
-
-      workoutPlanDataTable = $(workoutPlanLogsTable).DataTable({
-        columns: [
-          { data: 'workout_plan.name' },
-        ]
-      });
-    }
-
-    initializeDataTables(); // Initialize the DataTables on page load
+    const exerciseLogsTable = $('#exercise-logs-table').DataTable({
+  columns: [
+    { data: 'exercise.name' },
+    { data: 'exercise.category' },
+    { data: 'exercise.duration_minutes' },
+    { data: 'exercise.calories_burned' },
+    { data: 'exercise.reps' },
+    { data: 'exercise.sets' },
+    { data: 'exercise.weight_lifted' },
+    { data: 'exercise.notes' },
+  ]
+});
+    const workoutPlanLogsTable = $('#workout-plan-logs-table').DataTable({
+      columns: [
+        { data: 'workout_plan.name' },
+      ]
+    });
 
     function fetchLogs(date) {
       fetch('/fitness/tracking', {
@@ -76,17 +78,17 @@
           const workoutPlanLogs = data.workout_plan_logs;
 
           // Clear existing table data
-          exerciseDataTable.clear().draw();
-          workoutPlanDataTable.clear().draw();
+          exerciseLogsTable.clear().draw();
+          workoutPlanLogsTable.clear().draw();
 
           if (exerciseLogs.length > 0) {
             // Add exercise log data to the table
-            exerciseDataTable.rows.add(exerciseLogs).draw();
+            exerciseLogsTable.rows.add(exerciseLogs).draw();
           }
 
           if (workoutPlanLogs.length > 0) {
             // Add workout plan log data to the table
-            workoutPlanDataTable.rows.add(workoutPlanLogs).draw();
+            workoutPlanLogsTable.rows.add(workoutPlanLogs).draw();
           }
         });
     }

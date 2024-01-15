@@ -338,7 +338,14 @@ def tracking():
         exercise_logs_data = [
             {
                 'exercise': {
-                    'name': log.exercise.name if log.exercise else None
+                    'name': log.exercise.name if log.exercise else None,
+                    'category': log.exercise.category if log.exercise else None,
+                    'duration_minutes': log.exercise.duration_minutes if log.exercise else None,
+                    'sets': log.exercise.sets if log.exercise else None,
+                    'reps': log.exercise.reps if log.exercise else None,
+                    'weight_lifted': str(log.exercise.weight_lifted) if log.exercise else None,
+                    'calories_burned': log.exercise.calories_burned if log.exercise else None,
+                    'notes': log.exercise.notes if log.exercise else None,
                 }
             }
             for log in exercise_logs
@@ -356,3 +363,4 @@ def tracking():
         return jsonify({'exercise_logs': exercise_logs_data, 'workout_plan_logs': workout_plan_logs_data, 'current_date': current_date})
 
     return render_template('fitness/tracking/tracking.html', current_date=current_date)
+
