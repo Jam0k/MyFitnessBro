@@ -12,9 +12,15 @@
         <tr>
           <th>Name</th>
           <th>Category</th>
+          <th>Duration (min)</th>
+          <th>Sets</th>
+          <th>Reps</th>
+          <th>Weight Lifted</th>
+          <th>Calories Burned</th>
+          <th>Notes</th>
           <th>Select</th>
         </tr>
-      </thead>
+      </thead>      
       <tbody>
         <!-- Exercise data will be loaded here -->
       </tbody>
@@ -27,19 +33,26 @@
 $(document).ready(function() {
   // DataTable initialization
   var exerciseTable = $('#exerciseTable').DataTable({
-    ajax: '/fitness/exercises-and-workouts/get-exercises', // Adjust the URL
-    columns: [
-      { data: 'name' },
-      { data: 'category' },
-      {
-        data: 'id',
-        render: function(data, type, row) {
-          return '<input type="checkbox" class="exercise-select" value="' + data + '">';
-        },
-        orderable: false
-      }
-    ]
-  });
+  ajax: '/fitness/exercises-and-workouts/get-exercises', // Adjust the URL
+  columns: [
+    { data: 'name' },
+    { data: 'category' },
+    { data: 'duration_minutes' },
+    { data: 'sets' },
+    { data: 'reps' },
+    { data: 'weight_lifted' },
+    { data: 'calories_burned' },
+    { data: 'notes' },
+    {
+      data: 'id',
+      render: function(data, type, row) {
+        return '<input type="checkbox" class="exercise-select" value="' + data + '">';
+      },
+      orderable: false
+    }
+  ]
+});
+
 
   // Form submission handling
   $('#logExerciseForm').submit(function(e) {

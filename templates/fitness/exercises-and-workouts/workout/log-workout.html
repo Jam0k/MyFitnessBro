@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Log Workout</h1>
+  <form id="logWorkoutForm">
+    <div class="mb-3">
+      <label for="workoutDate" class="form-label">Date</label>
+      <input type="date" class="form-control" id="workoutDate" value="{{ today_date }}">
+    </div>
+    <div class="table-responsive">
+      <table id="workoutTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Select</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Workout data will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+    <button type="submit" class="btn btn-primary">Log Workout</button>
+  </form>
+</div>
+
+<script>
+$(document).ready(function() {
+  // DataTable initialization for workout plans
+  $('#workoutTable').DataTable({
+    responsive: true,
+    ajax: '/fitness/exercises-and-workouts/get-workout-plans', // URL to your API endpoint
+    columns: [
+      { data: 'name' },
+      {
+        data: 'id',
+        render: function(data, type, row) {
+          return '<input type="checkbox" class="workout-select" value="' + data + '">';
+        },
+        orderable: false
+      }
+    ]
+  });
+
+  // Form submission handling
+  $('#logWorkoutForm').submit(function(e) {
+    e.preventDefault();
+
+    // Get selected workout IDs
+    var selectedWorkoutIds = $('.workout-select:checked').map(function() {
+      return $(this).val();
+    }).get();
+
+    // Get the selected date
+    var logDate = $('#workoutDate').val();
+
+    // Prepare the data to be submitted
+    var logData = {
+      date: logDate,
+      workout_ids: selectedWorkoutIds
+    };
+
+    // Submit the log data to your Flask route
+    $.ajax({
+      url: '/fitness/exercises-and-workouts/log-workout',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(logData),
+      success: function(response) {
+        alert('Workout(s) logged successfully');
+      },
+      error: function(xhr, status, error) {
+        alert('Error logging workout(s): ' + status);
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}

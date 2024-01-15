@@ -277,20 +277,19 @@ def logExercise():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Define routes within the fitness blueprint
 @fitness_blueprint.route('/exercises-and-workouts/log-workout')
 def logWorkout():
-    return render_template('fitness/exercises-and-workouts/exercise/log-workout.html')
+    return render_template('fitness/exercises-and-workouts/workout/log-workout.html')
+
+@fitness_blueprint.route('/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>', methods=['POST'])
+def updateWorkoutPlan(workout_plan_id):
+    data = request.get_json()
+    workout_plan = WorkoutPlan.query.get(workout_plan_id)
+    if workout_plan:
+        workout_plan.name = data.get('name', workout_plan.name)
+        # Handle any other updatable fields here
+
+        db.session.commit()
+        return jsonify({'message': 'Workout plan updated successfully'})
+    return jsonify({'error': 'Workout plan not found'}), 404
