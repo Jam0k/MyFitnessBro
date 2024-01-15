@@ -319,6 +319,8 @@ def updateWorkoutPlan(workout_plan_id):
 
 @fitness_blueprint.route('/tracking', methods=['GET', 'POST'])
 def tracking():
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
     if request.method == 'POST':
         selected_date_str = request.form.get('date')
         selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d') if selected_date_str else None
@@ -337,6 +339,6 @@ def tracking():
             for log in exercise_logs
         ]
 
-        return jsonify({'exercise_logs': exercise_logs_data})
+        return jsonify({'exercise_logs': exercise_logs_data, 'current_date': current_date})
 
-    return render_template('fitness/tracking/tracking.html')
+    return render_template('fitness/tracking/tracking.html', current_date=current_date)

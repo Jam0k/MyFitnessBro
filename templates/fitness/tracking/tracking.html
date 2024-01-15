@@ -1,52 +1,77 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <h1>Exercise Logs</h1>
 
-<form id="date-form">
-  <label for="date">Select a Date:</label>
-  <input type="date" id="date" name="date">
-  <button type="button" id="submit-button">Submit</button>
-</form>
+<div class="form-group">
+  <label for="dateFilter">Select a Date:</label>
+  <input type="date" class="form-control" id="dateFilter" name="dateFilter" value="{{ current_date }}">
+</div>
 
 <div id="exercise-logs">
-  <!-- Data will be displayed here -->
+  <table id="exercise-logs-table" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Exercise ID</th>
+        <th>Workout Plan ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows will be generated here dynamically -->
+    </tbody>
+  </table>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('date-form');
-    const submitButton = document.getElementById('submit-button');
+    const dateInput = document.getElementById('dateFilter');
     const exerciseLogsDiv = document.getElementById('exercise-logs');
+    const exerciseLogsTable = document.getElementById('exercise-logs-table');
 
-    submitButton.addEventListener('click', function () {
-      const selectedDate = document.getElementById('date').value;
+    let dataTable; // Declare the dataTable variable
 
-      fetch('/fitness/tracking', {
-        method: 'POST',
-        body: new URLSearchParams({ date: selectedDate }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const exerciseLogs = data.exercise_logs;
+    function initializeDataTable() {
+      dataTable = $(exerciseLogsTable).DataTable({
+        columns: [
+          { data: 'exercise_id' },
+          { data: 'workout_plan_id' }
+        ]
+      }); // Initialize DataTables with column definitions
+    }
 
-          if (exerciseLogs.length > 0) {
-            let html = '<table><thead><tr><th>Exercise ID</th><th>Workout Plan ID</th></tr></thead><tbody>';
+    initializeDataTable(); // Initialize the DataTable on page load
 
-            exerciseLogs.forEach((log) => {
-              html += `<tr><td>${log.exercise_id}</td><td>${log.workout_plan_id}</td></tr>`;
-            });
+    function fetchExerciseLogs(date) {
+  fetch('/fitness/tracking', {
+    method: 'POST',
+    body: new URLSearchParams({ date: date }),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      const exerciseLogs = data.exercise_logs;
 
-            html += '</tbody></table>';
-            exerciseLogsDiv.innerHTML = html;
-          } else {
-            exerciseLogsDiv.innerHTML = '<p>No exercise logs found for the selected date.</p>';
-          }
-        });
+      // Clear existing table data
+      dataTable.clear().draw();
+
+      if (exerciseLogs.length > 0) {
+        // Add exercise log data to the table
+        dataTable.rows.add(exerciseLogs).draw();
+      }
     });
+}
+
+
+    dateInput.addEventListener('input', function () {
+      const selectedDate = dateInput.value;
+      fetchExerciseLogs(selectedDate);
+    });
+
+    // Initial fetch with today's date
+    const current_date = '{{ current_date }}';
+    dateInput.value = current_date;
+    fetchExerciseLogs(current_date);
   });
 </script>
 {% endblock %}
