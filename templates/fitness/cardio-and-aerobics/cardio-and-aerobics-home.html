@@ -1,43 +1,79 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
-    <h1>Cardio & Aerobics</h1>
-    <p>Effortlessly manage your cardio and aerobic exercises to stay fit and healthy.</p>
-
-    <div class="row">
-        <!-- Log Exercise Section -->
-        <section class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-clipboard-list"></i> Log Exercise</h5>
-                    <p class="card-text">Track your cardio and aerobic exercises here.</p>
-                    <a href="cardio-and-aerobics/log-cardio" class="btn btn-success">Log Exercise</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Create Exercise Section -->
-        <section class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-plus-circle"></i> Create Exercise</h5>
-                    <p class="card-text">Add new cardio and aerobic exercises to your collection.</p>
-                    <a href="cardio-and-aerobics/create-cardio" class="btn btn-success">Create Exercise</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Browse Exercise Section -->
-        <section class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-search"></i> Browse Exercise</h5>
-                    <p class="card-text">Explore a variety of cardio and aerobic exercises.</p>
-                    <a href="cardio-and-aerobics/browse-cardio" class="btn btn-success">Browse Exercise</a>
-                </div>
-            </div>
-        </section>
+  <h1>Log Cardio and Aerobics</h1>
+  <form id="logCardioForm">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" class="form-control" id="name" name="name" required />
     </div>
+    <div class="form-group">
+      <label for="activity">Activity:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="activity"
+        name="activity"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="duration">Duration (minutes):</label>
+      <input
+        type="number"
+        class="form-control"
+        id="duration"
+        name="duration"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input type="date" class="form-control" id="date" name="date" required />
+    </div>
+    <div class="form-group">
+      <label for="notes">Notes:</label>
+      <textarea
+        class="form-control"
+        id="notes"
+        name="notes"
+        rows="3"
+      ></textarea>
+    </div>
+    <button type="button" class="btn btn-primary" id="submitForm">
+      Submit
+    </button>
+  </form>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Pre-fill the date input with today's date
+    document.getElementById("date").valueAsDate = new Date();
+
+    // Handle form submission
+    document
+      .getElementById("submitForm")
+      .addEventListener("click", function () {
+        var formData = new FormData(document.getElementById("logCardioForm"));
+
+        fetch("/fitness/cardio-and-aerobics/submit-cardio-log", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Handle successful submission here, like redirecting to a different page or showing a success message
+              window.location.href = "/fitness/cardio-and-aerobics"; // Redirect to cardio and aerobics page
+            } else {
+              // Handle errors here
+              alert("Error submitting form.");
+            }
+          })
+          .catch((error) => {
+            // Handle network errors here
+            console.error("Error:", error);
+          });
+      });
+  });
+</script>
 {% endblock %}

@@ -69,3 +69,12 @@ CREATE TABLE exercise_logs (
     workout_plan_id INTEGER REFERENCES workout_plans(id),  -- Added field for workout plan
     log_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
+
+CREATE TABLE CardioLog (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    activity VARCHAR(255) NOT NULL,
+    duration INT NOT NULL,
+    date DATE NOT NULL,
+    notes TEXT -- TEXT type for potentially longer notes
+);

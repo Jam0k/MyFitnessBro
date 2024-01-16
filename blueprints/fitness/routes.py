@@ -8,7 +8,7 @@ from flask import (
     url_for,
     jsonify,
 )
-from models import Exercise, ExerciseLog, WorkoutPlan, db
+from models import Exercise, ExerciseLog, WorkoutPlan, CardioLog, db
 from decimal import Decimal
 from datetime import date, datetime
 
@@ -480,17 +480,27 @@ def tracking():
 def cardioAndAerobics():
     return render_template("fitness/cardio-and-aerobics/cardio-and-aerobics-home.html")
 
-# Cardio Routes
-@fitness_blueprint.route("/cardio-and-aerobics/log-cardio")
-def logCardio():
-    return render_template("fitness/cardio-and-aerobics/log-cardio.html")
+@fitness_blueprint.route("/cardio-and-aerobics/submit-cardio-log", methods=['POST'])
+def submit_cardio_log():
+    # Retrieve form data
+    name = request.form.get('name')
+    activity = request.form.get('activity')
+    duration = request.form.get('duration', type=int)
+    date = request.form.get('date')
+    notes = request.form.get('notes')
 
-# Cardio Routes
-@fitness_blueprint.route("/cardio-and-aerobics/browse-cardio")
-def browseCardio():
-    return render_template("fitness/cardio-and-aerobics/browse-cardio.html")
+    # Create a new CardioLog object
+    cardio_log = CardioLog(
+        name=name,
+        activity=activity,
+        duration=duration,
+        date=datetime.strptime(date, '%Y-%m-%d').date() if date else None,
+        notes=notes
+    )
 
-# Cardio Routes
-@fitness_blueprint.route("/cardio-and-aerobics/create-cardio")
-def createCardio():
-    return render_template("fitness/cardio-and-aerobics/create-cardio.html")
+    # Add the cardio log to the database
+    db.session.add(cardio_log)
+    db.session.commit()
+
+    # Redirect to a suitable page after submission
+    return redirect(url_for('fitness.cardioAndAerobics'))

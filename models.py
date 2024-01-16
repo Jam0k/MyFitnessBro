@@ -148,3 +148,25 @@ class ExerciseLog(db.Model):
             'workout_plan_id': self.workout_plan_id,  # Include the workout_plan_id in the to_dict method
             'log_date': self.log_date,
         }
+
+
+class CardioLog(db.Model):
+    __tablename__ = 'cardiolog'
+    
+    id = db.Column(db.Integer, primary_key=True)  # SERIAL in PostgreSQL is represented as Integer in SQLAlchemy
+    name = db.Column(db.String(255), nullable=False)
+    activity = db.Column(db.String(255), nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    notes = db.Column(db.Text)  # TEXT type for potentially longer notes
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'activity': self.activity,
+            'duration': self.duration,
+            'date': self.date.isoformat(),
+            'notes': self.notes
+        }
+
