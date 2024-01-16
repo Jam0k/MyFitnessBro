@@ -503,7 +503,7 @@ def tracking():
         selected_start_date = datetime.now().date()
         selected_end_date = datetime.now().date()
 
-    meal_type_order = ["breakfast", "lunch", "dinner", "snacks"]
+    meal_type_order = ["breakfast", "lunch", "dinner", "snack"]
     meal_type_data = {mt: {"meals": [], "foods": []} for mt in meal_type_order}
     grand_total = {
         "calories": 0,
