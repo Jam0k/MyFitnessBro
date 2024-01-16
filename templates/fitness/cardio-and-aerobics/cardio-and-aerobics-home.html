@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Cardio & Aerobics</h1>
+    <p>Effortlessly manage your cardio and aerobic exercises to stay fit and healthy.</p>
+
+    <div class="row">
+        <!-- Log Exercise Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-clipboard-list"></i> Log Exercise</h5>
+                    <p class="card-text">Track your cardio and aerobic exercises here.</p>
+                    <a href="cardio-aerobics/log-exercise" class="btn btn-success">Log Exercise</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Exercise Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-plus-circle"></i> Create Exercise</h5>
+                    <p class="card-text">Add new cardio and aerobic exercises to your collection.</p>
+                    <a href="cardio-aerobics/create-exercise" class="btn btn-success">Create Exercise</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browse Exercise Section -->
+        <section class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-search"></i> Browse Exercise</h5>
+                    <p class="card-text">Explore a variety of cardio and aerobic exercises.</p>
+                    <a href="cardio-aerobics/browse-exercise" class="btn btn-success">Browse Exercise</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

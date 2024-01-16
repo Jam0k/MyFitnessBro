@@ -1,38 +1,50 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, jsonify
-from models import Exercise, ExerciseLog, WorkoutPlan, FoodItem, Meal, MealFoodItem, FoodMealLog, db
-import json
+# Import necessary modules
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    jsonify,
+)
+from models import Exercise, ExerciseLog, WorkoutPlan, db
 from decimal import Decimal
 from datetime import date, datetime
-from collections import defaultdict
 
 # Create a blueprint for the fitness routes
-fitness_blueprint = Blueprint('fitness', __name__, url_prefix='/fitness')
+fitness_blueprint = Blueprint("fitness", __name__, url_prefix="/fitness")
 
-# Define routes within the fitness blueprint
-@fitness_blueprint.route('/')
+# Fitness Home
+@fitness_blueprint.route("/")
 def fitness_home():
-    return render_template('fitness/fitness-home.html')
+    return render_template("fitness/fitness-home.html")
 
-# Define routes within the fitness blueprint
-@fitness_blueprint.route('/exercises-and-workouts')
+
+# Exercise and Workouts Routes
+@fitness_blueprint.route("/exercises-and-workouts")
 def exercisesAndWorkoutsHome():
-    return render_template('fitness/exercises-and-workouts/exercises-and-workouts-home.html')
+    return render_template(
+        "fitness/exercises-and-workouts/exercises-and-workouts-home.html"
+    )
 
-# Define a route within the fitness blueprint to handle exercise creation
-@fitness_blueprint.route('/exercises-and-workouts/create-exercise', methods=['GET', 'POST'])
+# Define a route to create a new exercise
+@fitness_blueprint.route(
+    "/exercises-and-workouts/create-exercise", methods=["GET", "POST"]
+)
 def create_exercise():
-    if request.method == 'POST':
-        # Extract data from the form
-        name = request.form['name']
-        category = request.form['category']
-        duration_minutes = request.form.get('duration', type=int)
-        sets = request.form.get('sets', type=int)
-        reps = request.form.get('reps', type=int)
-        weight_lifted = request.form.get('weight_lifted', type=Decimal)
-        calories_burned = request.form.get('calories_burned', type=int)
-        notes = request.form['notes']
+    if request.method == "POST":
+        # Retrieve form data
+        name = request.form["name"]
+        category = request.form["category"]
+        duration_minutes = request.form.get("duration", type=int)
+        sets = request.form.get("sets", type=int)
+        reps = request.form.get("reps", type=int)
+        weight_lifted = request.form.get("weight_lifted", type=Decimal)
+        calories_burned = request.form.get("calories_burned", type=int)
+        notes = request.form["notes"]
 
-        # Create a new exercise object and save it to the database
+        # Create a new Exercise object
         exercise = Exercise(
             name=name,
             category=category,
@@ -43,136 +55,174 @@ def create_exercise():
             calories_burned=calories_burned,
             notes=notes,
         )
+
+        # Add the exercise to the database
         db.session.add(exercise)
         db.session.commit()
 
-        return redirect(url_for('fitness.exercisesAndWorkoutsHome'))
+        # Redirect to the exercises and workouts home page
+        return redirect(url_for("fitness.exercisesAndWorkoutsHome"))
 
-    return render_template('fitness/exercises-and-workouts/exercise/create-exercise.html')
+    # Render the create exercise template for GET request
+    return render_template(
+        "fitness/exercises-and-workouts/exercise/create-exercise.html"
+    )
 
 
 # Define a route to get exercise data in JSON format
-@fitness_blueprint.route('/exercises-and-workouts/get-exercises')
+@fitness_blueprint.route("/exercises-and-workouts/get-exercises")
 def get_exercises():
+    """
+    Retrieves a list of exercises from the Exercise table and returns them as JSON.
+
+    Returns:
+        JSON: A JSON response containing the exercise data.
+    """
+    # Retrieve all exercises from the Exercise table
     exercises = Exercise.query.all()
 
-    # Convert exercises to a list of dictionaries
+    # Create a list of exercise data dictionaries
     exercise_data = [
         {
-            'id': exercise.id,  # Include the ID field
-            'name': exercise.name,
-            'category': exercise.category,
-            'duration_minutes': exercise.duration_minutes,
-            'sets': exercise.sets,
-            'reps': exercise.reps,
-            'weight_lifted': str(exercise.weight_lifted),
-            'calories_burned': exercise.calories_burned,
-            'notes': exercise.notes,  # Include the notes field
-            'created_at': exercise.created_at.isoformat(),  # Include the created_at field
-            'updated_at': exercise.updated_at.isoformat(),  # Include the updated_at field
+            "id": exercise.id,
+            "name": exercise.name,
+            "category": exercise.category,
+            "duration_minutes": exercise.duration_minutes,
+            "sets": exercise.sets,
+            "reps": exercise.reps,
+            "weight_lifted": str(exercise.weight_lifted),
+            "calories_burned": exercise.calories_burned,
+            "notes": exercise.notes,
+            "created_at": exercise.created_at.isoformat(),
+            "updated_at": exercise.updated_at.isoformat(),
         }
         for exercise in exercises
     ]
 
-    return jsonify({'data': exercise_data})
+    # Return the exercise data as JSON
+    return jsonify({"data": exercise_data})
 
-# Define routes within the fitness blueprint
-@fitness_blueprint.route('/exercises-and-workouts/browse-exercise')
+
+# Browse Exercise Page
+@fitness_blueprint.route("/exercises-and-workouts/browse-exercise")
 def browseExercise():
-    return render_template('fitness/exercises-and-workouts/exercise/browse-exercise.html')
+    return render_template(
+        "fitness/exercises-and-workouts/exercise/browse-exercise.html"
+    )
 
 
-@fitness_blueprint.route('/exercises-and-workouts/create-workout-plan', methods=['GET', 'POST'])
+@fitness_blueprint.route(
+    "/exercises-and-workouts/create-workout-plan", methods=["GET", "POST"]
+)
 def create_workout_plan():
-    if request.method == 'POST':
+    if request.method == "POST":
         # Parsing JSON data for POST request
         data = request.get_json()
-        workout_name = data['workout_name']
-        selected_exercises_ids = data['selected_exercises']
-        selected_exercises = Exercise.query.filter(Exercise.id.in_(selected_exercises_ids)).all()
+        workout_name = data["workout_name"]
+        selected_exercises_ids = data["selected_exercises"]
+        selected_exercises = Exercise.query.filter(
+            Exercise.id.in_(selected_exercises_ids)
+        ).all()
 
         if selected_exercises:
             workout_plan = WorkoutPlan(name=workout_name, exercises=selected_exercises)
             db.session.add(workout_plan)
             db.session.commit()
 
-        return redirect(url_for('fitness.exercisesAndWorkoutsHome'))
+        return redirect(url_for("fitness.exercisesAndWorkoutsHome"))
 
     # Handling GET request to render the page initially
     exercises = Exercise.query.all()
-    return render_template('fitness/exercises-and-workouts/workout/create-workout-plan.html', exercises=exercises)
+    return render_template(
+        "fitness/exercises-and-workouts/workout/create-workout-plan.html",
+        exercises=exercises,
+    )
 
 
-# Define routes within the fitness blueprint
-@fitness_blueprint.route('/exercises-and-workouts/browse-workout-plans')
+# Browse Workout Page
+@fitness_blueprint.route("/exercises-and-workouts/browse-workout-plans")
 def browseWorkout():
-    return render_template('fitness/exercises-and-workouts/workout/browse-workout-plan.html')
+    return render_template(
+        "fitness/exercises-and-workouts/workout/browse-workout-plan.html"
+    )
 
-
-@fitness_blueprint.route('/exercises-and-workouts/get-workout-plans')
+# Get workout plans
+@fitness_blueprint.route("/exercises-and-workouts/get-workout-plans")
 def get_workout_plans():
+    # Retrieve all workout plans from the database
     workout_plans = WorkoutPlan.query.all()
 
+    # Prepare workout plan data in JSON format
     workout_plan_data = [
         {
-            'id': workout_plan.id,
-            'name': workout_plan.name,
-            'created_at': workout_plan.created_at.isoformat(),
-            'exercises': [
+            "id": workout_plan.id,
+            "name": workout_plan.name,
+            "created_at": workout_plan.created_at.isoformat(),
+            "exercises": [
                 {
-                    'id': exercise.id,
-                    'name': exercise.name,
-                    'category': exercise.category,
-                    'duration_minutes': exercise.duration_minutes,
-                    'sets': exercise.sets,
-                    'reps': exercise.reps,
-                    'weight_lifted': str(exercise.weight_lifted),
-                    'calories_burned': exercise.calories_burned,
-                    'notes': exercise.notes
+                    "id": exercise.id,
+                    "name": exercise.name,
+                    "category": exercise.category,
+                    "duration_minutes": exercise.duration_minutes,
+                    "sets": exercise.sets,
+                    "reps": exercise.reps,
+                    "weight_lifted": str(exercise.weight_lifted),
+                    "calories_burned": exercise.calories_burned,
+                    "notes": exercise.notes,
                 }
                 for exercise in workout_plan.exercises
-            ]
+            ],
         }
         for workout_plan in workout_plans
     ]
 
-    return jsonify({'data': workout_plan_data})
+    # Return the workout plan data as JSON response
+    return jsonify({"data": workout_plan_data})
 
 
-@fitness_blueprint.route('/exercises-and-workouts/get-workout-plan/<int:workout_plan_id>')
+# Retrieve a specific workout plan by ID
+@fitness_blueprint.route(
+    "/exercises-and-workouts/get-workout-plan/<int:workout_plan_id>"
+)
 def get_workout_plan(workout_plan_id):
     workout_plan = WorkoutPlan.query.get(workout_plan_id)
     if workout_plan:
+        # Prepare workout plan data in JSON format
         workout_plan_data = {
-            'id': workout_plan.id,
-            'name': workout_plan.name,
-            'created_at': workout_plan.created_at.isoformat(),
-            'exercises': [
-                exercise.to_dict() for exercise in workout_plan.exercises
-            ]
+            "id": workout_plan.id,
+            "name": workout_plan.name,
+            "created_at": workout_plan.created_at.isoformat(),
+            "exercises": [exercise.to_dict() for exercise in workout_plan.exercises],
         }
         return jsonify(workout_plan_data)
-    return jsonify({'error': 'Workout plan not found'}), 404
+    # Return error message if workout plan is not found
+    return jsonify({"error": "Workout plan not found"}), 404
 
 
-@fitness_blueprint.route('/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>', methods=['POST'])
+# Update Workout Plan
+@fitness_blueprint.route(
+    "/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>",
+    methods=["POST"],
+)
 def update_workout_plan(workout_plan_id):
     data = request.get_json()
     workout_plan = WorkoutPlan.query.get(workout_plan_id)
     if workout_plan:
-        workout_plan.name = data.get('name', workout_plan.name)
-        
+        workout_plan.name = data.get("name", workout_plan.name)
+
         # Update exercises list as needed
-        if 'exercises' in data:
-            updated_exercise_ids = set(map(int, data['exercises']))
-            current_exercise_ids = set(exercise.id for exercise in workout_plan.exercises)
-            
+        if "exercises" in data:
+            updated_exercise_ids = set(map(int, data["exercises"]))
+            current_exercise_ids = set(
+                exercise.id for exercise in workout_plan.exercises
+            )
+
             # Add new exercises to the workout plan
             for exercise_id in updated_exercise_ids - current_exercise_ids:
                 exercise = Exercise.query.get(exercise_id)
                 if exercise:
                     workout_plan.exercises.append(exercise)
-            
+
             # Remove exercises that are no longer in the updated list
             for exercise_id in current_exercise_ids - updated_exercise_ids:
                 exercise = Exercise.query.get(exercise_id)
@@ -180,84 +230,100 @@ def update_workout_plan(workout_plan_id):
                     workout_plan.exercises.remove(exercise)
 
         db.session.commit()
-        return jsonify({'message': 'Workout plan updated successfully'})
-    return jsonify({'error': 'Workout plan not found'}), 404
+        return jsonify({"message": "Workout plan updated successfully"})
+    return jsonify({"error": "Workout plan not found"}), 404
 
 
-
-@fitness_blueprint.route('/exercises-and-workouts/delete-workout-plan/<int:workout_plan_id>', methods=['DELETE'])
+# Delete Workout Plan
+@fitness_blueprint.route(
+    "/exercises-and-workouts/delete-workout-plan/<int:workout_plan_id>",
+    methods=["DELETE"],
+)
 def delete_workout_plan(workout_plan_id):
     workout_plan = WorkoutPlan.query.get(workout_plan_id)
     if workout_plan:
         db.session.delete(workout_plan)
         db.session.commit()
-        return jsonify({'message': 'Workout plan deleted successfully'})
-    return jsonify({'error': 'Workout plan not found'}), 404
+        return jsonify({"message": "Workout plan deleted successfully"})
+    return jsonify({"error": "Workout plan not found"}), 404
 
-
-@fitness_blueprint.route('/exercises-and-workouts/delete-exercise/<int:exercise_id>', methods=['DELETE'])
+# Delete Exercise
+@fitness_blueprint.route(
+    "/exercises-and-workouts/delete-exercise/<int:exercise_id>", methods=["DELETE"]
+)
 def delete_exercise(exercise_id):
     exercise = Exercise.query.get(exercise_id)
     if exercise:
         db.session.delete(exercise)
         db.session.commit()
-        return jsonify({'message': 'Exercise deleted successfully'})
-    return jsonify({'error': 'Exercise not found'}), 404
+        return jsonify({"message": "Exercise deleted successfully"})
+    return jsonify({"error": "Exercise not found"}), 404
 
-@fitness_blueprint.route('/exercises-and-workouts/get-exercise/<int:exercise_id>')
+# Get Exercise
+@fitness_blueprint.route("/exercises-and-workouts/get-exercise/<int:exercise_id>")
 def get_exercise(exercise_id):
     exercise = Exercise.query.get(exercise_id)
     if exercise:
         return jsonify(exercise.to_dict())
-    return jsonify({'error': 'Exercise not found'}), 404
+    return jsonify({"error": "Exercise not found"}), 404
 
-@fitness_blueprint.route('/exercises-and-workouts/update-exercise/<int:exercise_id>', methods=['POST'])
+# Update Exercise
+@fitness_blueprint.route(
+    "/exercises-and-workouts/update-exercise/<int:exercise_id>", methods=["POST"]
+)
 def update_exercise(exercise_id):
     data = request.get_json()
     exercise = Exercise.query.get(exercise_id)
     if exercise:
-        exercise.name = data.get('name', exercise.name)
-        exercise.category = data.get('category', exercise.category)
+        exercise.name = data.get("name", exercise.name)
+        exercise.category = data.get("category", exercise.category)
 
         # Handle integer fields with a utility function
-        exercise.duration_minutes = convert_to_int(data.get('duration_minutes'), default=exercise.duration_minutes)
-        exercise.sets = convert_to_int(data.get('sets'), default=exercise.sets)
-        exercise.reps = convert_to_int(data.get('reps'), default=exercise.reps)
-        exercise.calories_burned = convert_to_int(data.get('calories_burned'), default=exercise.calories_burned)
+        exercise.duration_minutes = convert_to_int(
+            data.get("duration_minutes"), default=exercise.duration_minutes
+        )
+        exercise.sets = convert_to_int(data.get("sets"), default=exercise.sets)
+        exercise.reps = convert_to_int(data.get("reps"), default=exercise.reps)
+        exercise.calories_burned = convert_to_int(
+            data.get("calories_burned"), default=exercise.calories_burned
+        )
 
         # For numeric/decimal fields
-        weight_lifted = data.get('weight_lifted')
-        exercise.weight_lifted = Decimal(weight_lifted) if weight_lifted else exercise.weight_lifted
+        weight_lifted = data.get("weight_lifted")
+        exercise.weight_lifted = (
+            Decimal(weight_lifted) if weight_lifted else exercise.weight_lifted
+        )
 
-        exercise.notes = data.get('notes', exercise.notes)
+        exercise.notes = data.get("notes", exercise.notes)
 
         db.session.commit()
-        return jsonify({'message': 'Exercise updated successfully'})
-    return jsonify({'error': 'Exercise not found'}), 404
+        return jsonify({"message": "Exercise updated successfully"})
+    return jsonify({"error": "Exercise not found"}), 404
+
 
 def convert_to_int(value, default=None):
     try:
-        return int(value) if value not in ['', None] else default
+        return int(value) if value not in ["", None] else default
     except ValueError:
         return default
 
-
-
-
-@fitness_blueprint.route('/exercises-and-workouts/log-exercise', methods=['GET', 'POST'])
+# Log Exercise
+@fitness_blueprint.route(
+    "/exercises-and-workouts/log-exercise", methods=["GET", "POST"]
+)
 def logExercise():
-    if request.method == 'POST':
+    if request.method == "POST":
         # Parse JSON data from the request
         data = request.get_json()
-        
-        if not data:
-            return jsonify({'error': 'Invalid JSON data'}), 400
 
-        exercise_ids = data.get('exercise_ids', [])
-        log_date = data.get('date')
+        if not data:
+            return jsonify({"error": "Invalid JSON data"}), 400
+
+        exercise_ids = data.get("exercise_ids", [])
+        log_date = data.get("date")
 
         if not exercise_ids or not log_date:
-            return jsonify({'error': 'Missing required data'}), 400
+            return jsonify({"error": "Missing required data"}), 400
 
         # Create ExerciseLog entries for the selected exercises and log date
         for exercise_id in exercise_ids:
@@ -265,7 +331,7 @@ def logExercise():
             db.session.add(exercise_log)
 
         db.session.commit()
-        return jsonify({'message': 'Exercise(s) logged successfully'}), 200
+        return jsonify({"message": "Exercise(s) logged successfully"}), 200
 
     # Fetch exercises from the database
     exercises = Exercise.query.all()
@@ -273,96 +339,143 @@ def logExercise():
     # Get today's date as a default date
     today_date = date.today().isoformat()
 
-    return render_template('fitness/exercises-and-workouts/exercise/log-exercise.html', exercises=exercises, today_date=today_date)
+    return render_template(
+        "fitness/exercises-and-workouts/exercise/log-exercise.html",
+        exercises=exercises,
+        today_date=today_date,
+    )
 
-
-@fitness_blueprint.route('/exercises-and-workouts/log-workout', methods=['GET', 'POST'])
+# Log Workout
+@fitness_blueprint.route("/exercises-and-workouts/log-workout", methods=["GET", "POST"])
 def logWorkout():
-    if request.method == 'POST':
+    if request.method == "POST":
+        # Parse JSON data from the request
         data = request.get_json()
 
         if not data:
-            return jsonify({'error': 'Invalid JSON data'}), 400
+            return jsonify({"error": "Invalid JSON data"}), 400
 
-        workout_plan_ids = data.get('workout_plan_ids')
-        log_date = data.get('date')
+        workout_plan_ids = data.get("workout_plan_ids")
+        log_date = data.get("date")
 
         if not workout_plan_ids or not log_date:
-            return jsonify({'error': 'Missing required data'}), 400
+            return jsonify({"error": "Missing required data"}), 400
 
+        # Create ExerciseLog entries for the selected workout plans and log date
         for workout_plan_id in workout_plan_ids:
-            exercise_log = ExerciseLog(workout_plan_id=workout_plan_id, log_date=log_date)
+            exercise_log = ExerciseLog(
+                workout_plan_id=workout_plan_id, log_date=log_date
+            )
             db.session.add(exercise_log)
         db.session.commit()
 
-        return jsonify({'message': 'Workout(s) logged successfully'}), 200
+        return jsonify({"message": "Workout(s) logged successfully"}), 200
 
+    # Fetch workout plans from the database
     workout_plans = WorkoutPlan.query.all()
+
+    # Get today's date as a default date
     today_date = date.today().isoformat()
 
-    return render_template('fitness/exercises-and-workouts/workout/log-workout.html', workout_plans=workout_plans, today_date=today_date)
+    return render_template(
+        "fitness/exercises-and-workouts/workout/log-workout.html",
+        workout_plans=workout_plans,
+        today_date=today_date,
+    )
 
-
-
-@fitness_blueprint.route('/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>', methods=['POST'])
+# Update Workout Plan
+@fitness_blueprint.route(
+    "/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>",
+    methods=["POST"],
+)
 def updateWorkoutPlan(workout_plan_id):
+    # Parse JSON data from the request
     data = request.get_json()
+
+    # Retrieve the workout plan from the database
     workout_plan = WorkoutPlan.query.get(workout_plan_id)
+
     if workout_plan:
-        workout_plan.name = data.get('name', workout_plan.name)
+        # Update the workout plan with the provided data
+        workout_plan.name = data.get("name", workout_plan.name)
         # Handle any other updatable fields here
 
         db.session.commit()
-        return jsonify({'message': 'Workout plan updated successfully'})
-    return jsonify({'error': 'Workout plan not found'}), 404
+        return jsonify({"message": "Workout plan updated successfully"})
+    return jsonify({"error": "Workout plan not found"}), 404
 
-
-@fitness_blueprint.route('/tracking', methods=['GET', 'POST'])
+# Tracking Routes
+@fitness_blueprint.route("/tracking", methods=["GET", "POST"])
 def tracking():
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    current_date = datetime.now().strftime("%Y-%m-%d")
 
-    if request.method == 'POST':
-        selected_date_str = request.form.get('date')
-        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d') if selected_date_str else None
+    if request.method == "POST":
+        selected_date_str = request.form.get("date")
+        selected_date = (
+            datetime.strptime(selected_date_str, "%Y-%m-%d")
+            if selected_date_str
+            else None
+        )
 
         exercise_logs = []
         workout_plan_logs = []
 
         if selected_date:
-            # Query exercise logs
-            exercise_logs = ExerciseLog.query.filter(ExerciseLog.log_date == selected_date, ExerciseLog.exercise_id.isnot(None)).all()
+            # Query exercise logs for the selected date
+            exercise_logs = ExerciseLog.query.filter(
+                ExerciseLog.log_date == selected_date,
+                ExerciseLog.exercise_id.isnot(None),
+            ).all()
 
-            # Query workout plan logs
-            workout_plan_logs = ExerciseLog.query.filter(ExerciseLog.log_date == selected_date, ExerciseLog.workout_plan_id.isnot(None)).all()
+            # Query workout plan logs for the selected date
+            workout_plan_logs = ExerciseLog.query.filter(
+                ExerciseLog.log_date == selected_date,
+                ExerciseLog.workout_plan_id.isnot(None),
+            ).all()
 
         exercise_logs_data = [
             {
-                'exercise': {
-                    'name': log.exercise.name if log.exercise else None,
-                    'category': log.exercise.category if log.exercise else None,
-                    'duration_minutes': log.exercise.duration_minutes if log.exercise else None,
-                    'sets': log.exercise.sets if log.exercise else None,
-                    'reps': log.exercise.reps if log.exercise else None,
-                    'weight_lifted': str(log.exercise.weight_lifted) if log.exercise else None,
-                    'calories_burned': log.exercise.calories_burned if log.exercise else None,
-                    'notes': log.exercise.notes if log.exercise else None,
+                "exercise": {
+                    "name": log.exercise.name if log.exercise else None,
+                    "category": log.exercise.category if log.exercise else None,
+                    "duration_minutes": log.exercise.duration_minutes
+                    if log.exercise
+                    else None,
+                    "sets": log.exercise.sets if log.exercise else None,
+                    "reps": log.exercise.reps if log.exercise else None,
+                    "weight_lifted": str(log.exercise.weight_lifted)
+                    if log.exercise
+                    else None,
+                    "calories_burned": log.exercise.calories_burned
+                    if log.exercise
+                    else None,
+                    "notes": log.exercise.notes if log.exercise else None,
                 }
             }
             for log in exercise_logs
         ]
 
         workout_plan_logs_data = [
-    {
-        'workout_plan': {
-            'id': log.workout_plan.id,  # Include the ID here
-            'name': log.workout_plan.name if log.workout_plan else None
-        }
-    }
-    for log in workout_plan_logs
-]
+            {
+                "workout_plan": {
+                    "id": log.workout_plan.id,  # Include the ID here
+                    "name": log.workout_plan.name if log.workout_plan else None,
+                }
+            }
+            for log in workout_plan_logs
+        ]
 
+        return jsonify(
+            {
+                "exercise_logs": exercise_logs_data,
+                "workout_plan_logs": workout_plan_logs_data,
+                "current_date": current_date,
+            }
+        )
 
-        return jsonify({'exercise_logs': exercise_logs_data, 'workout_plan_logs': workout_plan_logs_data, 'current_date': current_date})
+    return render_template("fitness/tracking/tracking.html", current_date=current_date)
 
-    return render_template('fitness/tracking/tracking.html', current_date=current_date)
-
+# Cardio Routes
+@fitness_blueprint.route("/cardio-and-aerobics")
+def cardioAndAerobics():
+    return render_template("fitness/cardio-and-aerobics/cardio-and-aerobics-home.html")
