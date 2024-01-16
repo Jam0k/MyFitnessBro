@@ -7,7 +7,7 @@ from flask import (
     url_for,
     jsonify,
 )
-from models import FoodItem, Meal, MealFoodItem, FoodMealLog, db
+from models import FoodItem, Meal, MealFoodItem, FoodMealLog, Goal, db
 from decimal import Decimal
 from datetime import datetime
 from collections import defaultdict
@@ -624,3 +624,42 @@ def delete_entry(id):
 
     # Redirect back to the tracking page or any other appropriate page
     return redirect(url_for("nutrition.tracking"))
+
+
+
+
+
+
+
+
+# Goals (Combined route for rendering the form and saving goals)
+@nutrition_blueprint.route("/goals", methods=['GET', 'POST'])
+def goals():
+    existing_goal = Goal.query.first()  # Get the first (and presumably only) goal entry
+
+    if request.method == 'POST':
+        # Handle form submission
+        calories = int(request.form['calories'])
+        fat = float(request.form['fat'])
+        carbohydrates = float(request.form['carbohydrates'])
+        sugars = float(request.form['sugars'])
+        protein = float(request.form['protein'])
+
+        if existing_goal:
+            # Update the existing goal if it exists
+            existing_goal.calories = calories
+            existing_goal.fat = fat
+            existing_goal.carbohydrates = carbohydrates
+            existing_goal.sugars = sugars
+            existing_goal.protein = protein
+        else:
+            # Create a new Goal object and save it to the database
+            new_goal = Goal(calories=calories, fat=fat, carbohydrates=carbohydrates, sugars=sugars, protein=protein)
+            db.session.add(new_goal)
+
+        db.session.commit()
+
+        return jsonify({'message': 'Goals saved successfully'})
+    else:
+        # Render the form and pass the existing goal data to the template
+        return render_template("nutrition/goals/goals.html", existing_goal=existing_goal)

@@ -79,3 +79,12 @@ CREATE TABLE CardioLog (
     date DATE NOT NULL,
     notes TEXT -- TEXT type for potentially longer notes
 );
+
+CREATE TABLE goals (
+    id SERIAL PRIMARY KEY,
+    calories INT NOT NULL,
+    fat DECIMAL(8, 2) NOT NULL, -- Using DECIMAL for decimal values
+    carbohydrates DECIMAL(8, 2) NOT NULL,
+    sugars DECIMAL(8, 2) NOT NULL,
+    protein DECIMAL(8, 2) NOT NULL
+);

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Daily Nutrition Goals</h2>
+    <form id="goalsForm">
+        <div class="form-group">
+            <label for="calories">Calories</label>
+            <input type="number" class="form-control" id="calories" name="calories" placeholder="Enter daily calorie goal" required value="{{ existing_goal.calories }}">
+        </div>
+        <div class="form-group">
+            <label for="fat">Fat (grams)</label>
+            <input type="number" class="form-control" id="fat" name="fat" placeholder="Enter daily fat goal" required value="{{ existing_goal.fat }}">
+        </div>
+        <div class="form-group">
+            <label for="carbohydrates">Carbohydrates (grams)</label>
+            <input type="number" class="form-control" id="carbohydrates" name="carbohydrates" placeholder="Enter daily carbohydrate goal" required value="{{ existing_goal.carbohydrates }}">
+        </div>
+        <div class="form-group">
+            <label for="sugars">Sugars (grams)</label>
+            <input type="number" class="form-control" id="sugars" name="sugars" placeholder="Enter daily sugar goal" required value="{{ existing_goal.sugars }}">
+        </div>
+        <div class="form-group">
+            <label for="protein">Protein (grams)</label>
+            <input type="number" class="form-control" id="protein" name="protein" placeholder="Enter daily protein goal" required value="{{ existing_goal.protein }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Goals</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Fetch existing goals data from the server
+        $.ajax({
+            type: 'GET',
+            url: '/nutrition/goals', // Replace with your Flask route to fetch goals data
+            success: function(data) {
+                // Populate the form fields with the fetched data after the page has fully loaded
+                $(window).on('load', function() {
+                    $('#calories').val(data.calories);
+                    $('#fat').val(data.fat);
+                    $('#carbohydrates').val(data.carbohydrates);
+                    $('#sugars').val(data.sugars);
+                    $('#protein').val(data.protein);
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching goals:', error);
+            }
+        });
+
+        $('#goalsForm').submit(function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Collect form data
+            var formData = {
+                calories: $('#calories').val(),
+                fat: $('#fat').val(),
+                carbohydrates: $('#carbohydrates').val(),
+                sugars: $('#sugars').val(),
+                protein: $('#protein').val()
+            };
+
+            // Send an AJAX POST request to your Flask route to save goals
+            $.ajax({
+                type: 'POST',
+                url: '/nutrition/goals', // Replace with your Flask route URL
+                data: formData,
+                success: function(response) {
+                    console.log('Goals saved successfully:', response);
+                },
+                error: function(error) {
+                    console.error('Error saving goals:', error);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
