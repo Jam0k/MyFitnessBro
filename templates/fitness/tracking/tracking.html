@@ -1,5 +1,21 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Fitness Tracking</h1>
+<div class="container mt-4">
+  <h1>Fitness Tracking</h1>
+  <hr>
+    <!-- Buttons for Logging Food and Meal -->
+    <p class="lead">Log Your Fitness</p>
+    <div class="mb-4">
+      <a class="btn btn-success mr-2" href="{{ url_for('fitness.logExercise') }}">
+        <i class="fas fa-dumbbell"></i> Log Exercise
+    </a>
+    <a class="btn btn-success mr-2" href="{{ url_for('fitness.logWorkout') }}">
+        <i class="fas fa-list"></i> Log Workout
+    </a>
+         
+                 
+    </div>
+
+    <hr>
 
 <div class="form-group">
   <label for="dateFilter">Select a Date:</label>
@@ -35,11 +51,11 @@
 </div>
 
 <div id="workout-plan-logs">
-  <h2>Workout Plan Logs</h2>
+  <h2>Workout Logs</h2>
   <table id="workout-plan-logs-table" class="table table-striped">
     <thead>
       <tr>
-        <th>Workout Plan Name</th>
+        <th>Workout Name</th>
         <th>Actions</th>
         <!-- Column for actions like View Exercises -->
       </tr>
@@ -115,7 +131,7 @@
           data: "workout_plan.id", // Access the ID here
           render: function (data, type, row) {
             return (
-              '<button class="btn btn-info view-exercises-btn" data-id="' +
+              '<button class="btn btn-success view-exercises-btn" data-id="' +
               data +
               '">View Exercises</button>'
             );
