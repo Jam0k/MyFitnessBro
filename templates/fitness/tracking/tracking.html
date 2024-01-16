@@ -11,6 +11,9 @@
     <a class="btn btn-success mr-2" href="{{ url_for('fitness.logWorkout') }}">
         <i class="fas fa-list"></i> Log Workout
     </a>
+    <a class="btn btn-success mr-2" href="{{ url_for('fitness.cardioAndAerobics') }}">
+      <i class="fas fa-person-running"></i> Log Cardio
+    </a>
          
                  
     </div>
@@ -27,9 +30,9 @@
     value="{{ current_date }}"
   />
 </div>
-
+<hr>
 <div id="exercise-logs">
-  <h2>Exercise Logs</h2>
+  <h3>Individual Exercises</h3>
   <table id="exercise-logs-table" class="table table-striped">
     <thead>
       <tr>
@@ -49,9 +52,10 @@
     </tbody>
   </table>
 </div>
+<hr>
 
 <div id="workout-plan-logs">
-  <h2>Workout Logs</h2>
+  <h3>Workouts</h3>
   <table id="workout-plan-logs-table" class="table table-striped">
     <thead>
       <tr>
@@ -65,9 +69,10 @@
     </tbody>
   </table>
 </div>
+<hr>
 
 <div id="cardio-logs">
-  <h2>Cardio Logs</h2>
+  <h3>Cardio</h3>
   <table id="cardio-logs-table" class="table table-striped">
 <thead>
 <tr>
