@@ -75,6 +75,7 @@ CREATE TABLE CardioLog (
     name VARCHAR(255) NOT NULL,
     activity VARCHAR(255) NOT NULL,
     duration INT NOT NULL,
+    calories_burned INT NOT NULL,
     date DATE NOT NULL,
     notes TEXT -- TEXT type for potentially longer notes
 );

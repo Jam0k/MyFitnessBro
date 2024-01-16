@@ -157,6 +157,7 @@ class CardioLog(db.Model):
     name = db.Column(db.String(255), nullable=False)
     activity = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
+    calories_burned = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False)
     notes = db.Column(db.Text)  # TEXT type for potentially longer notes
 
@@ -166,6 +167,7 @@ class CardioLog(db.Model):
             'name': self.name,
             'activity': self.activity,
             'duration': self.duration,
+            'calories_burned': self.calories_burned,
             'date': self.date.isoformat(),
             'notes': self.notes
         }

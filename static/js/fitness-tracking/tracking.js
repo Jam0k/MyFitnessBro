@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { data: "cardio_log.name" },
             { data: "cardio_log.activity" },
             { data: "cardio_log.duration" },
+            { data: "cardio_log.calories_burned" },
             { data: "cardio_log.notes" },
         ],
     });

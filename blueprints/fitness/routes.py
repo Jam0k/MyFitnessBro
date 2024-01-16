@@ -477,6 +477,7 @@ def tracking():
                     "name": log.name,
                     "activity": log.activity,
                     "duration": log.duration,
+                    "calories_burned": log.calories_burned,
                     "date": log.date.strftime("%Y-%m-%d") if log.date else None,
                     "notes": log.notes,
                 }
@@ -506,6 +507,7 @@ def submit_cardio_log():
     name = request.form.get('name')
     activity = request.form.get('activity')
     duration = request.form.get('duration', type=int)
+    calories_burned = request.form.get('calories_burned', type=int)
     date = request.form.get('date')
     notes = request.form.get('notes')
 
@@ -514,6 +516,7 @@ def submit_cardio_log():
         name=name,
         activity=activity,
         duration=duration,
+        calories_burned=calories_burned,
         date=datetime.strptime(date, '%Y-%m-%d').date() if date else None,
         notes=notes
     )
