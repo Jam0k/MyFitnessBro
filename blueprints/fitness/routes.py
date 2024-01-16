@@ -419,6 +419,7 @@ def tracking():
 
         exercise_logs = []
         workout_plan_logs = []
+        cardio_logs = []
 
         if selected_date:
             # Query exercise logs for the selected date
@@ -431,6 +432,11 @@ def tracking():
             workout_plan_logs = ExerciseLog.query.filter(
                 ExerciseLog.log_date == selected_date,
                 ExerciseLog.workout_plan_id.isnot(None),
+            ).all()
+
+            # Query cardio logs for the selected date
+            cardio_logs = CardioLog.query.filter(
+                CardioLog.date == selected_date
             ).all()
 
         exercise_logs_data = [
@@ -465,10 +471,24 @@ def tracking():
             for log in workout_plan_logs
         ]
 
+        cardio_logs_data = [
+            {
+                "cardio_log": {
+                    "name": log.name,
+                    "activity": log.activity,
+                    "duration": log.duration,
+                    "date": log.date.strftime("%Y-%m-%d") if log.date else None,
+                    "notes": log.notes,
+                }
+            }
+            for log in cardio_logs
+        ]
+
         return jsonify(
             {
                 "exercise_logs": exercise_logs_data,
                 "workout_plan_logs": workout_plan_logs_data,
+                "cardio_logs": cardio_logs_data,
                 "current_date": current_date,
             }
         )
@@ -504,3 +524,34 @@ def submit_cardio_log():
 
     # Redirect to a suitable page after submission
     return redirect(url_for('fitness.cardioAndAerobics'))
+
+
+@fitness_blueprint.route("/cardio-and-aerobics/get-logs", methods=["POST"])
+def get_cardio_logs():
+    selected_date_str = request.form.get("date")
+    selected_date = (
+        datetime.strptime(selected_date_str, "%Y-%m-%d")
+        if selected_date_str
+        else None
+    )
+
+    cardio_logs = []
+
+    if selected_date:
+        # Query cardio logs for the selected date
+        cardio_logs = CardioLog.query.filter(
+            CardioLog.date == selected_date
+        ).all()
+
+    cardio_logs_data = [
+        {
+            "name": log.name,
+            "activity": log.activity,
+            "duration": log.duration,
+            "date": log.date.isoformat(),
+            "notes": log.notes
+        }
+        for log in cardio_logs
+    ]
+
+    return jsonify({"cardio_logs": cardio_logs_data})

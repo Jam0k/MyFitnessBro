@@ -39,41 +39,39 @@
         rows="3"
       ></textarea>
     </div>
-    <button type="button" class="btn btn-primary" id="submitForm">
+    <button type="button" class="btn btn-success" id="submitForm">
       Submit
     </button>
   </form>
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Pre-fill the date input with today's date
-    document.getElementById("date").valueAsDate = new Date();
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pre-fill the date input with today's date
+        document.getElementById('date').valueAsDate = new Date();
 
-    // Handle form submission
-    document
-      .getElementById("submitForm")
-      .addEventListener("click", function () {
-        var formData = new FormData(document.getElementById("logCardioForm"));
+        // Handle form submission
+        document.getElementById('submitForm').addEventListener('click', function() {
+            var formData = new FormData(document.getElementById('logCardioForm'));
 
-        fetch("/fitness/cardio-and-aerobics/submit-cardio-log", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (response.ok) {
-              // Handle successful submission here, like redirecting to a different page or showing a success message
-              window.location.href = "/fitness/cardio-and-aerobics"; // Redirect to cardio and aerobics page
-            } else {
-              // Handle errors here
-              alert("Error submitting form.");
-            }
-          })
-          .catch((error) => {
-            // Handle network errors here
-            console.error("Error:", error);
-          });
-      });
-  });
+            fetch('/fitness/cardio-and-aerobics/submit-cardio-log', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    // Show a success alert
+                    alert('Cardio log submitted successfully!');
+                } else {
+                    // Handle errors here
+                    alert('Error submitting form.');
+                }
+            }).catch(error => {
+                // Handle network errors here
+                alert('Network error: ' + error.message);
+            });
+        });
+    });
 </script>
+
+
 {% endblock %}

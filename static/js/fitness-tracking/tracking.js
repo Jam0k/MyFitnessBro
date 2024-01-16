@@ -30,6 +30,15 @@ document.addEventListener("DOMContentLoaded", function () {
         ],
     });
 
+    const cardioLogsTable = $("#cardio-logs-table").DataTable({
+        columns: [
+            { data: "cardio_log.name" },
+            { data: "cardio_log.activity" },
+            { data: "cardio_log.duration" },
+            { data: "cardio_log.notes" },
+        ],
+    });
+
     function fetchLogs(date) {
         fetch("/fitness/tracking", {
             method: "POST",
@@ -42,9 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 const exerciseLogs = data.exercise_logs;
                 const workoutPlanLogs = data.workout_plan_logs;
+                const cardioLogs = data.cardio_logs;
 
                 exerciseLogsTable.clear().draw();
                 workoutPlanLogsTable.clear().draw();
+                cardioLogsTable.clear().draw();
 
                 if (exerciseLogs.length > 0) {
                     exerciseLogsTable.rows.add(exerciseLogs).draw();
@@ -53,8 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (workoutPlanLogs.length > 0) {
                     workoutPlanLogsTable.rows.add(workoutPlanLogs).draw();
                 }
+                if (cardioLogs.length > 0) {
+                    cardioLogsTable.rows.add(cardioLogs).draw();
+                }
             });
-    }
+        }
 
     dateInput.addEventListener("input", function () {
         const selectedDate = dateInput.value;
@@ -115,3 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+
+
+
+
