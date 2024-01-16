@@ -479,3 +479,18 @@ def tracking():
 @fitness_blueprint.route("/cardio-and-aerobics")
 def cardioAndAerobics():
     return render_template("fitness/cardio-and-aerobics/cardio-and-aerobics-home.html")
+
+# Cardio Routes
+@fitness_blueprint.route("/cardio-and-aerobics/log-cardio")
+def logCardio():
+    return render_template("fitness/cardio-and-aerobics/log-cardio.html")
+
+# Cardio Routes
+@fitness_blueprint.route("/cardio-and-aerobics/browse-cardio")
+def browseCardio():
+    return render_template("fitness/cardio-and-aerobics/browse-cardio.html")
+
+# Cardio Routes
+@fitness_blueprint.route("/cardio-and-aerobics/create-cardio")
+def createCardio():
+    return render_template("fitness/cardio-and-aerobics/create-cardio.html")
