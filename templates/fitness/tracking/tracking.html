@@ -1,10 +1,15 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <h1>Fitness Tracking</h1>
 
 <div class="form-group">
   <label for="dateFilter">Select a Date:</label>
-  <input type="date" class="form-control" id="dateFilter" name="dateFilter" value="{{ current_date }}">
+  <input
+    type="date"
+    class="form-control"
+    id="dateFilter"
+    name="dateFilter"
+    value="{{ current_date }}"
+  />
 </div>
 
 <div id="exercise-logs">
@@ -22,7 +27,7 @@
         <th>Notes</th>
       </tr>
     </thead>
-    
+
     <tbody>
       <!-- Table rows for exercise logs will be generated here dynamically -->
     </tbody>
@@ -35,6 +40,8 @@
     <thead>
       <tr>
         <th>Workout Plan Name</th>
+        <th>Actions</th>
+        <!-- Column for actions like View Exercises -->
       </tr>
     </thead>
     <tbody>
@@ -42,34 +49,88 @@
     </tbody>
   </table>
 </div>
+<!-- Updated Modal Structure -->
+<div class="modal fade" id="viewExercisesModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Exercises in Workout Plan</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table id="exercisesDataTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Duration</th>
+              <th>Calories Burned</th>
+              <th>Reps</th>
+              <th>Sets</th>
+              <th>Weight Lifted</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Data will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const dateInput = document.getElementById('dateFilter');
-    const exerciseLogsTable = $('#exercise-logs-table').DataTable({
-  columns: [
-    { data: 'exercise.name' },
-    { data: 'exercise.category' },
-    { data: 'exercise.duration_minutes' },
-    { data: 'exercise.calories_burned' },
-    { data: 'exercise.reps' },
-    { data: 'exercise.sets' },
-    { data: 'exercise.weight_lifted' },
-    { data: 'exercise.notes' },
-  ]
-});
-    const workoutPlanLogsTable = $('#workout-plan-logs-table').DataTable({
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById("dateFilter");
+    const exerciseLogsTable = $("#exercise-logs-table").DataTable({
       columns: [
-        { data: 'workout_plan.name' },
-      ]
+        { data: "exercise.name" },
+        { data: "exercise.category" },
+        { data: "exercise.duration_minutes" },
+        { data: "exercise.calories_burned" },
+        { data: "exercise.reps" },
+        { data: "exercise.sets" },
+        { data: "exercise.weight_lifted" },
+        { data: "exercise.notes" },
+      ],
+    });
+
+    const workoutPlanLogsTable = $("#workout-plan-logs-table").DataTable({
+      columns: [
+        { data: "workout_plan.name" },
+        {
+          data: "workout_plan.id", // Access the ID here
+          render: function (data, type, row) {
+            return (
+              '<button class="btn btn-info view-exercises-btn" data-id="' +
+              data +
+              '">View Exercises</button>'
+            );
+          },
+          orderable: false,
+        },
+      ],
     });
 
     function fetchLogs(date) {
-      fetch('/fitness/tracking', {
-        method: 'POST',
+      fetch("/fitness/tracking", {
+        method: "POST",
         body: new URLSearchParams({ date: date }),
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       })
         .then((response) => response.json())
@@ -77,31 +138,89 @@
           const exerciseLogs = data.exercise_logs;
           const workoutPlanLogs = data.workout_plan_logs;
 
-          // Clear existing table data
           exerciseLogsTable.clear().draw();
           workoutPlanLogsTable.clear().draw();
 
           if (exerciseLogs.length > 0) {
-            // Add exercise log data to the table
             exerciseLogsTable.rows.add(exerciseLogs).draw();
           }
 
           if (workoutPlanLogs.length > 0) {
-            // Add workout plan log data to the table
             workoutPlanLogsTable.rows.add(workoutPlanLogs).draw();
           }
         });
     }
 
-    dateInput.addEventListener('input', function () {
+    dateInput.addEventListener("input", function () {
       const selectedDate = dateInput.value;
       fetchLogs(selectedDate);
     });
 
-    // Initial fetch with today's date
-    const current_date = '{{ current_date }}';
+    const current_date = "{{ current_date }}";
     dateInput.value = current_date;
     fetchLogs(current_date);
+
+    $("#workout-plan-logs-table").on(
+      "click",
+      ".view-exercises-btn",
+      function () {
+        const workoutPlanId = $(this).data("id");
+        viewExercises(workoutPlanId);
+      }
+    );
+
+    function viewExercises(workoutPlanId) {
+      $.ajax({
+        url:
+          "/fitness/exercises-and-workouts/get-workout-plan/" + workoutPlanId,
+        type: "GET",
+        success: function (response) {
+          const exercises = response.exercises;
+
+          // Destroy existing DataTable if it exists
+          if ($.fn.DataTable.isDataTable("#exercisesDataTable")) {
+            $("#exercisesDataTable").DataTable().destroy();
+          }
+
+          // Create DataTable
+          $("#exercisesDataTable").DataTable({
+            responsive: true,
+            data: exercises,
+            columns: [
+              { data: "name" },
+              { data: "category" },
+              { data: "duration_minutes" },
+              { data: "calories_burned" },  
+              { data: "reps" },
+              { data: "sets" },
+              { data: "weight_lifted" },
+              { data: "notes" },
+            ],
+            searching: false, // Disable searching if not needed
+            paging: false, // Disable pagination if not needed
+            info: false, // Disable info text if not needed
+          });
+
+          $("#viewExercisesModal").modal("show");
+        },
+        error: function (xhr, status, error) {
+          console.error("Error fetching exercises:", status, error);
+        },
+      });
+    }
+
   });
 </script>
+
+<style>
+  .modal-dialog {
+  overflow-x: auto;
+}
+
+.modal-body {
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+</style>
+
 {% endblock %}

@@ -352,13 +352,15 @@ def tracking():
         ]
 
         workout_plan_logs_data = [
-            {
-                'workout_plan': {
-                    'name': log.workout_plan.name if log.workout_plan else None
-                }
-            }
-            for log in workout_plan_logs
-        ]
+    {
+        'workout_plan': {
+            'id': log.workout_plan.id,  # Include the ID here
+            'name': log.workout_plan.name if log.workout_plan else None
+        }
+    }
+    for log in workout_plan_logs
+]
+
 
         return jsonify({'exercise_logs': exercise_logs_data, 'workout_plan_logs': workout_plan_logs_data, 'current_date': current_date})
 
