@@ -602,6 +602,9 @@ def tracking():
     # Convert defaultdict to regular dict for JSON serialization
     daily_macros = dict(daily_macros)
 
+    # Fetch the goal data
+    goal_data = Goal.query.first()
+
     return render_template(
         "nutrition/tracking/tracking.html",
         meal_type_data=meal_type_data,
@@ -609,6 +612,7 @@ def tracking():
         selected_start_date=selected_start_date,
         selected_end_date=selected_end_date,
         daily_macros=daily_macros,
+        goal_data=goal_data  # Pass the goal data to the template
     )
 
 

@@ -18,6 +18,23 @@
 
     <hr>
 
+    <!-- Display Nutrition Goals -->
+<div class="nutrition-goals">
+  <h2>Daily Nutrition Goals</h2>
+  {% if goal_data %}
+  <ul>
+      <li>Calories: {{ goal_data.calories }}</li>
+      <li>Fat: {{ goal_data.fat }} g</li>
+      <li>Carbohydrates: {{ goal_data.carbohydrates }} g</li>
+      <li>Sugars: {{ goal_data.sugars }} g</li>
+      <li>Protein: {{ goal_data.protein }} g</li>
+  </ul>
+  {% else %}
+  <p>No goals set yet.</p>
+  {% endif %}
+</div>
+
+
 
 <!-- Start Date Selector for Filtering -->
 <p class="lead">Date Selection</p>
