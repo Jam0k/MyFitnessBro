@@ -1,130 +1,247 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
   <h1>Nutrition Tracking</h1>
-  <hr>
-    <!-- Buttons for Logging Food and Meal -->
-    <p class="lead">Log Your Nutrition</p>
-    <div class="mb-4">
-      <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addFood') }}">
-        <i class="fas fa-apple-whole"></i> Log Food
+  <hr />
+  <!-- Buttons for Logging Food and Meal -->
+  <p class="lead">Log Your Nutrition</p>
+  <div class="mb-4">
+    <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addFood') }}">
+      <i class="fas fa-apple-whole"></i> Log Food
     </a>
     <a class="btn btn-primary mr-2" href="{{ url_for('nutrition.addMeal') }}">
-        <i class="fas fa-utensils"></i> Log Meal
+      <i class="fas fa-utensils"></i> Log Meal
     </a>
-         
-                 
-    </div>
-
-    <hr>
-
-    <!-- Display Nutrition Goals -->
-<div class="nutrition-goals">
-  <h2>Daily Nutrition Goals</h2>
-  {% if goal_data %}
-  <ul>
-      <li>Calories: {{ goal_data.calories }}</li>
-      <li>Fat: {{ goal_data.fat }} g</li>
-      <li>Carbohydrates: {{ goal_data.carbohydrates }} g</li>
-      <li>Sugars: {{ goal_data.sugars }} g</li>
-      <li>Protein: {{ goal_data.protein }} g</li>
-  </ul>
-  {% else %}
-  <p>No goals set yet.</p>
-  {% endif %}
-</div>
-
-
-
-<!-- Start Date Selector for Filtering -->
-<p class="lead">Date Selection</p>
-<div class="form-group">
-  <label for="startDateFilter">Select Start Date:</label>
-  <input type="date" class="form-control" id="startDateFilter" name="startDateFilter">
-</div>
-
-<!-- End Date Selector for Filtering -->
-<div class="form-group">
-  <label for="endDateFilter">Select End Date:</label>
-  <input type="date" class="form-control" id="endDateFilter" name="endDateFilter">
-</div>
-
-<hr>
-
-<p class="lead">Nutrition Summary</p>
-<div class="row">
-  {% for key, value in grand_total.items() %}
-  <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-    <div class="card text-center">
-      <div class="card-body">
-        <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
-        {% if key == 'calories' %}
-          <p class="card-text">{{ value }} kcal</p>
-        {% else %}
-          <p class="card-text">{{ value }}g</p>
-        {% endif %}
-      </div>
-    </div>
   </div>
-  {% endfor %}
-</div>
-    <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#macrosModal">
-      <i class="fas fa-chart-pie"></i> View Breakdown
-    </button>
 
-    <!-- Button to Open Line Chart Modal -->
-<button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#lineChartModal">
-  <i class="fas fa-chart-line"></i> View Line Chart
-</button>
+  <hr />
 
-<hr>
+  <!-- Start Date Selector for Filtering -->
+  <p class="lead">Date Selection</p>
+  <div class="form-group">
+    <label for="startDateFilter">Select Start Date:</label>
+    <input
+      type="date"
+      class="form-control"
+      id="startDateFilter"
+      name="startDateFilter"
+    />
+  </div>
 
-  
-    <!-- Modal for Pie Chart -->
-    <div class="modal fade" id="macrosModal" tabindex="-1" role="dialog" aria-labelledby="macrosModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="macrosModalLabel">Macro Nutrient Distribution</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <canvas id="grandTotalPieChart"></canvas>
-          </div>
+  <!-- End Date Selector for Filtering -->
+  <div class="form-group">
+    <label for="endDateFilter">Select End Date:</label>
+    <input
+      type="date"
+      class="form-control"
+      id="endDateFilter"
+      name="endDateFilter"
+    />
+  </div>
+
+  <hr />
+
+  <p class="lead">Nutrition Summary</p>
+  <div class="row">
+    {% for key, value in grand_total.items() %}
+    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
+          {% if key == 'calories' %}
+          <p class="card-text">{{ value }} kcal</p>
+          {% else %}
+          <p class="card-text">{{ value }}g</p>
+          {% endif %}
         </div>
       </div>
     </div>
+    {% endfor %}
+  </div>
+  <!-- Button to Open Modal -->
+  <button
+    type="button"
+    class="btn btn-primary mr-2"
+    data-toggle="modal"
+    data-target="#macrosModal"
+  >
+    <i class="fas fa-chart-pie"></i> View Breakdown
+  </button>
 
+  <!-- Button to Open Line Chart Modal -->
+  <button
+    type="button"
+    class="btn btn-primary mr-2"
+    data-toggle="modal"
+    data-target="#lineChartModal"
+  >
+    <i class="fas fa-chart-line"></i> View Line Chart
+  </button>
 
-    <!-- Modal for Line Chart -->
-<div class="modal fade" id="lineChartModal" tabindex="-1" role="dialog" aria-labelledby="lineChartModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="lineChartModalLabel">Macro Trends</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <canvas id="modalMacroTrendsChart"></canvas>
+  <hr />
+
+  <!-- Nutrition Goals Progress -->
+  <div class="nutrition-goals-progress">
+    <h2>Nutrition Goals Progress</h2>
+    {% if goal_data %}
+    <!-- Calories Progress Bar -->
+    <div class="mb-2">
+      Calories: {{ grand_total['calories'] }} / {{ goal_data.calories }} kcal
+    </div>
+    <div class="progress">
+      <div
+        class="progress-bar {{ 'bg-danger' if grand_total['calories'] > goal_data.calories else 'bg-primary' }}"
+        role="progressbar"
+        style="width: {{ (grand_total['calories'] / goal_data.calories * 100) | round(2) }}%;"
+        aria-valuenow="{{ grand_total['calories'] }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ goal_data.calories }}"
+      ></div>
+    </div>
+
+    <!-- Fat Progress Bar -->
+    <div class="mb-2">
+      Fat: {{ grand_total['total_fat'] }} / {{ goal_data.fat }} g
+    </div>
+    <div class="progress">
+      <div
+        class="progress-bar {{ 'bg-danger' if grand_total['total_fat'] > goal_data.fat else 'bg-primary' }}"
+        role="progressbar"
+        style="width: {{ (grand_total['total_fat'] / goal_data.fat * 100) | round(2) }}%;"
+        aria-valuenow="{{ grand_total['total_fat'] }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ goal_data.fat }}"
+      ></div>
+    </div>
+
+    <!-- Carbohydrates Progress Bar -->
+    <div class="mb-2">
+      Carbohydrates: {{ grand_total['total_carbohydrate'] }} / {{
+      goal_data.carbohydrates }} g
+    </div>
+    <div class="progress">
+      <div
+        class="progress-bar {{ 'bg-danger' if grand_total['total_carbohydrate'] > goal_data.carbohydrates else 'bg-primary' }}"
+        role="progressbar"
+        style="width: {{ (grand_total['total_carbohydrate'] / goal_data.carbohydrates * 100) | round(2) }}%;"
+        aria-valuenow="{{ grand_total['total_carbohydrate'] }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ goal_data.carbohydrates }}"
+      ></div>
+    </div>
+
+    <!-- Sugars Progress Bar -->
+    <div class="mb-2">
+      Sugars: {{ grand_total['total_sugars'] }} / {{ goal_data.sugars }} g
+    </div>
+    <div class="progress">
+      <div
+        class="progress-bar {{ 'bg-danger' if grand_total['total_sugars'] > goal_data.sugars else 'bg-primary' }}"
+        role="progressbar"
+        style="width: {{ (grand_total['total_sugars'] / goal_data.sugars * 100) | round(2) }}%;"
+        aria-valuenow="{{ grand_total['total_sugars'] }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ goal_data.sugars }}"
+      ></div>
+    </div>
+
+    <!-- Protein Progress Bar -->
+    <div class="mb-2">
+      Protein: {{ grand_total['total_protein'] }} / {{ goal_data.protein }} g
+    </div>
+    <div class="progress">
+      <div
+        class="progress-bar {{ 'bg-danger' if grand_total['total_protein'] > goal_data.protein else 'bg-primary' }}"
+        role="progressbar"
+        style="width: {{ (grand_total['total_protein'] / goal_data.protein * 100) | round(2) }}%;"
+        aria-valuenow="{{ grand_total['total_protein'] }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ goal_data.protein }}"
+      ></div>
+    </div>
+    {% else %}
+    <p>No goals set yet.</p>
+    {% endif %}
+  </div>
+  <hr />
+  <!-- Modal for Pie Chart -->
+  <div
+    class="modal fade"
+    id="macrosModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="macrosModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="macrosModalLabel">
+            Macro Nutrient Distribution
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <canvas id="grandTotalPieChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<p class="lead">Nutrition Log</p>
-{% for meal_type, data in meal_type_data.items() %}
-<div class="accordion nutrition-accordion" id="mealTypeAccordion{{ loop.index }}">
-  <div class="card">
-    <div class="card-header" id="mealTypeHeading{{ loop.index }}">
-      <h2 class="mb-0">
-        <button class="btn btn-link modern-accordion-btn" type="button" data-toggle="collapse" data-target="#mealTypeCollapse{{ loop.index }}" aria-expanded="true" aria-controls="mealTypeCollapse{{ loop.index }}">
-          {{ meal_type.title() }} <i class="fas fa-chevron-down"></i>
-        </button>
-      </h2>
+
+  <!-- Modal for Line Chart -->
+  <div
+    class="modal fade"
+    id="lineChartModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="lineChartModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="lineChartModalLabel">Macro Trends</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <canvas id="modalMacroTrendsChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="lead">Nutrition Log</p>
+  {% for meal_type, data in meal_type_data.items() %}
+  <div
+    class="accordion nutrition-accordion"
+    id="mealTypeAccordion{{ loop.index }}"
+  >
+    <div class="card">
+      <div class="card-header" id="mealTypeHeading{{ loop.index }}">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link modern-accordion-btn"
+            type="button"
+            data-toggle="collapse"
+            data-target="#mealTypeCollapse{{ loop.index }}"
+            aria-expanded="true"
+            aria-controls="mealTypeCollapse{{ loop.index }}"
+          >
+            {{ meal_type.title() }} <i class="fas fa-chevron-down"></i>
+          </button>
+        </h2>
       </div>
       <div
         id="mealTypeCollapse{{ loop.index }}"
@@ -134,146 +251,154 @@
       >
         <div class="card-body">
           <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th><i class="fas fa-tag"></i> Type</th>
-                <th><i class="fas fa-utensils"></i> Name</th>
-                <th><i class="fas fa-fire"></i> Calories</th>
-                <th><i class="fas fa-tint"></i> Total Fat</th>
-                <th><i class="fas fa-bread-slice"></i> Total Carbohydrates</th>
-                <th><i class="fas fa-cookie"></i> Total Sugars</th>
-                <th><i class="fas fa-drumstick-bite"></i> Total Protein</th>
-                <th><i class="fas fa-utensil-spoon"></i> Serving Count</th>
-                <th><i class="fas fa-circle-info"></i> Action</th>
-                <!-- Add a new column for the Delete button -->
-              </tr>
-            </thead>
-            <tbody>
-              {% for meal in data.meals %}
-              <tr>
-                <td>Meal</td>
-                <td>{{ meal.meal_name }}</td>
-                <td>{{ meal.calories }}</td>
-                <td>{{ meal.total_fat }}</td>
-                <td>{{ meal.total_carbohydrate }}</td>
-                <td>{{ meal.total_sugars }}</td>
-                <td>{{ meal.total_protein }}</td>
-                <td>{{ meal.serving_count }}</td>
-                <td>
-                  <form
-                    method="POST"
-                    action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}"
-                  >
-                    <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
-                  </form>
-                </td>
-              </tr>
-              {% endfor %} {% for food in data.foods %}
-              <tr>
-                <td>Food</td>
-                <td>{{ food.food_item_name }}</td>
-                <td>{{ food.calories }}</td>
-                <td>{{ food.total_fat }}</td>
-                <td>{{ food.total_carbohydrate }}</td>
-                <td>{{ food.total_sugars }}</td>
-                <td>{{ food.total_protein }}</td>
-                <td>{{ food.serving_count }}</td>
-                <td>
-                  <form
-                    method="POST"
-                    action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}"
-                  >
-                    <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
-                  </form>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-tag"></i> Type</th>
+                  <th><i class="fas fa-utensils"></i> Name</th>
+                  <th><i class="fas fa-fire"></i> Calories</th>
+                  <th><i class="fas fa-tint"></i> Total Fat</th>
+                  <th>
+                    <i class="fas fa-bread-slice"></i> Total Carbohydrates
+                  </th>
+                  <th><i class="fas fa-cookie"></i> Total Sugars</th>
+                  <th><i class="fas fa-drumstick-bite"></i> Total Protein</th>
+                  <th><i class="fas fa-utensil-spoon"></i> Serving Count</th>
+                  <th><i class="fas fa-circle-info"></i> Action</th>
+                  <!-- Add a new column for the Delete button -->
+                </tr>
+              </thead>
+              <tbody>
+                {% for meal in data.meals %}
+                <tr>
+                  <td>Meal</td>
+                  <td>{{ meal.meal_name }}</td>
+                  <td>{{ meal.calories }}</td>
+                  <td>{{ meal.total_fat }}</td>
+                  <td>{{ meal.total_carbohydrate }}</td>
+                  <td>{{ meal.total_sugars }}</td>
+                  <td>{{ meal.total_protein }}</td>
+                  <td>{{ meal.serving_count }}</td>
+                  <td>
+                    <form
+                      method="POST"
+                      action="{{ url_for('nutrition.delete_entry', id=meal.food_meal_log_id) }}"
+                    >
+                      <input type="hidden" name="_method" value="DELETE" />
+                      <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %} {% for food in data.foods %}
+                <tr>
+                  <td>Food</td>
+                  <td>{{ food.food_item_name }}</td>
+                  <td>{{ food.calories }}</td>
+                  <td>{{ food.total_fat }}</td>
+                  <td>{{ food.total_carbohydrate }}</td>
+                  <td>{{ food.total_sugars }}</td>
+                  <td>{{ food.total_protein }}</td>
+                  <td>{{ food.serving_count }}</td>
+                  <td>
+                    <form
+                      method="POST"
+                      action="{{ url_for('nutrition.delete_entry', id=food.food_meal_log_id) }}"
+                    >
+                      <input type="hidden" name="_method" value="DELETE" />
+                      <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
 
+  <script type="text/javascript">
+    // Pass the selected dates from Flask to JavaScript
+    var selectedStartDate = "{{ selected_start_date.isoformat() }}";
+    var selectedEndDate = "{{ selected_end_date.isoformat() }}";
+  </script>
 
-<script type="text/javascript">
-  // Pass the selected dates from Flask to JavaScript
-  var selectedStartDate = "{{ selected_start_date.isoformat() }}";
-  var selectedEndDate = "{{ selected_end_date.isoformat() }}";
-</script>
+  <script src="{{ url_for('static', filename='js/nutrition-tracking/tracking.js') }}"></script>
 
-<script src="{{ url_for('static', filename='js/nutrition-tracking/tracking.js') }}"></script>
+  <script type="text/javascript">
+    var grandTotalData = JSON.parse("{{ grand_total | tojson | safe }}");
+  </script>
 
-<script type="text/javascript">
-  var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
-</script>
+  <script type="text/javascript">
+    // Pass the daily macros data from Flask to JavaScript
+    var dailyMacrosData = JSON.parse("{{ daily_macros | tojson | safe }}");
 
+    // Prepare data for the line chart
+    var dates = Object.keys(dailyMacrosData);
+    var macrosData = {
+      Calories: dates.map((date) => dailyMacrosData[date].calories),
+      "Total Fat": dates.map((date) => dailyMacrosData[date].total_fat),
+      "Total Carbohydrate": dates.map(
+        (date) => dailyMacrosData[date].total_carbohydrate
+      ),
+      "Total Sugars": dates.map((date) => dailyMacrosData[date].total_sugars),
+      "Total Protein": dates.map((date) => dailyMacrosData[date].total_protein),
+    };
 
-<script type="text/javascript">
-  // Pass the daily macros data from Flask to JavaScript
-  var dailyMacrosData = JSON.parse('{{ daily_macros | tojson | safe }}');
+    document.addEventListener("DOMContentLoaded", function () {
+      var modalCtx = document
+        .getElementById("modalMacroTrendsChart")
+        .getContext("2d");
+      var modalChart;
 
-  // Prepare data for the line chart
-  var dates = Object.keys(dailyMacrosData);
-  var macrosData = {
-      'Calories': dates.map(date => dailyMacrosData[date].calories),
-      'Total Fat': dates.map(date => dailyMacrosData[date].total_fat),
-      'Total Carbohydrate': dates.map(date => dailyMacrosData[date].total_carbohydrate),
-      'Total Sugars': dates.map(date => dailyMacrosData[date].total_sugars),
-      'Total Protein': dates.map(date => dailyMacrosData[date].total_protein)
-  };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var modalCtx = document.getElementById('modalMacroTrendsChart').getContext('2d');
-    var modalChart;
-
-    $('#lineChartModal').on('show.bs.modal', function () {
+      $("#lineChartModal").on("show.bs.modal", function () {
         modalChart = new Chart(modalCtx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: Object.keys(macrosData).map(key => {
-                    return {
-                        label: key,
-                        data: macrosData[key],
-                        // add additional styling as needed
-                    };
-                })
-            },
-            options: {
-                // configure options as needed
-            }
+          type: "line",
+          data: {
+            labels: dates,
+            datasets: Object.keys(macrosData).map((key) => {
+              return {
+                label: key,
+                data: macrosData[key],
+                // add additional styling as needed
+              };
+            }),
+          },
+          options: {
+            // configure options as needed
+          },
         });
-    });
+      });
 
-    $('#lineChartModal').on('hide.bs.modal', function () {
+      $("#lineChartModal").on("hide.bs.modal", function () {
         modalChart.destroy();
+      });
     });
-});
+  </script>
 
-</script>
+  <style>
+    /* Custom CSS for spacing between accordion items */
+    .nutrition-accordion .card {
+      margin-bottom: 10px; /* Adjust this value as needed for spacing */
+    }
+    /* Responsive table */
+    .table-responsive {
+      overflow-x: auto; /* Enable horizontal scrolling */
+    }
 
-<style>
-  /* Custom CSS for spacing between accordion items */
-.nutrition-accordion .card {
-    margin-bottom: 10px; /* Adjust this value as needed for spacing */
-}
-/* Responsive table */
-.table-responsive {
-  overflow-x: auto; /* Enable horizontal scrolling */
-}
+    @media screen and (max-width: 768px) {
+      /* Adjust this breakpoint as needed */
+      .table-responsive {
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile devices */
+      }
+    }
+  </style>
 
-@media screen and (max-width: 768px) { /* Adjust this breakpoint as needed */
-  .table-responsive {
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile devices */
-  }
-}
-
-</style>
-
-{% endblock %}
+  {% endblock %}
+</div>

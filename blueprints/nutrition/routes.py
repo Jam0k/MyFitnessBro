@@ -605,6 +605,14 @@ def tracking():
     # Fetch the goal data
     goal_data = Goal.query.first()
 
+    # Calculate remaining goals, allowing negative values
+    remaining_goals = {
+        "remaining_calories": goal_data.calories - grand_total["calories"],
+        "remaining_fat": goal_data.fat - grand_total["total_fat"],
+        "remaining_carbohydrates": goal_data.carbohydrates - grand_total["total_carbohydrate"],
+        "remaining_sugars": goal_data.sugars - grand_total["total_sugars"],
+        "remaining_protein": goal_data.protein - grand_total["total_protein"],
+    }
     return render_template(
         "nutrition/tracking/tracking.html",
         meal_type_data=meal_type_data,
@@ -612,7 +620,8 @@ def tracking():
         selected_start_date=selected_start_date,
         selected_end_date=selected_end_date,
         daily_macros=daily_macros,
-        goal_data=goal_data  # Pass the goal data to the template
+        goal_data=goal_data,  # Pass the goal data to the template
+        remaining_goals=remaining_goals  # Pass the remaining goals to the template
     )
 
 
