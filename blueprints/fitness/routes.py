@@ -37,22 +37,12 @@ def create_exercise():
         # Retrieve form data
         name = request.form["name"]
         category = request.form["category"]
-        duration_minutes = request.form.get("duration", type=int)
-        sets = request.form.get("sets", type=int)
-        reps = request.form.get("reps", type=int)
-        weight_lifted = request.form.get("weight_lifted", type=Decimal)
-        calories_burned = request.form.get("calories_burned", type=int)
         notes = request.form["notes"]
 
         # Create a new Exercise object
         exercise = Exercise(
             name=name,
             category=category,
-            duration_minutes=duration_minutes,
-            sets=sets,
-            reps=reps,
-            weight_lifted=weight_lifted,
-            calories_burned=calories_burned,
             notes=notes,
         )
 
@@ -87,11 +77,6 @@ def get_exercises():
             "id": exercise.id,
             "name": exercise.name,
             "category": exercise.category,
-            "duration_minutes": exercise.duration_minutes,
-            "sets": exercise.sets,
-            "reps": exercise.reps,
-            "weight_lifted": str(exercise.weight_lifted),
-            "calories_burned": exercise.calories_burned,
             "notes": exercise.notes,
             "created_at": exercise.created_at.isoformat(),
             "updated_at": exercise.updated_at.isoformat(),
@@ -307,43 +292,49 @@ def convert_to_int(value, default=None):
     except ValueError:
         return default
 
-# Log Exercise
-@fitness_blueprint.route(
-    "/exercises-and-workouts/log-exercise", methods=["GET", "POST"]
-)
-def logExercise():
+@fitness_blueprint.route("/exercises-and-workouts/log-exercise", methods=["GET", "POST"])
+def log_exercise():
     if request.method == "POST":
-        # Parse JSON data from the request
-        data = request.get_json()
+        try:
+            # Parse JSON data from the request
+            data = request.get_json()
 
-        if not data:
-            return jsonify({"error": "Invalid JSON data"}), 400
+            # Validating the received data
+            if not all(key in data for key in ["exercise_id", "sets", "reps", "date"]):
+                return jsonify({"error": "Missing required data"}), 400
 
-        exercise_ids = data.get("exercise_ids", [])
-        log_date = data.get("date")
+            # Creating a new ExerciseLog instance
+            new_log = ExerciseLog(
+                exercise_id=data["exercise_id"],
+                sets=data["sets"],
+                reps=data["reps"],
+                weight=data.get("weight", 0),  # Defaulting to 0 if weight is not provided
+                notes=data.get("notes", ""),  # Defaulting to an empty string if notes are not provided
+                log_date=datetime.strptime(data["date"], "%Y-%m-%d")
+            )
 
-        if not exercise_ids or not log_date:
-            return jsonify({"error": "Missing required data"}), 400
+            # Adding the new log to the database session and committing
+            db.session.add(new_log)
+            db.session.commit()
 
-        # Create ExerciseLog entries for the selected exercises and log date
-        for exercise_id in exercise_ids:
-            exercise_log = ExerciseLog(exercise_id=exercise_id, log_date=log_date)
-            db.session.add(exercise_log)
+            return jsonify({"message": "Exercise logged successfully"}), 201
 
-        db.session.commit()
-        return jsonify({"message": "Exercise(s) logged successfully"}), 200
+        except Exception as e:
+            # Handling any unexpected exceptions
+            return jsonify({"error": str(e)}), 500
 
-    # Fetch exercises from the database
-    exercises = Exercise.query.all()
+    else:  # GET request
+        # Fetch exercises from the database
+        exercises = Exercise.query.all()
 
-    # Get today's date as a default date
-    today_date = date.today().isoformat()
+        # Get today's date as a default date
+        today_date = datetime.today().strftime('%Y-%m-%d')
 
-    return render_template(
-        "fitness/exercises-and-workouts/exercise/log-exercise.html",
-        exercises=exercises,
-        today_date=today_date,
-    )
+        return render_template(
+            "fitness/exercises-and-workouts/exercise/log-exercise.html",
+            exercises=exercises,
+            today_date=today_date
+        )
 
 # Log Workout
 @fitness_blueprint.route("/exercises-and-workouts/log-workout", methods=["GET", "POST"])
