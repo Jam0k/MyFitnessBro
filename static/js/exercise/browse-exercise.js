@@ -4,16 +4,22 @@ $(document).ready(function() {
         columns: [
             { data: 'name' },
             { data: 'category' },
-            { data: 'duration_minutes' },
-            { data: 'sets' },
-            { data: 'reps' },
-            { data: 'weight_lifted' },
-            { data: 'calories_burned' },
             { data: 'notes' },
+            { 
+                data: 'created_at',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleDateString() : ''; // Format the date
+                }
+            },
+            { 
+                data: 'updated_at',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleDateString() : ''; // Format the date
+                }
+            },
             {
                 data: 'id', // Use 'id' to create buttons
                 render: function(data, type, row) {
-                    // Create Edit and Delete buttons
                     return '<button class="btn btn-primary edit-btn" data-id="' + data + '">Edit</button>' +
                            '<button class="btn btn-danger delete-btn" data-id="' + data + '">Delete</button>';
                 },
@@ -33,11 +39,9 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
                 $('#editExerciseId').val(response.id);
                 $('#editExerciseName').val(response.name);
                 $('#editExerciseCategory').val(response.category);
-                $('#editExerciseDuration').val(response.duration_minutes);
                 $('#editExerciseSets').val(response.sets);
                 $('#editExerciseReps').val(response.reps);
                 $('#editExerciseWeight').val(response.weight_lifted);
-                $('#editExerciseCalories').val(response.calories_burned);
                 $('#editExerciseNotes').val(response.notes);
 
                 $('#editExerciseModal').modal('show');
@@ -53,11 +57,9 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
         var updatedData = {
             name: $('#editExerciseName').val(),
             category: $('#editExerciseCategory').val(),
-            duration_minutes: $('#editExerciseDuration').val(),
             sets: $('#editExerciseSets').val(),
             reps: $('#editExerciseReps').val(),
             weight_lifted: $('#editExerciseWeight').val(),
-            calories_burned: $('#editExerciseCalories').val(),
             notes: $('#editExerciseNotes').val()
         };
 

@@ -1,71 +1,52 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+{% block content %}
 <div class="container mt-4">
   <h1>Fitness Tracking</h1>
+  <p class="lead">Log and track your fitness activities.</p>
+
+  <!-- Navigation Buttons -->
+  <div class="row mb-4">
+    <div class="col">
+      <a href="exercises-and-workouts/log-exercise" class="btn btn-primary">Log Exercise</a>
+      <a href="exercises-and-workouts/create-exercise" class="btn btn-primary">Create Exercise</a>
+      <a href="exercises-and-workouts/browse-exercise" class="btn btn-primary">Browse Exercises</a>
+      <a href="cardio-and-aerobics" class="btn btn-primary">Log Cardio</a>
+    </div>
+  </div>
+
   <hr>
-    <!-- Buttons for Logging Food and Meal -->
-    <p class="lead">Log Your Fitness</p>
 
-    <hr>
+  <!-- Date Filter -->
+  <div class="form-group">
+    <label for="dateFilter">Select a Date:</label>
+    <input
+      type="date"
+      class="form-control"
+      id="dateFilter"
+      name="dateFilter"
+      value="{{ current_date }}"
+    />
+  </div>
+  <hr>
 
-<div class="form-group">
-  <label for="dateFilter">Select a Date:</label>
-  <input
-    type="date"
-    class="form-control"
-    id="dateFilter"
-    name="dateFilter"
-    value="{{ current_date }}"
-  />
+  <!-- Exercise Logs Section -->
+  <div id="exercise-logs">
+    <h3>Individual Exercises</h3>
+    <table id="exercise-logs-table" class="table table-striped">
+      <!-- Table Content -->
+    </table>
+  </div>
+  <hr>
+
+  <!-- Cardio Logs Section -->
+  <div id="cardio-logs">
+    <h3>Cardio</h3>
+    <table id="cardio-logs-table" class="table table-striped">
+      <!-- Table Content -->
+    </table>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/fitness-tracking/tracking.js') }}"></script>
+
 </div>
-<hr>
-<div id="exercise-logs">
-  <h3>Individual Exercises</h3>
-  <table id="exercise-logs-table" class="table table-striped">
-    <thead>
-      <tr>
-        <th>Exercise Name</th>
-        <th>Sets</th>
-        <th>Reps</th>
-        <th>Weight Lifted</th>
-        <th>Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Table rows for exercise logs will be generated here dynamically -->
-    </tbody>
-  </table>
-</div>
-<hr>
-
-<div id="cardio-logs">
-  <h3>Cardio</h3>
-  <table id="cardio-logs-table" class="table table-striped">
-<thead>
-<tr>
-<th>Activity</th>
-<th>Duration (Minutes)</th>
-<th>Calories Burned</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<!-- Table rows for cardio logs will be generated here dynamically -->
-</tbody>
-
-  </table>
-</div>
-
-<script src="{{ url_for('static', filename='js/fitness-tracking/tracking.js') }}"></script>
-
-<style>
-  .modal-dialog {
-  overflow-x: auto;
-}
-
-.modal-body {
-  overflow-y: auto; /* Enable vertical scrolling if needed */
-}
-
-</style>
-
 {% endblock %}

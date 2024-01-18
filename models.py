@@ -121,7 +121,7 @@ class ExerciseLog(db.Model):
     __tablename__ = "exercise_logs"
 
     id = db.Column(db.Integer, primary_key=True)
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=True)
     sets = db.Column(db.Integer, nullable=False)
     reps = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float)
@@ -131,27 +131,6 @@ class ExerciseLog(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     exercise = db.relationship('Exercise', backref=db.backref('logs', lazy=True))
-
-
-
-class WorkoutPlan(db.Model):
-    __tablename__ = "workout_plans"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    exercises = db.relationship(
-        "Exercise",
-        secondary="workout_plan_exercises",
-        backref=db.backref("workout_plans", lazy=True),
-    )
-
-
-class WorkoutPlanExercise(db.Model):
-    __tablename__ = "workout_plan_exercises"
-    workout_plan_id = db.Column(
-        db.Integer, db.ForeignKey("workout_plans.id"), primary_key=True
-    )
-    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), primary_key=True)
 
 
 

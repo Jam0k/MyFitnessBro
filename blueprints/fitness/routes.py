@@ -8,7 +8,7 @@ from flask import (
     url_for,
     jsonify,
 )
-from models import Exercise, ExerciseLog, WorkoutPlan, CardioLog, db
+from models import Exercise, ExerciseLog, CardioLog, db
 from decimal import Decimal
 from datetime import date, datetime
 
@@ -96,153 +96,16 @@ def browseExercise():
     )
 
 
-@fitness_blueprint.route(
-    "/exercises-and-workouts/create-workout-plan", methods=["GET", "POST"]
-)
-def create_workout_plan():
-    if request.method == "POST":
-        # Parsing JSON data for POST request
-        data = request.get_json()
-        workout_name = data["workout_name"]
-        selected_exercises_ids = data["selected_exercises"]
-        selected_exercises = Exercise.query.filter(
-            Exercise.id.in_(selected_exercises_ids)
-        ).all()
-
-        if selected_exercises:
-            workout_plan = WorkoutPlan(name=workout_name, exercises=selected_exercises)
-            db.session.add(workout_plan)
-            db.session.commit()
-
-        return redirect(url_for("fitness.exercisesAndWorkoutsHome"))
-
-    # Handling GET request to render the page initially
-    exercises = Exercise.query.all()
-    return render_template(
-        "fitness/exercises-and-workouts/workout/create-workout-plan.html",
-        exercises=exercises,
-    )
-
-
-# Browse Workout Page
-@fitness_blueprint.route("/exercises-and-workouts/browse-workout-plans")
-def browseWorkout():
-    return render_template(
-        "fitness/exercises-and-workouts/workout/browse-workout-plan.html"
-    )
-
-# Get workout plans
-@fitness_blueprint.route("/exercises-and-workouts/get-workout-plans")
-def get_workout_plans():
-    # Retrieve all workout plans from the database
-    workout_plans = WorkoutPlan.query.all()
-
-    # Prepare workout plan data in JSON format
-    workout_plan_data = [
-        {
-            "id": workout_plan.id,
-            "name": workout_plan.name,
-            "created_at": workout_plan.created_at.isoformat(),
-            "exercises": [
-                {
-                    "id": exercise.id,
-                    "name": exercise.name,
-                    "category": exercise.category,
-                    "duration_minutes": exercise.duration_minutes,
-                    "sets": exercise.sets,
-                    "reps": exercise.reps,
-                    "weight_lifted": str(exercise.weight_lifted),
-                    "calories_burned": exercise.calories_burned,
-                    "notes": exercise.notes,
-                }
-                for exercise in workout_plan.exercises
-            ],
-        }
-        for workout_plan in workout_plans
-    ]
-
-    # Return the workout plan data as JSON response
-    return jsonify({"data": workout_plan_data})
-
-
-# Retrieve a specific workout plan by ID
-@fitness_blueprint.route(
-    "/exercises-and-workouts/get-workout-plan/<int:workout_plan_id>"
-)
-def get_workout_plan(workout_plan_id):
-    workout_plan = WorkoutPlan.query.get(workout_plan_id)
-    if workout_plan:
-        # Prepare workout plan data in JSON format
-        workout_plan_data = {
-            "id": workout_plan.id,
-            "name": workout_plan.name,
-            "created_at": workout_plan.created_at.isoformat(),
-            "exercises": [exercise.to_dict() for exercise in workout_plan.exercises],
-        }
-        return jsonify(workout_plan_data)
-    # Return error message if workout plan is not found
-    return jsonify({"error": "Workout plan not found"}), 404
-
-
-# Update Workout Plan
-@fitness_blueprint.route(
-    "/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>",
-    methods=["POST"],
-)
-def update_workout_plan(workout_plan_id):
-    data = request.get_json()
-    workout_plan = WorkoutPlan.query.get(workout_plan_id)
-    if workout_plan:
-        workout_plan.name = data.get("name", workout_plan.name)
-
-        # Update exercises list as needed
-        if "exercises" in data:
-            updated_exercise_ids = set(map(int, data["exercises"]))
-            current_exercise_ids = set(
-                exercise.id for exercise in workout_plan.exercises
-            )
-
-            # Add new exercises to the workout plan
-            for exercise_id in updated_exercise_ids - current_exercise_ids:
-                exercise = Exercise.query.get(exercise_id)
-                if exercise:
-                    workout_plan.exercises.append(exercise)
-
-            # Remove exercises that are no longer in the updated list
-            for exercise_id in current_exercise_ids - updated_exercise_ids:
-                exercise = Exercise.query.get(exercise_id)
-                if exercise:
-                    workout_plan.exercises.remove(exercise)
-
-        db.session.commit()
-        return jsonify({"message": "Workout plan updated successfully"})
-    return jsonify({"error": "Workout plan not found"}), 404
-
-
-# Delete Workout Plan
-@fitness_blueprint.route(
-    "/exercises-and-workouts/delete-workout-plan/<int:workout_plan_id>",
-    methods=["DELETE"],
-)
-def delete_workout_plan(workout_plan_id):
-    workout_plan = WorkoutPlan.query.get(workout_plan_id)
-    if workout_plan:
-        db.session.delete(workout_plan)
-        db.session.commit()
-        return jsonify({"message": "Workout plan deleted successfully"})
-    return jsonify({"error": "Workout plan not found"}), 404
-
 # Delete Exercise
-@fitness_blueprint.route(
-    "/exercises-and-workouts/delete-exercise/<int:exercise_id>", methods=["DELETE"]
-)
+@fitness_blueprint.route("/exercises-and-workouts/delete-exercise/<int:exercise_id>", methods=["DELETE"])
 def delete_exercise(exercise_id):
     exercise = Exercise.query.get(exercise_id)
     if exercise:
+        if ExerciseLog.query.filter_by(exercise_id=exercise.id).first():
+            return jsonify({"error": "Cannot delete exercise because it is referenced in exercise logs"}), 400
         db.session.delete(exercise)
         db.session.commit()
-        return jsonify({"message": "Exercise deleted successfully"})
-    return jsonify({"error": "Exercise not found"}), 404
+        return jsonify({"message": "Exercise deleted successfully"}), 200
 
 # Get Exercise
 @fitness_blueprint.route("/exercises-and-workouts/get-exercise/<int:exercise_id>")
@@ -262,28 +125,12 @@ def update_exercise(exercise_id):
     if exercise:
         exercise.name = data.get("name", exercise.name)
         exercise.category = data.get("category", exercise.category)
-
-        # Handle integer fields with a utility function
-        exercise.duration_minutes = convert_to_int(
-            data.get("duration_minutes"), default=exercise.duration_minutes
-        )
-        exercise.sets = convert_to_int(data.get("sets"), default=exercise.sets)
-        exercise.reps = convert_to_int(data.get("reps"), default=exercise.reps)
-        exercise.calories_burned = convert_to_int(
-            data.get("calories_burned"), default=exercise.calories_burned
-        )
-
-        # For numeric/decimal fields
-        weight_lifted = data.get("weight_lifted")
-        exercise.weight_lifted = (
-            Decimal(weight_lifted) if weight_lifted else exercise.weight_lifted
-        )
-
         exercise.notes = data.get("notes", exercise.notes)
 
         db.session.commit()
         return jsonify({"message": "Exercise updated successfully"})
     return jsonify({"error": "Exercise not found"}), 404
+
 
 
 def convert_to_int(value, default=None):
@@ -336,64 +183,6 @@ def log_exercise():
             today_date=today_date
         )
 
-# Log Workout
-@fitness_blueprint.route("/exercises-and-workouts/log-workout", methods=["GET", "POST"])
-def logWorkout():
-    if request.method == "POST":
-        # Parse JSON data from the request
-        data = request.get_json()
-
-        if not data:
-            return jsonify({"error": "Invalid JSON data"}), 400
-
-        workout_plan_ids = data.get("workout_plan_ids")
-        log_date = data.get("date")
-
-        if not workout_plan_ids or not log_date:
-            return jsonify({"error": "Missing required data"}), 400
-
-        # Create ExerciseLog entries for the selected workout plans and log date
-        for workout_plan_id in workout_plan_ids:
-            exercise_log = ExerciseLog(
-                workout_plan_id=workout_plan_id, log_date=log_date
-            )
-            db.session.add(exercise_log)
-        db.session.commit()
-
-        return jsonify({"message": "Workout(s) logged successfully"}), 200
-
-    # Fetch workout plans from the database
-    workout_plans = WorkoutPlan.query.all()
-
-    # Get today's date as a default date
-    today_date = date.today().isoformat()
-
-    return render_template(
-        "fitness/exercises-and-workouts/workout/log-workout.html",
-        workout_plans=workout_plans,
-        today_date=today_date,
-    )
-
-# Update Workout Plan
-@fitness_blueprint.route(
-    "/exercises-and-workouts/update-workout-plan/<int:workout_plan_id>",
-    methods=["POST"],
-)
-def updateWorkoutPlan(workout_plan_id):
-    # Parse JSON data from the request
-    data = request.get_json()
-
-    # Retrieve the workout plan from the database
-    workout_plan = WorkoutPlan.query.get(workout_plan_id)
-
-    if workout_plan:
-        # Update the workout plan with the provided data
-        workout_plan.name = data.get("name", workout_plan.name)
-        # Handle any other updatable fields here
-
-        db.session.commit()
-        return jsonify({"message": "Workout plan updated successfully"})
-    return jsonify({"error": "Workout plan not found"}), 404
 
 @fitness_blueprint.route("/tracking", methods=["GET", "POST"])
 def tracking():
@@ -419,6 +208,7 @@ def tracking():
 
         exercise_logs_data = [
             {
+                "id": log.id,  # Include the log ID
                 "name": log.exercise.name,
                 "sets": log.sets,
                 "reps": log.reps,
@@ -430,6 +220,7 @@ def tracking():
 
         cardio_logs_data = [
             {
+                "id": log.id,  # Include the log ID
                 "activity": log.activity,
                 "duration": log.duration,
                 "calories_burned": log.calories_burned,
@@ -508,3 +299,27 @@ def get_cardio_logs():
     ]
 
     return jsonify({"cardio_logs": cardio_logs_data})
+
+
+
+
+
+# Delete Exercise Log
+@fitness_blueprint.route("/delete-exercise-log/<int:log_id>", methods=["DELETE"])
+def delete_exercise_log(log_id):
+    log = ExerciseLog.query.get(log_id)
+    if log:
+        db.session.delete(log)
+        db.session.commit()
+        return jsonify({"message": "Exercise log deleted successfully"}), 200
+    return jsonify({"error": "Log not found"}), 404
+
+# Delete Cardio Log
+@fitness_blueprint.route("/delete-cardio-log/<int:log_id>", methods=["DELETE"])
+def delete_cardio_log(log_id):
+    log = CardioLog.query.get(log_id)
+    if log:
+        db.session.delete(log)
+        db.session.commit()
+        return jsonify({"message": "Cardio log deleted successfully"}), 200
+    return jsonify({"error": "Log not found"}), 404
