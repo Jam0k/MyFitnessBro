@@ -18,6 +18,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
+app.config['WTF_CSRF_ENABLED'] = False
+
 # Database connection parameters
 db_user = os.environ.get('POSTGRES_USER')
 db_password = os.environ.get('POSTGRES_PASSWORD')
