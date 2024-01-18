@@ -599,20 +599,31 @@ def tracking():
     for key in grand_total:
         grand_total[key] = round(grand_total[key], 1)
 
-    # Convert defaultdict to regular dict for JSON serialization
-    daily_macros = dict(daily_macros)
+        # Convert defaultdict to regular dict for JSON serialization
+        daily_macros = dict(daily_macros)
 
     # Fetch the goal data
     goal_data = Goal.query.first()
 
-    # Calculate remaining goals, allowing negative values
+    # Initialize default values for remaining goals
     remaining_goals = {
-        "remaining_calories": goal_data.calories - grand_total["calories"],
-        "remaining_fat": goal_data.fat - grand_total["total_fat"],
-        "remaining_carbohydrates": goal_data.carbohydrates - grand_total["total_carbohydrate"],
-        "remaining_sugars": goal_data.sugars - grand_total["total_sugars"],
-        "remaining_protein": goal_data.protein - grand_total["total_protein"],
+        "remaining_calories": 0,
+        "remaining_fat": 0,
+        "remaining_carbohydrates": 0,
+        "remaining_sugars": 0,
+        "remaining_protein": 0,
     }
+
+    # Calculate remaining goals if goal_data is not None
+    if goal_data is not None:
+        remaining_goals = {
+            "remaining_calories": goal_data.calories - grand_total["calories"],
+            "remaining_fat": goal_data.fat - grand_total["total_fat"],
+            "remaining_carbohydrates": goal_data.carbohydrates - grand_total["total_carbohydrate"],
+            "remaining_sugars": goal_data.sugars - grand_total["total_sugars"],
+            "remaining_protein": goal_data.protein - grand_total["total_protein"],
+        }
+
     return render_template(
         "nutrition/tracking/tracking.html",
         meal_type_data=meal_type_data,

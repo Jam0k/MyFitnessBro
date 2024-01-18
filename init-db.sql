@@ -45,24 +45,16 @@ CREATE TABLE exercises (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the Workout Plans table
-CREATE TABLE workout_plans (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create the Workout Plan Exercises junction table
-CREATE TABLE workout_plan_exercises (
-    workout_plan_id INTEGER REFERENCES workout_plans(id),
-    exercise_id INTEGER REFERENCES exercises(id),
-    PRIMARY KEY (workout_plan_id, exercise_id)
-);
-
 CREATE TABLE exercise_logs (
     id SERIAL PRIMARY KEY,
     exercise_id INTEGER REFERENCES exercises(id),
-    workout_plan_id INTEGER REFERENCES workout_plans(id),  -- Added field for workout plan
-    log_date DATE NOT NULL DEFAULT CURRENT_DATE
+    sets INTEGER NOT NULL,
+    reps INTEGER NOT NULL,
+    weight FLOAT,
+    notes TEXT,
+    log_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE CardioLog (
