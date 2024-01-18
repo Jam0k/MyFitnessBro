@@ -101,11 +101,6 @@ class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     category = db.Column(db.String(100))
-    duration_minutes = db.Column(db.Integer)
-    sets = db.Column(db.Integer)
-    reps = db.Column(db.Integer)
-    weight_lifted = db.Column(db.Numeric(5, 2))
-    calories_burned = db.Column(db.Integer)
     notes = db.Column(db.Text)
     log_date = db.Column(db.Date, nullable=False, default=db.func.current_date())
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
@@ -116,61 +111,27 @@ class Exercise(db.Model):
             "id": self.id,
             "name": self.name,
             "category": self.category,
-            "duration_minutes": self.duration_minutes,
-            "sets": self.sets,
-            "reps": self.reps,
-            "weight_lifted": str(self.weight_lifted),
-            "calories_burned": self.calories_burned,
             "notes": self.notes,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }
 
 
-class WorkoutPlan(db.Model):
-    __tablename__ = "workout_plans"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    exercises = db.relationship(
-        "Exercise",
-        secondary="workout_plan_exercises",
-        backref=db.backref("workout_plans", lazy=True),
-    )
-
-
-class WorkoutPlanExercise(db.Model):
-    __tablename__ = "workout_plan_exercises"
-    workout_plan_id = db.Column(
-        db.Integer, db.ForeignKey("workout_plans.id"), primary_key=True
-    )
-    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), primary_key=True)
-
-
 class ExerciseLog(db.Model):
     __tablename__ = "exercise_logs"
 
     id = db.Column(db.Integer, primary_key=True)
-    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
-    workout_plan_id = db.Column(
-        db.Integer, db.ForeignKey("workout_plans.id")
-    )  # Added workout_plan_id
-    log_date = db.Column(db.Date, nullable=False, default=db.func.current_date())
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=True)
+    sets = db.Column(db.Integer, nullable=False)
+    reps = db.Column(db.Integer, nullable=False)
+    weight = db.Column(db.Float)
+    notes = db.Column(db.Text)
+    log_date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    exercise = db.relationship(
-        "Exercise", backref=db.backref("exercise_logs", lazy="dynamic")
-    )
-    workout_plan = db.relationship(
-        "WorkoutPlan", backref=db.backref("exercise_logs", lazy="dynamic")
-    )  # Added workout_plan relationship
+    exercise = db.relationship('Exercise', backref=db.backref('logs', lazy=True))
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "exercise_id": self.exercise_id,
-            "workout_plan_id": self.workout_plan_id,  # Include the workout_plan_id in the to_dict method
-            "log_date": self.log_date,
-        }
 
 
 class CardioLog(db.Model):
@@ -179,7 +140,6 @@ class CardioLog(db.Model):
     id = db.Column(
         db.Integer, primary_key=True
     )  # SERIAL in PostgreSQL is represented as Integer in SQLAlchemy
-    name = db.Column(db.String(255), nullable=False)
     activity = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     calories_burned = db.Column(db.Integer, nullable=False)
@@ -189,7 +149,6 @@ class CardioLog(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
             "activity": self.activity,
             "duration": self.duration,
             "calories_burned": self.calories_burned,

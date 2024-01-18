@@ -1,19 +1,25 @@
 $(document).ready(function() {
     $('#exerciseTable').DataTable({
-        ajax: '/fitness/exercises-and-workouts/get-exercises',
+        ajax: '/fitness/get-exercises',
         columns: [
             { data: 'name' },
             { data: 'category' },
-            { data: 'duration_minutes' },
-            { data: 'sets' },
-            { data: 'reps' },
-            { data: 'weight_lifted' },
-            { data: 'calories_burned' },
             { data: 'notes' },
+            { 
+                data: 'created_at',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleDateString() : ''; // Format the date
+                }
+            },
+            { 
+                data: 'updated_at',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleDateString() : ''; // Format the date
+                }
+            },
             {
                 data: 'id', // Use 'id' to create buttons
                 render: function(data, type, row) {
-                    // Create Edit and Delete buttons
                     return '<button class="btn btn-primary edit-btn" data-id="' + data + '">Edit</button>' +
                            '<button class="btn btn-danger delete-btn" data-id="' + data + '">Delete</button>';
                 },
@@ -27,17 +33,15 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
         var exerciseId = $(this).data('id');
 
         $.ajax({
-            url: '/fitness/exercises-and-workouts/get-exercise/' + exerciseId,
+            url: '/fitness/get-exercise/' + exerciseId,
             type: 'GET',
             success: function(response) {
                 $('#editExerciseId').val(response.id);
                 $('#editExerciseName').val(response.name);
                 $('#editExerciseCategory').val(response.category);
-                $('#editExerciseDuration').val(response.duration_minutes);
                 $('#editExerciseSets').val(response.sets);
                 $('#editExerciseReps').val(response.reps);
                 $('#editExerciseWeight').val(response.weight_lifted);
-                $('#editExerciseCalories').val(response.calories_burned);
                 $('#editExerciseNotes').val(response.notes);
 
                 $('#editExerciseModal').modal('show');
@@ -53,16 +57,14 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
         var updatedData = {
             name: $('#editExerciseName').val(),
             category: $('#editExerciseCategory').val(),
-            duration_minutes: $('#editExerciseDuration').val(),
             sets: $('#editExerciseSets').val(),
             reps: $('#editExerciseReps').val(),
             weight_lifted: $('#editExerciseWeight').val(),
-            calories_burned: $('#editExerciseCalories').val(),
             notes: $('#editExerciseNotes').val()
         };
 
         $.ajax({
-            url: '/fitness/exercises-and-workouts/update-exercise/' + exerciseId,
+            url: '/fitness/update-exercise/' + exerciseId,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(updatedData),
@@ -83,7 +85,7 @@ $('#exerciseTable').on('click', '.delete-btn', function() {
     if (confirm('Are you sure you want to delete this exercise?')) {
         // AJAX request to delete the exercise
         $.ajax({
-            url: '/fitness/exercises-and-workouts/delete-exercise/' + exerciseId,
+            url: '/fitness/delete-exercise/' + exerciseId,
             type: 'DELETE',
             success: function(response) {
                 // Reload the DataTable to reflect changes
