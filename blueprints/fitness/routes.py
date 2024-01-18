@@ -46,9 +46,7 @@ def create_exercise():
         return redirect(url_for("fitness.fitness_home"))
 
     # Render the create exercise template for GET request
-    return render_template(
-        "fitness/create-exercise.html"
-    )
+    return render_template("fitness/create-exercise.html")
 
 
 # Route to get exercise data in JSON format
@@ -79,19 +77,24 @@ def get_exercises():
     # Return the exercise data as JSON
     return jsonify({"data": exercise_data})
 
+# Delete Exercise Log (From Overview)
+@fitness_blueprint.route("/delete-exercise-log/<int:log_id>", methods=["DELETE"])
+def delete_exercise_log(log_id):
+    log = ExerciseLog.query.get(log_id)
+    if log:
+        db.session.delete(log)
+        db.session.commit()
+        return jsonify({"message": "Exercise log deleted successfully"}), 200
+    return jsonify({"error": "Log not found"}), 404
 
 # Browse Exercise
 @fitness_blueprint.route("/browse-exercise")
 def browseExercise():
-    return render_template(
-        "fitness/browse-exercise.html"
-    )
+    return render_template("fitness/browse-exercise.html")
 
 
 # Delete Exercise
-@fitness_blueprint.route(
-    "delete-exercise/<int:exercise_id>", methods=["DELETE"]
-)
+@fitness_blueprint.route("delete-exercise/<int:exercise_id>", methods=["DELETE"])
 def delete_exercise(exercise_id):
     exercise = Exercise.query.get(exercise_id)
     if exercise:
@@ -107,6 +110,7 @@ def delete_exercise(exercise_id):
         db.session.delete(exercise)
         db.session.commit()
         return jsonify({"message": "Exercise deleted successfully"}), 200
+    
 
 
 # Get Exercise
@@ -119,9 +123,7 @@ def get_exercise(exercise_id):
 
 
 # Update Exercise
-@fitness_blueprint.route(
-    "update-exercise/<int:exercise_id>", methods=["POST"]
-)
+@fitness_blueprint.route("update-exercise/<int:exercise_id>", methods=["POST"])
 def update_exercise(exercise_id):
     data = request.get_json()
     exercise = Exercise.query.get(exercise_id)
@@ -142,9 +144,7 @@ def convert_to_int(value, default=None):
         return default
 
 
-@fitness_blueprint.route(
-    "log-exercise", methods=["GET", "POST"]
-)
+@fitness_blueprint.route("log-exercise", methods=["GET", "POST"])
 def log_exercise():
     if request.method == "POST":
         try:
@@ -250,10 +250,9 @@ def tracking():
             }
         )
 
-    return render_template("fitness/tracking/tracking.html", current_date=current_date)
-
-
 # Cardio Routes
+    
+
 @fitness_blueprint.route("/cardio-and-aerobics")
 def cardioAndAerobics():
     return render_template("fitness/cardio-and-aerobics-home.html")
@@ -310,18 +309,6 @@ def get_cardio_logs():
     ]
 
     return jsonify({"cardio_logs": cardio_logs_data})
-
-
-# Delete Exercise Log
-@fitness_blueprint.route("/delete-exercise-log/<int:log_id>", methods=["DELETE"])
-def delete_exercise_log(log_id):
-    log = ExerciseLog.query.get(log_id)
-    if log:
-        db.session.delete(log)
-        db.session.commit()
-        return jsonify({"message": "Exercise log deleted successfully"}), 200
-    return jsonify({"error": "Log not found"}), 404
-
 
 # Delete Cardio Log
 @fitness_blueprint.route("/delete-cardio-log/<int:log_id>", methods=["DELETE"])
