@@ -4,19 +4,6 @@
   <hr>
     <!-- Buttons for Logging Food and Meal -->
     <p class="lead">Log Your Fitness</p>
-    <div class="mb-4">
-      <a class="btn btn-success mr-2" href="{{ url_for('fitness.logExercise') }}">
-        <i class="fas fa-dumbbell"></i> Log Exercise
-    </a>
-    <a class="btn btn-success mr-2" href="{{ url_for('fitness.logWorkout') }}">
-        <i class="fas fa-list"></i> Log Workout
-    </a>
-    <a class="btn btn-success mr-2" href="{{ url_for('fitness.cardioAndAerobics') }}">
-      <i class="fas fa-person-running"></i> Log Cardio
-    </a>
-         
-                 
-    </div>
 
     <hr>
 
@@ -37,35 +24,14 @@
     <thead>
       <tr>
         <th>Exercise Name</th>
-        <th>Category</th>
-        <th>Duration (Minutes)</th>
-        <th>Calories Burned</th>
-        <th>Reps</th>
         <th>Sets</th>
+        <th>Reps</th>
         <th>Weight Lifted</th>
         <th>Notes</th>
       </tr>
     </thead>
-
     <tbody>
       <!-- Table rows for exercise logs will be generated here dynamically -->
-    </tbody>
-  </table>
-</div>
-<hr>
-
-<div id="workout-plan-logs">
-  <h3>Workouts</h3>
-  <table id="workout-plan-logs-table" class="table table-striped">
-    <thead>
-      <tr>
-        <th>Workout Name</th>
-        <th>Actions</th>
-        <!-- Column for actions like View Exercises -->
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Table rows for workout plan logs will be generated here dynamically -->
     </tbody>
   </table>
 </div>

@@ -395,35 +395,22 @@ def updateWorkoutPlan(workout_plan_id):
         return jsonify({"message": "Workout plan updated successfully"})
     return jsonify({"error": "Workout plan not found"}), 404
 
-# Tracking Routes
 @fitness_blueprint.route("/tracking", methods=["GET", "POST"])
 def tracking():
     current_date = datetime.now().strftime("%Y-%m-%d")
 
     if request.method == "POST":
         selected_date_str = request.form.get("date")
-        selected_date = (
-            datetime.strptime(selected_date_str, "%Y-%m-%d")
-            if selected_date_str
-            else None
-        )
+        selected_date = datetime.strptime(selected_date_str, "%Y-%m-%d") if selected_date_str else None
 
         exercise_logs = []
-        workout_plan_logs = []
         cardio_logs = []
 
         if selected_date:
             # Query exercise logs for the selected date
             exercise_logs = ExerciseLog.query.filter(
-                ExerciseLog.log_date == selected_date,
-                ExerciseLog.exercise_id.isnot(None),
-            ).all()
-
-            # Query workout plan logs for the selected date
-            workout_plan_logs = ExerciseLog.query.filter(
-                ExerciseLog.log_date == selected_date,
-                ExerciseLog.workout_plan_id.isnot(None),
-            ).all()
+                ExerciseLog.log_date == selected_date
+            ).join(ExerciseLog.exercise).all()
 
             # Query cardio logs for the selected date
             cardio_logs = CardioLog.query.filter(
@@ -432,46 +419,22 @@ def tracking():
 
         exercise_logs_data = [
             {
-                "exercise": {
-                    "name": log.exercise.name if log.exercise else None,
-                    "category": log.exercise.category if log.exercise else None,
-                    "duration_minutes": log.exercise.duration_minutes
-                    if log.exercise
-                    else None,
-                    "sets": log.exercise.sets if log.exercise else None,
-                    "reps": log.exercise.reps if log.exercise else None,
-                    "weight_lifted": str(log.exercise.weight_lifted)
-                    if log.exercise
-                    else None,
-                    "calories_burned": log.exercise.calories_burned
-                    if log.exercise
-                    else None,
-                    "notes": log.exercise.notes if log.exercise else None,
-                }
+                "name": log.exercise.name,
+                "sets": log.sets,
+                "reps": log.reps,
+                "weight": log.weight,
+                "notes": log.notes,
             }
             for log in exercise_logs
         ]
 
-        workout_plan_logs_data = [
-            {
-                "workout_plan": {
-                    "id": log.workout_plan.id,  # Include the ID here
-                    "name": log.workout_plan.name if log.workout_plan else None,
-                }
-            }
-            for log in workout_plan_logs
-        ]
-
         cardio_logs_data = [
             {
-                "cardio_log": {
-                    "name": log.name,
-                    "activity": log.activity,
-                    "duration": log.duration,
-                    "calories_burned": log.calories_burned,
-                    "date": log.date.strftime("%Y-%m-%d") if log.date else None,
-                    "notes": log.notes,
-                }
+                "name": log.name,
+                "activity": log.activity,
+                "duration": log.duration,
+                "calories_burned": log.calories_burned,
+                "notes": log.notes,
             }
             for log in cardio_logs
         ]
@@ -479,7 +442,6 @@ def tracking():
         return jsonify(
             {
                 "exercise_logs": exercise_logs_data,
-                "workout_plan_logs": workout_plan_logs_data,
                 "cardio_logs": cardio_logs_data,
                 "current_date": current_date,
             }
