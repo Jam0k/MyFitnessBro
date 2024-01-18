@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('#exerciseTable').DataTable({
-        ajax: '/fitness/exercises-and-workouts/get-exercises',
+        ajax: '/fitness/get-exercises',
         columns: [
             { data: 'name' },
             { data: 'category' },
@@ -33,7 +33,7 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
         var exerciseId = $(this).data('id');
 
         $.ajax({
-            url: '/fitness/exercises-and-workouts/get-exercise/' + exerciseId,
+            url: '/fitness/get-exercise/' + exerciseId,
             type: 'GET',
             success: function(response) {
                 $('#editExerciseId').val(response.id);
@@ -64,7 +64,7 @@ $('#exerciseTable').on('click', '.edit-btn', function() {
         };
 
         $.ajax({
-            url: '/fitness/exercises-and-workouts/update-exercise/' + exerciseId,
+            url: '/fitness/update-exercise/' + exerciseId,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(updatedData),
@@ -85,7 +85,7 @@ $('#exerciseTable').on('click', '.delete-btn', function() {
     if (confirm('Are you sure you want to delete this exercise?')) {
         // AJAX request to delete the exercise
         $.ajax({
-            url: '/fitness/exercises-and-workouts/delete-exercise/' + exerciseId,
+            url: '/fitness/delete-exercise/' + exerciseId,
             type: 'DELETE',
             success: function(response) {
                 // Reload the DataTable to reflect changes

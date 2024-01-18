@@ -68,8 +68,8 @@ CREATE TABLE exercise_logs (
 CREATE TABLE CardioLog (
     id SERIAL PRIMARY KEY,
     activity VARCHAR(255) NOT NULL,
-    duration INT NOT NULL,
-    calories_burned INT NOT NULL,
+    duration INT,
+    calories_burned INT,
     date DATE NOT NULL,
     notes TEXT -- TEXT type for potentially longer notes
 );

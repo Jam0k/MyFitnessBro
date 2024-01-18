@@ -1,7 +1,7 @@
 $(document).ready(function() {
   // Populate exercise dropdown
   $.ajax({
-    url: '/fitness/exercises-and-workouts/get-exercises',
+    url: '/fitness/get-exercises',
     type: 'GET',
     success: function(response) {
       var exercises = response.data;
@@ -36,7 +36,7 @@ $(document).ready(function() {
     };
 
     $.ajax({
-      url: '/fitness/exercises-and-workouts/log-exercise',
+      url: '/fitness/log-exercise',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(logData),

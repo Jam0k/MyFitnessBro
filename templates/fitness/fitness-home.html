@@ -1,43 +1,75 @@
-{% extends 'base.html' %}
-
+{% extends 'base.html' %} 
 {% block content %}
 <div class="container mt-4">
-    <h1>Fitness</h1>
-    <p>Track and manage your fitness routines and activities to stay healthy and fit.</p>
+  <h1>Fitness</h1>
+  <p class="lead">Log and track your fitness activities.</p>
 
-    <div class="row">
-        <!-- Tracking Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Tracking</h5>
-                    <p class="card-text">Monitor your daily, weekly, and monthly fitness progress.</p>
-                    <a href="/fitness/tracking" class="btn btn-success"><i class="fas fa-chart-line"></i> View Tracking</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exercises and Workouts Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Exercises and Workouts</h5>
-                    <p class="card-text">Log your exercises and create personalized workout plans.</p>
-                    <a href="/fitness/exercises-and-workouts" class="btn btn-success"><i class="fas fa-dumbbell"></i> View Exercises</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cardio and Aerobics Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Cardio and Aerobics</h5>
-                    <p class="card-text">Record your cardio activities and improve your cardiovascular health.</p>
-                    <a href="/fitness/cardio-and-aerobics" class="btn btn-success"><i class="fas fa-running"></i> View Cardio</a>
-                </div>
-            </div>
-        </div>
+  <!-- Navigation Buttons -->
+  <div class="row mb-4">
+    <div class="col">
+      <a href="log-exercise" class="btn btn-success">Log Exercise</a>
+      <a href="create-exercise" class="btn btn-success">Create Exercise</a>
+      <a href="browse-exercise" class="btn btn-success">Browse Exercises</a>
+      <a href="cardio-and-aerobics" class="btn btn-success">Log Cardio</a>
     </div>
+  </div>
+
+  <hr>
+
+  <!-- Date Filter -->
+  <div class="form-group">
+    <label for="dateFilter">Select a Date:</label>
+    <input
+      type="date"
+      class="form-control"
+      id="dateFilter"
+      name="dateFilter"
+      value="{{ current_date }}"
+    />
+  </div>
+  <hr>
+
+  <!-- Exercise Logs Section -->
+  <div id="exercise-logs">
+    <h3>Exercises</h3>
+    <table id="exercise-logs-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Sets</th>
+          <th>Reps</th>
+          <th>Weight</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here by DataTables -->
+      </tbody>
+    </table>
+  </div>
+  <hr>
+
+  <!-- Cardio Logs Section -->
+  <div id="cardio-logs">
+    <h3>Cardio</h3>
+    <table id="cardio-logs-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Activity</th>
+          <th>Duration</th>
+          <th>Calories Burned</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here by DataTables -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/fitness/home.js') }}"></script>
+
 </div>
 {% endblock %}
