@@ -42,7 +42,6 @@
   <table id="cardio-logs-table" class="table table-striped">
 <thead>
 <tr>
-<th>Name</th>
 <th>Activity</th>
 <th>Duration (Minutes)</th>
 <th>Calories Burned</th>
@@ -54,49 +53,6 @@
 </tbody>
 
   </table>
-</div>
-
-<!-- Updated Modal Structure -->
-<div class="modal fade" id="viewExercisesModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalLabel">Exercises in Workout Plan</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table id="exercisesDataTable" class="table table-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Duration</th>
-              <th>Calories Burned</th>
-              <th>Reps</th>
-              <th>Sets</th>
-              <th>Weight Lifted</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Data will be inserted here -->
-          </tbody>
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script src="{{ url_for('static', filename='js/fitness-tracking/tracking.js') }}"></script>

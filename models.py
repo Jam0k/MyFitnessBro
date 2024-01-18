@@ -161,7 +161,6 @@ class CardioLog(db.Model):
     id = db.Column(
         db.Integer, primary_key=True
     )  # SERIAL in PostgreSQL is represented as Integer in SQLAlchemy
-    name = db.Column(db.String(255), nullable=False)
     activity = db.Column(db.String(255), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     calories_burned = db.Column(db.Integer, nullable=False)
@@ -171,7 +170,6 @@ class CardioLog(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
             "activity": self.activity,
             "duration": self.duration,
             "calories_burned": self.calories_burned,

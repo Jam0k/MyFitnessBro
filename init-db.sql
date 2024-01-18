@@ -67,7 +67,6 @@ CREATE TABLE exercise_logs (
 
 CREATE TABLE CardioLog (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
     activity VARCHAR(255) NOT NULL,
     duration INT NOT NULL,
     calories_burned INT NOT NULL,

@@ -29,13 +29,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const cardioLogsTable = $("#cardio-logs-table").DataTable({
         columns: [
-            { data: "cardio_log.name" },
-            { data: "cardio_log.activity" },
-            { data: "cardio_log.duration" },
-            { data: "cardio_log.calories_burned" },
-            { data: "cardio_log.notes" },
+            { data: "activity" },          // Directly accessing the 'activity'
+            { data: "duration" },          // Directly accessing the 'duration'
+            { data: "calories_burned" },   // Directly accessing the 'calories_burned'
+            { data: "notes" },             // Directly accessing the 'notes'
         ],
     });
+    
 
     function fetchLogs(date) {
         fetch("/fitness/tracking", {

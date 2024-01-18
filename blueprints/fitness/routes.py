@@ -430,7 +430,6 @@ def tracking():
 
         cardio_logs_data = [
             {
-                "name": log.name,
                 "activity": log.activity,
                 "duration": log.duration,
                 "calories_burned": log.calories_burned,
@@ -457,7 +456,6 @@ def cardioAndAerobics():
 @fitness_blueprint.route("/cardio-and-aerobics/submit-cardio-log", methods=['POST'])
 def submit_cardio_log():
     # Retrieve form data
-    name = request.form.get('name')
     activity = request.form.get('activity')
     duration = request.form.get('duration', type=int)
     calories_burned = request.form.get('calories_burned', type=int)
@@ -466,7 +464,6 @@ def submit_cardio_log():
 
     # Create a new CardioLog object
     cardio_log = CardioLog(
-        name=name,
         activity=activity,
         duration=duration,
         calories_burned=calories_burned,
