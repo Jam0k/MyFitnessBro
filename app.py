@@ -12,6 +12,7 @@ from models import db
 from blueprints.nutrition.routes import nutrition_blueprint
 from blueprints.dashboard.routes import dashboard_blueprint
 from blueprints.fitness.routes import fitness_blueprint
+from blueprints.progress.routes import progress_blueprint
 
 # Load environment variables
 load_dotenv()
@@ -72,6 +73,7 @@ def index():
 app.register_blueprint(nutrition_blueprint)
 app.register_blueprint(dashboard_blueprint)
 app.register_blueprint(fitness_blueprint)
+app.register_blueprint(progress_blueprint)
 
 if __name__ == '__main__':
     app.run(debug=True)
