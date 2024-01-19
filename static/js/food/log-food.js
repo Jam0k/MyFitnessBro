@@ -15,6 +15,11 @@ $(document).ready(function() {
                 columns: [
                     { data: 'name' },
                     { data: 'calories' },
+                    { data: 'total_protein' },
+                    { data: 'total_carbohydrate' },
+                    { data: 'total_sugars' },
+                    { data: 'total_fat' },
+
                     { data: 'id', render: function(data) {
                         return `<button class="btn btn-primary select-food-item-btn" data-id="${data}">Select</button>`;
                     }}

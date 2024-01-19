@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Welcome to MyFitnessBro</h1>
-    <p>This is a simple Flask application focused on health and fitness.</p>
-
+    <p class="lead">MyFitnessBro is a web application that allows you to track your nutrition and fitness goals. You can also view your progress and insights.</p>
+    <hr>
     <!-- Section Buttons -->
     <div class="row mt-4">
       <div class="col-sm-4 mb-3">
@@ -16,6 +16,14 @@
       <div class="col-sm-4 mb-3">
         <a href="/progress" class="btn btn-warning btn-block" style="padding: 20px; border-radius: 0;"><i class="fas fa-chart-line"></i> Progress & Insights</a>
       </div>
+      
     </div>
+
   </div>
+<!-- Footer -->
+<footer class="footer mt-auto py-3 bg-light text-center" style="position: fixed; bottom: 0; width: 100%; left: 0; right: 0;">
+  <div>
+    <span class="text-muted">Made by <a href="https://www.github.com/Jam0k" target="_blank">James Mockford</a>.</span>  </div>
+</footer>
 {% endblock %}
+

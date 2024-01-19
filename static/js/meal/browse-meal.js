@@ -89,6 +89,9 @@ $("#editMealContent").on(
   }
 );
 
+// Define a variable at the top of your script to hold the chart instance
+var macrosPieChart;
+
 $("#mealsTable").on("click", ".show-macros-btn", function () {
   var mealId = $(this).data("id");
 
@@ -96,9 +99,15 @@ $("#mealsTable").on("click", ".show-macros-btn", function () {
     url: "/nutrition/meals-and-foods/get-macros/" + mealId,
     method: "GET",
     success: function (response) {
-      // Render Chart
       var ctx = document.getElementById("macrosPieChart").getContext("2d");
-      new Chart(ctx, {
+
+      // Check if the chart already exists and destroy it if it does
+      if (macrosPieChart) {
+        macrosPieChart.destroy();
+      }
+
+      // Create a new chart
+      macrosPieChart = new Chart(ctx, {
         type: "pie",
         data: response.chartData,
         options: {
