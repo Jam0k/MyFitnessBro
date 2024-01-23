@@ -1,5 +1,8 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
+
+  
+
   <h1>Nutrition Dashboard</h1>
   <hr />
   <p class="lead">Menu Selection</p>
@@ -394,104 +397,57 @@
   </div>
 
   <!-- Create Food Modal -->
-  <div
-    class="modal fade"
-    id="createFoodModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="createFoodModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="createFoodModal" tabindex="-1" role="dialog" aria-labelledby="createFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="createFoodModalLabel">Create Food</h5>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form action="/nutrition/create-new-food-item" method="post">
-            <!-- Form Fields Here -->
-            <div class="form-group">
-              <label for="name">Food Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="serving_size">Serving Size (g)</label>
-              <input
-                type="text"
-                class="form-control"
-                id="serving_size"
-                name="serving_size"
-              />
-            </div>
-            <div class="form-group">
-              <label for="calories">Calories</label>
-              <input
-                type="number"
-                class="form-control"
-                id="calories"
-                name="calories"
-              />
-            </div>
-            <div class="form-group">
-              <label for="total_fat">Total Fat (g)</label>
-              <input
-                type="number"
-                step="0.01"
-                class="form-control"
-                id="total_fat"
-                name="total_fat"
-              />
-            </div>
-            <div class="form-group">
-              <label for="total_carbohydrate">Total Carbohydrate (g)</label>
-              <input
-                type="number"
-                step="0.01"
-                class="form-control"
-                id="total_carbohydrate"
-                name="total_carbohydrate"
-              />
-            </div>
-            <div class="form-group">
-              <label for="total_sugars">Total Sugars (g)</label>
-              <input
-                type="number"
-                step="0.01"
-                class="form-control"
-                id="total_sugars"
-                name="total_sugars"
-              />
-            </div>
-            <div class="form-group">
-              <label for="total_protein">Total Protein (g)</label>
-              <input
-                type="number"
-                step="0.01"
-                class="form-control"
-                id="total_protein"
-                name="total_protein"
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">Add Food</button>
-          </form>
-        </div>
+          <div class="modal-header">
+              <h5 class="modal-title" id="createFoodModalLabel">Create Food</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="foodForm">
+                  <!-- Form Fields Here -->
+                  <div class="form-group">
+                      <label for="name">Food Name</label>
+                      <input type="text" class="form-control" id="name" name="name" required />
+                  </div>
+                  <div class="form-group">
+                      <label for="serving_size">Serving Size (g)</label>
+                      <input type="text" class="form-control" id="serving_size" name="serving_size" />
+                  </div>
+                  <div class="form-group">
+                      <label for="calories">Calories</label>
+                      <input type="number" class="form-control" id="calories" name="calories" />
+                  </div>
+                  <div class="form-group">
+                      <label for="total_fat">Total Fat (g)</label>
+                      <input type="number" step="0.01" class="form-control" id="total_fat" name="total_fat" />
+                  </div>
+                  <div class="form-group">
+                      <label for="total_carbohydrate">Total Carbohydrate (g)</label>
+                      <input type="number" step="0.01" class="form-control" id="total_carbohydrate" name="total_carbohydrate" />
+                  </div>
+                  <div class="form-group">
+                      <label for="total_sugars">Total Sugars (g)</label>
+                      <input type="number" step="0.01" class="form-control" id="total_sugars" name="total_sugars" />
+                  </div>
+                  <div class="form-group">
+                      <label for="total_protein">Total Protein (g)</label>
+                      <input type="number" step="0.01" class="form-control" id="total_protein" name="total_protein" />
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="submitForm">Add Food</button>
+              </form>
+
+              <!-- Bootstrap Alert for Notifications -->
+              <div class="alert alert-success mt-3" id="modalAlert" style="display: none;">
+                  Food item added successfully!
+              </div>
+          </div>
       </div>
-    </div>
   </div>
+</div>
 
 
 
@@ -606,8 +562,10 @@
   <script src="{{ url_for('static', filename='js/nutrition/home-menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nutrition/add-food.js') }}"></script>
 
-  
+
+
 
   <style>
     /* Custom CSS for spacing between accordion items */

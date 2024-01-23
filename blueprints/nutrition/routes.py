@@ -201,12 +201,12 @@ def createNewFoodItem():
         db.session.commit()
 
         return redirect(
-            url_for("nutrition.createFood", message="Food item added successfully!")
+            url_for("nutrition.nutritionHome", message="Food item added successfully!")
         )
 
     except Exception as e:
         return redirect(
-            url_for("nutrition.createFood", message=f"An error occurred: {e}")
+            url_for("nutrition.nutritionHome", message=f"An error occurred: {e}")
         )
 
 
