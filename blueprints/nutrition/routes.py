@@ -221,15 +221,9 @@ def browseFood():
 
         food_items_data = [item.to_dict() for item in food_items]
 
-        return render_template(
-            "nutrition/meals-and-food/food/browse-food.html",
-            food_items=food_items_data,
-            search_query=search_query,
-        )
+        return jsonify(food_items_data)  # Return JSON data
     except Exception as e:
-        return render_template(
-            "nutrition/meals-and-food/food/browse-food.html", error=str(e)
-        )
+        return jsonify({"error": str(e)}), 500  # Return JSON error response
 
 
 @nutrition_blueprint.route("/meals-and-foods/edit-food/<int:id>", methods=["POST"])

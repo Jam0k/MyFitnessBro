@@ -42,11 +42,13 @@
     >
       Create Food
     </button>
-    <a
-      href="{{ url_for('nutrition.browseFood') }}"
+    <button
       class="btn btn-secondary btn-block"
-      >Browse Food</a
+      data-toggle="modal"
+      data-target="#browseFoodModal"
     >
+      Browse Food
+    </button>
     <button
       class="btn btn-danger btn-block"
       onclick="hideSubMenu('foodSubMenu')"
@@ -494,57 +496,93 @@
 
 
 
-    <!-- Browse Food Modal -->
-    <div class="modal fade" id="browseFoodModal" tabindex="-1" role="dialog" aria-labelledby="browseFoodModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title" id="browseFoodModalLabel">Browse Food Items</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-              </div>
-              <div class="modal-body">
-                  <table class="table table-bordered">
-                      <thead>
-                          <tr>
-                              <th>Name</th>
-                              <th>Serving Size</th>
-                              <th>Calories</th>
-                              <th>Total Fat</th>
-                              <th>Total Carbohydrate</th>
-                              <th>Total Sugars</th>
-                              <th>Total Protein</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {% for food in food_items %}
-                          <tr>
-                              <td>{{ food.name }}</td>
-                              <td>{{ food.serving_size }}</td>
-                              <td>{{ food.calories }}</td>
-                              <td>{{ food.total_fat }}</td>
-                              <td>{{ food.total_carbohydrate }}</td>
-                              <td>{{ food.total_sugars }}</td>
-                              <td>{{ food.total_protein }}</td>
-                          </tr>
-                          {% else %}
-                          <tr>
-                              <td colspan="7">No food items found.</td>
-                          </tr>
-                          {% endfor %}
-                      </tbody>
-                  </table>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              </div>
-          </div>
+<!-- Browse Food Modal -->
+<div class="modal fade" id="browseFoodModal" tabindex="-1" role="dialog" aria-labelledby="browseFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="browseFoodModalLabel">Browse Food Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body">
+        <table class="table table-bordered" id="foodDataTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Serving Size</th>
+              <th>Calories</th>
+              <th>Total Fat</th>
+              <th>Total Carbohydrate</th>
+              <th>Total Sugars</th>
+              <th>Total Protein</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Data will be populated here dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
 
+<!-- Edit Food Item Modal -->
+<div class="modal fade" id="editFoodModal" tabindex="-1" role="dialog" aria-labelledby="editFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editFoodModalLabel">Edit Food Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="editFoodForm">
+        <div class="modal-body">
+          <input type="hidden" id="editFoodId" />
+          <div class="form-group">
+            <label for="editName">Name</label>
+            <input type="text" class="form-control" id="editName" />
+          </div>
+          <div class="form-group">
+            <label for="editServingSize">Serving Size</label>
+            <input type="text" class="form-control" id="editServingSize" />
+          </div>
+          <div class="form-group">
+            <label for="editCalories">Calories</label>
+            <input type="number" class="form-control" id="editCalories" />
+          </div>
+          <div class="form-group">
+            <label for="editTotalFat">Total Fat</label>
+            <input type="text" class="form-control" id="editTotalFat" />
+          </div>
+          <div class="form-group">
+            <label for="editTotalCarbohydrate">Total Carbohydrate</label>
+            <input type="text" class="form-control" id="editTotalCarbohydrate" />
+          </div>
+          <div class="form-group">
+            <label for="editTotalSugars">Total Sugars</label>
+            <input type="text" class="form-control" id="editTotalSugars" />
+          </div>
+          <div class="form-group">
+            <label for="editTotalProtein">Total Protein</label>
+            <input type="text" class="form-control" id="editTotalProtein" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
 
@@ -567,6 +605,8 @@
   <script src="{{ url_for('static', filename='js/nutrition/home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/home-menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
+
   
 
   <style>
