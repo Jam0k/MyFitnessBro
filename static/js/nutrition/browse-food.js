@@ -99,7 +99,7 @@ $('#editFoodForm').on('submit', function (e) {
 
 // Event listener for Delete button click
 $('#foodDataTable').on('click', '.delete-btn', function () {
-  if (confirm('Are you sure you want to delete this food item?')) {
+  if (window.confirm('Are you sure you want to delete this food item? This will remove ALL logged items.')) {
     var foodId = $(this).data('id');
 
     // AJAX request to delete the food item

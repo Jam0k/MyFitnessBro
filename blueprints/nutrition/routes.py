@@ -253,10 +253,27 @@ def getFoodItem(id):
 
 @nutrition_blueprint.route("/meals-and-foods/delete-food/<int:id>", methods=["POST"])
 def deleteFoodItem(id):
-    food_item = FoodItem.query.get_or_404(id)
-    db.session.delete(food_item)
-    db.session.commit()
-    return jsonify({"message": "Food item deleted successfully"})
+    try:
+        food_item = FoodItem.query.get_or_404(id)
+
+        # Delete references to the food item in related tables
+        meal_food_items = MealFoodItem.query.filter_by(food_item_id=id).all()
+        food_meal_logs = FoodMealLog.query.filter_by(food_item_id=id).all()
+
+        for meal_food_item in meal_food_items:
+            db.session.delete(meal_food_item)
+
+        for food_meal_log in food_meal_logs:
+            db.session.delete(food_meal_log)
+
+        # Finally, delete the food item itself
+        db.session.delete(food_item)
+
+        db.session.commit()
+        return jsonify({"message": "Food item deleted successfully"})
+    except Exception as e:
+        return jsonify({"message": f"Error deleting food item: {str(e)}"}), 500
+
 
 
 @nutrition_blueprint.route("/meals-and-foods/add-food")
