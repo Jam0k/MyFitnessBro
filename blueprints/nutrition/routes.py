@@ -18,8 +18,151 @@ nutrition_blueprint = Blueprint("nutrition", __name__, url_prefix="/nutrition")
 
 
 @nutrition_blueprint.route("/")
-def nutrition_home():
-    return render_template("nutrition/nutrition-home.html")
+def nutritionHome():
+    # Get the start and end dates from the request or use default dates
+    start_date_str = request.args.get("start_date", datetime.now().date().isoformat())
+    end_date_str = request.args.get("end_date", datetime.now().date().isoformat())
+
+    # Convert the strings to datetime objects
+    try:
+        selected_start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        selected_end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except ValueError:
+        # If the conversion fails, use default dates
+        selected_start_date = datetime.now().date()
+        selected_end_date = datetime.now().date()
+
+    meal_type_order = ["breakfast", "lunch", "dinner", "snack"]
+    meal_type_data = {mt: {"meals": [], "foods": []} for mt in meal_type_order}
+    grand_total = {
+        "calories": 0,
+        "total_fat": 0,
+        "total_carbohydrate": 0,
+        "total_sugars": 0,
+        "total_protein": 0,
+    }
+
+    # Initialize a dictionary to store daily macro totals
+    daily_macros = defaultdict(
+        lambda: {
+            "calories": 0,
+            "total_fat": 0,
+            "total_carbohydrate": 0,
+            "total_sugars": 0,
+            "total_protein": 0,
+        }
+    )
+
+    logs = (
+        db.session.query(
+            FoodMealLog.log_date,
+            FoodMealLog.id.label("food_meal_log_id"),
+            FoodMealLog.meal_type,
+            Meal.name.label("meal_name"),
+            Meal.id.label("meal_id"),
+            FoodItem.name.label("food_item_name"),
+            FoodItem.calories,
+            FoodItem.total_fat,
+            FoodItem.total_carbohydrate,
+            FoodItem.total_sugars,
+            FoodItem.total_protein,
+            FoodMealLog.serving_count,
+        )
+        .outerjoin(Meal, FoodMealLog.meal_id == Meal.id)
+        .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)
+        .filter(FoodMealLog.log_date >= selected_start_date)
+        .filter(FoodMealLog.log_date <= selected_end_date)
+        .all()
+    )
+
+    # Process logs for meals and food items
+    for log in logs:
+        # Process meal logs
+        if log.meal_id:
+            meal = Meal.query.get(log.meal_id)
+            if meal:
+                total_nutrition = {
+                    "calories": 0,
+                    "total_fat": 0,
+                    "total_carbohydrate": 0,
+                    "total_sugars": 0,
+                    "total_protein": 0,
+                }
+                for mfi in meal.meal_food_item_assoc:
+                    food_item = mfi.food_item
+                    serving_count = Decimal(mfi.serving_count)
+                    # Calculate nutrition values
+                    for key in total_nutrition.keys():
+                        attr_value = getattr(food_item, key, 0) or 0
+                        total_nutrition[key] += round(
+                            Decimal(attr_value) * serving_count, 1
+                        )
+                log_data = log._asdict()
+                log_data.update(total_nutrition)
+                meal_type_data[log.meal_type]["meals"].append(log_data)
+                for key, value in total_nutrition.items():
+                    grand_total[key] += value
+                    daily_macros[log.log_date.isoformat()][key] += value
+
+        # Process food item logs
+        elif log.food_item_name:
+            food_log_data = log._asdict()
+            serving_count = Decimal(food_log_data["serving_count"])
+            for key in [
+                "calories",
+                "total_fat",
+                "total_carbohydrate",
+                "total_sugars",
+                "total_protein",
+            ]:
+                food_log_data[key] = round(
+                    Decimal(food_log_data[key]) * serving_count, 1
+                )
+            meal_type_data[log.meal_type]["foods"].append(food_log_data)
+            for key, value in food_log_data.items():
+                if key in grand_total:
+                    grand_total[key] += value
+                    daily_macros[log.log_date.isoformat()][key] += value
+
+    # Round grand total values
+    for key in grand_total:
+        grand_total[key] = round(grand_total[key], 1)
+
+        # Convert defaultdict to regular dict for JSON serialization
+        daily_macros = dict(daily_macros)
+
+    # Fetch the goal data
+    goal_data = Goal.query.first()
+
+    # Initialize default values for remaining goals
+    remaining_goals = {
+        "remaining_calories": 0,
+        "remaining_fat": 0,
+        "remaining_carbohydrates": 0,
+        "remaining_sugars": 0,
+        "remaining_protein": 0,
+    }
+
+    # Calculate remaining goals if goal_data is not None
+    if goal_data is not None:
+        remaining_goals = {
+            "remaining_calories": goal_data.calories - grand_total["calories"],
+            "remaining_fat": goal_data.fat - grand_total["total_fat"],
+            "remaining_carbohydrates": goal_data.carbohydrates - grand_total["total_carbohydrate"],
+            "remaining_sugars": goal_data.sugars - grand_total["total_sugars"],
+            "remaining_protein": goal_data.protein - grand_total["total_protein"],
+        }
+
+    return render_template(
+        "nutrition/nutrition-home.html",
+        meal_type_data=meal_type_data,
+        grand_total=grand_total,
+        selected_start_date=selected_start_date,
+        selected_end_date=selected_end_date,
+        daily_macros=daily_macros,
+        goal_data=goal_data,  # Pass the goal data to the template
+        remaining_goals=remaining_goals  # Pass the remaining goals to the template
+    )
 
 
 @nutrition_blueprint.route("/meals-and-foods")
@@ -483,157 +626,6 @@ def getAllMeals():
 def addMeal():
     today = datetime.now().strftime("%Y-%m-%d")
     return render_template("nutrition/meals-and-food/meal/add-meal.html", today=today)
-
-
-# Tracker Routes
-
-
-@nutrition_blueprint.route("/tracking", methods=["GET"])
-def tracking():
-    # Get the start and end dates from the request or use default dates
-    start_date_str = request.args.get("start_date", datetime.now().date().isoformat())
-    end_date_str = request.args.get("end_date", datetime.now().date().isoformat())
-
-    # Convert the strings to datetime objects
-    try:
-        selected_start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        selected_end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-    except ValueError:
-        # If the conversion fails, use default dates
-        selected_start_date = datetime.now().date()
-        selected_end_date = datetime.now().date()
-
-    meal_type_order = ["breakfast", "lunch", "dinner", "snack"]
-    meal_type_data = {mt: {"meals": [], "foods": []} for mt in meal_type_order}
-    grand_total = {
-        "calories": 0,
-        "total_fat": 0,
-        "total_carbohydrate": 0,
-        "total_sugars": 0,
-        "total_protein": 0,
-    }
-
-    # Initialize a dictionary to store daily macro totals
-    daily_macros = defaultdict(
-        lambda: {
-            "calories": 0,
-            "total_fat": 0,
-            "total_carbohydrate": 0,
-            "total_sugars": 0,
-            "total_protein": 0,
-        }
-    )
-
-    logs = (
-        db.session.query(
-            FoodMealLog.log_date,
-            FoodMealLog.id.label("food_meal_log_id"),
-            FoodMealLog.meal_type,
-            Meal.name.label("meal_name"),
-            Meal.id.label("meal_id"),
-            FoodItem.name.label("food_item_name"),
-            FoodItem.calories,
-            FoodItem.total_fat,
-            FoodItem.total_carbohydrate,
-            FoodItem.total_sugars,
-            FoodItem.total_protein,
-            FoodMealLog.serving_count,
-        )
-        .outerjoin(Meal, FoodMealLog.meal_id == Meal.id)
-        .outerjoin(FoodItem, FoodMealLog.food_item_id == FoodItem.id)
-        .filter(FoodMealLog.log_date >= selected_start_date)
-        .filter(FoodMealLog.log_date <= selected_end_date)
-        .all()
-    )
-
-    # Process logs for meals and food items
-    for log in logs:
-        # Process meal logs
-        if log.meal_id:
-            meal = Meal.query.get(log.meal_id)
-            if meal:
-                total_nutrition = {
-                    "calories": 0,
-                    "total_fat": 0,
-                    "total_carbohydrate": 0,
-                    "total_sugars": 0,
-                    "total_protein": 0,
-                }
-                for mfi in meal.meal_food_item_assoc:
-                    food_item = mfi.food_item
-                    serving_count = Decimal(mfi.serving_count)
-                    # Calculate nutrition values
-                    for key in total_nutrition.keys():
-                        attr_value = getattr(food_item, key, 0) or 0
-                        total_nutrition[key] += round(
-                            Decimal(attr_value) * serving_count, 1
-                        )
-                log_data = log._asdict()
-                log_data.update(total_nutrition)
-                meal_type_data[log.meal_type]["meals"].append(log_data)
-                for key, value in total_nutrition.items():
-                    grand_total[key] += value
-                    daily_macros[log.log_date.isoformat()][key] += value
-
-        # Process food item logs
-        elif log.food_item_name:
-            food_log_data = log._asdict()
-            serving_count = Decimal(food_log_data["serving_count"])
-            for key in [
-                "calories",
-                "total_fat",
-                "total_carbohydrate",
-                "total_sugars",
-                "total_protein",
-            ]:
-                food_log_data[key] = round(
-                    Decimal(food_log_data[key]) * serving_count, 1
-                )
-            meal_type_data[log.meal_type]["foods"].append(food_log_data)
-            for key, value in food_log_data.items():
-                if key in grand_total:
-                    grand_total[key] += value
-                    daily_macros[log.log_date.isoformat()][key] += value
-
-    # Round grand total values
-    for key in grand_total:
-        grand_total[key] = round(grand_total[key], 1)
-
-        # Convert defaultdict to regular dict for JSON serialization
-        daily_macros = dict(daily_macros)
-
-    # Fetch the goal data
-    goal_data = Goal.query.first()
-
-    # Initialize default values for remaining goals
-    remaining_goals = {
-        "remaining_calories": 0,
-        "remaining_fat": 0,
-        "remaining_carbohydrates": 0,
-        "remaining_sugars": 0,
-        "remaining_protein": 0,
-    }
-
-    # Calculate remaining goals if goal_data is not None
-    if goal_data is not None:
-        remaining_goals = {
-            "remaining_calories": goal_data.calories - grand_total["calories"],
-            "remaining_fat": goal_data.fat - grand_total["total_fat"],
-            "remaining_carbohydrates": goal_data.carbohydrates - grand_total["total_carbohydrate"],
-            "remaining_sugars": goal_data.sugars - grand_total["total_sugars"],
-            "remaining_protein": goal_data.protein - grand_total["total_protein"],
-        }
-
-    return render_template(
-        "nutrition/tracking/tracking.html",
-        meal_type_data=meal_type_data,
-        grand_total=grand_total,
-        selected_start_date=selected_start_date,
-        selected_end_date=selected_end_date,
-        daily_macros=daily_macros,
-        goal_data=goal_data,  # Pass the goal data to the template
-        remaining_goals=remaining_goals  # Pass the remaining goals to the template
-    )
 
 
 @nutrition_blueprint.route("/delete_entry/<int:id>", methods=["POST"])
