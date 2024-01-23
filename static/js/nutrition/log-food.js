@@ -7,7 +7,7 @@ $(document).ready(function() {
 
     // Fetch and populate food items in DataTables
     $.ajax({
-        url: '/nutrition/meals-and-foods/get-all-food-items', // Replace with your actual endpoint
+        url: 'get-all-food-items', // Replace with your actual endpoint
         method: 'GET',
         success: function(response) {
             var table = $('#foodItemsTable').DataTable({
@@ -75,7 +75,7 @@ $(document).ready(function() {
 
 // AJAX request to log the food item
 $.ajax({
-    url: "/nutrition/meals-and-foods/log-food", // Replace with your actual endpoint
+    url: "/nutrition/log-food", // Replace with your actual endpoint
     method: "POST",
     contentType: "application/json",
     data: JSON.stringify(logData),

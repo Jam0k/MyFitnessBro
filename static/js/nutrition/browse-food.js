@@ -4,7 +4,7 @@ $('#browseFoodModal').on('show.bs.modal', function () {
   if (!$.fn.DataTable.isDataTable('#foodDataTable')) {
     // Make an AJAX request to fetch food items data
     $.ajax({
-      url: "meals-and-foods/browse-food",
+      url: "/nutrition/browse-food",
       method: "GET",
       success: function (data) {
         // Initialize the DataTable if not already initialized
@@ -42,7 +42,7 @@ $('#foodDataTable').on('click', '.edit-btn', function () {
 
   // AJAX request to get food data for editing
   $.ajax({
-    url: `meals-and-foods/get-food/${foodId}`,
+    url: `/nutrition/get-food/${foodId}`,
     method: 'GET',
     success: function (food) {
       // Populate the edit form fields with the food item's data
@@ -82,7 +82,7 @@ $('#editFoodForm').on('submit', function (e) {
 
   // AJAX request to update the food item
   $.ajax({
-    url: `meals-and-foods/edit-food/${updatedData.id}`,
+    url: `/nutrition/edit-food/${updatedData.id}`,
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(updatedData),
@@ -104,7 +104,7 @@ $('#foodDataTable').on('click', '.delete-btn', function () {
 
     // AJAX request to delete the food item
     $.ajax({
-      url: `meals-and-foods/delete-food/${foodId}`,
+      url: `/nutrition/delete-food/${foodId}`,
       method: 'POST',
       success: function (response) {
         // Alert success and reload the page

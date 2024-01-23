@@ -165,11 +165,6 @@ def nutritionHome():
     )
 
 
-@nutrition_blueprint.route("/meals-and-foods")
-def mealsAndFoods():
-    return render_template("nutrition/meals-and-food/meals-and-food-home.html")
-
-
 # Define food routes
 
 
@@ -210,7 +205,7 @@ def createNewFoodItem():
         )
 
 
-@nutrition_blueprint.route("/meals-and-foods/browse-food")
+@nutrition_blueprint.route("/browse-food")
 def browseFood():
     search_query = request.args.get("search", "")
     try:
@@ -226,7 +221,7 @@ def browseFood():
         return jsonify({"error": str(e)}), 500  # Return JSON error response
 
 
-@nutrition_blueprint.route("/meals-and-foods/edit-food/<int:id>", methods=["POST"])
+@nutrition_blueprint.route("/edit-food/<int:id>", methods=["POST"])
 def editFoodItem(id):
     data = request.get_json()  # Assuming you're sending JSON data
     food_item = FoodItem.query.get_or_404(id)
@@ -245,13 +240,13 @@ def editFoodItem(id):
     return jsonify({"message": "Food item updated successfully"})
 
 
-@nutrition_blueprint.route("/meals-and-foods/get-food/<int:id>")
+@nutrition_blueprint.route("/get-food/<int:id>")
 def getFoodItem(id):
     food_item = FoodItem.query.get_or_404(id)
     return jsonify(food_item.to_dict())
 
 
-@nutrition_blueprint.route("/meals-and-foods/delete-food/<int:id>", methods=["POST"])
+@nutrition_blueprint.route("/delete-food/<int:id>", methods=["POST"])
 def deleteFoodItem(id):
     try:
         food_item = FoodItem.query.get_or_404(id)
@@ -276,13 +271,7 @@ def deleteFoodItem(id):
 
 
 
-@nutrition_blueprint.route("/meals-and-foods/add-food")
-def addFood():
-    today = datetime.now().strftime("%Y-%m-%d")
-    return render_template("nutrition/meals-and-food/food/add-food.html", today=today)
-
-
-@nutrition_blueprint.route("/meals-and-foods/log-food", methods=["POST"])
+@nutrition_blueprint.route("/log-food", methods=["POST"])
 def logFood():
     try:
         data = request.get_json()
@@ -299,7 +288,7 @@ def logFood():
         return jsonify({"error": str(e)}), 500
 
 
-@nutrition_blueprint.route("/meals-and-foods/get-all-food-items", methods=["GET"])
+@nutrition_blueprint.route("/get-all-food-items", methods=["GET"])
 def getAllFoodItems():
     try:
         food_items = FoodItem.query.all()
@@ -413,97 +402,6 @@ def deleteMeal(id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-
-@nutrition_blueprint.route("/meals-and-foods/get-macros/<int:id>")
-def getMacros(id):
-    try:
-        meal = Meal.query.get_or_404(id)
-
-        # Fetch associated food items
-        food_items_data = (
-            db.session.query(
-                FoodItem.name,
-                FoodItem.calories,
-                FoodItem.total_fat,
-                FoodItem.total_carbohydrate,
-                FoodItem.total_sugars,
-                FoodItem.total_protein,
-                MealFoodItem.serving_count,
-            )
-            .join(MealFoodItem, FoodItem.id == MealFoodItem.food_item_id)
-            .filter(MealFoodItem.meal_id == id)
-            .all()
-        )
-
-        # Initialize total macros
-        macros = {
-            "total_calories": 0,
-            "total_fat": 0,
-            "total_carbs": 0,
-            "total_sugars": 0,
-            "total_protein": 0,
-        }
-
-        # Data for the table
-        table_data = []
-
-        for item in food_items_data:
-            item_macros = {
-                "calories": item.calories * item.serving_count if item.calories else 0,
-                "fat": item.total_fat * item.serving_count if item.total_fat else 0,
-                "carbs": item.total_carbohydrate * item.serving_count
-                if item.total_carbohydrate
-                else 0,
-                "sugars": item.total_sugars * item.serving_count
-                if item.total_sugars
-                else 0,
-                "protein": item.total_protein * item.serving_count
-                if item.total_protein
-                else 0,
-            }
-
-            # Convert Decimal to float for JSON serialization
-            for key in item_macros:
-                if isinstance(item_macros[key], Decimal):
-                    item_macros[key] = float(item_macros[key])
-
-            # Add to total macros
-            for key, value in item_macros.items():
-                macros[f"total_{key}"] += value
-
-            # Add item to table data
-            table_data.append(
-                {
-                    "name": item.name,
-                    "calories": round(item_macros["calories"], 1),
-                    "fat": round(item_macros["fat"], 1),
-                    "carbs": round(item_macros["carbs"], 1),
-                    "sugars": round(item_macros["sugars"], 1),
-                    "protein": round(item_macros["protein"], 1),
-                }
-            )
-
-        # Prepare JSON data for the pie chart
-        chart_data = {
-            "labels": ["Fat", "Carbs", "Sugars", "Protein"],
-            "datasets": [
-                {
-                    "data": [
-                        float(macros["total_fat"]),
-                        float(macros["total_carbs"]),
-                        float(macros["total_sugars"]),
-                        float(macros["total_protein"]),
-                    ],
-                    "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
-                }
-            ],
-        }
-
-        # Return combined JSON data
-        return jsonify({"chartData": chart_data, "tableData": table_data})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 @nutrition_blueprint.route("/meals-and-foods/get-meal/<int:id>", methods=["GET"])
@@ -645,13 +543,7 @@ def delete_entry(id):
         db.session.commit()
 
     # Redirect back to the tracking page or any other appropriate page
-    return redirect(url_for("nutrition.tracking"))
-
-
-
-
-
-
+    return redirect(url_for("nutrition.nutritionHome"))
 
 
 # Goals (Combined route for rendering the form and saving goals)

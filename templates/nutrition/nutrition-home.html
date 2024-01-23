@@ -1,8 +1,5 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
-
-  
-
   <h1>Nutrition Dashboard</h1>
   <hr />
   <p class="lead">Menu Selection</p>
@@ -32,25 +29,25 @@
   <!-- Food Sub Menu -->
   <div id="foodSubMenu" class="sub-menu" style="display: none">
     <button
-      class="btn btn-secondary btn-block"
+      class="btn btn-light btn-block"
       data-toggle="modal"
       data-target="#logFoodModal"
     >
-      Log Food
+    <i class="fa-solid fa-plus"></i> Log Food
     </button>
     <button
-      class="btn btn-secondary btn-block"
+      class="btn btn-light btn-block"
       data-toggle="modal"
       data-target="#createFoodModal"
     >
-      Create Food
+    <i class="fa-solid fa-paintbrush"></i> Create Food
     </button>
     <button
-      class="btn btn-secondary btn-block"
+      class="btn btn-light btn-block"
       data-toggle="modal"
       data-target="#browseFoodModal"
     >
-      Browse Food
+    <i class="fa-regular fa-eye"></i> Browse Food
     </button>
     <button
       class="btn btn-danger btn-block"
@@ -329,24 +326,27 @@
             Food item logged successfully!
           </div>
           <!-- DataTable for selecting a food item -->
-          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-          <table id="foodItemsTable" class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Food Name</th>
-                <th>Serving Size (g)</th>
-                <th>Calories</th>
-                <th>Protein (g)</th>
-                <th>Carbohydrates (g)</th>
-                <th>Sugar (g)</th>
-                <th>Fats (g)</th>
-                <th>Select</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Rows will be populated dynamically using JavaScript -->
-            </tbody>
-          </table>
+          <div
+            class="table-responsive"
+            style="max-height: 400px; overflow-y: auto"
+          >
+            <table id="foodItemsTable" class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Food Name</th>
+                  <th>Serving Size (g)</th>
+                  <th>Calories</th>
+                  <th>Protein (g)</th>
+                  <th>Carbohydrates (g)</th>
+                  <th>Sugar (g)</th>
+                  <th>Fats (g)</th>
+                  <th>Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be populated dynamically using JavaScript -->
+              </tbody>
+            </table>
           </div>
 
           <!-- Display selected food item name -->
@@ -397,175 +397,261 @@
   </div>
 
   <!-- Create Food Modal -->
-<div class="modal fade" id="createFoodModal" tabindex="-1" role="dialog" aria-labelledby="createFoodModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div
+    class="modal fade"
+    id="createFoodModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createFoodModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="createFoodModalLabel">Create Food</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
+        <div class="modal-header">
+          <h5 class="modal-title" id="createFoodModalLabel">Create Food</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="foodForm">
+            <!-- Form Fields Here -->
+            <div class="form-group">
+              <label for="name">Food Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="serving_size">Serving Size (g)</label>
+              <input
+                type="text"
+                class="form-control"
+                id="serving_size"
+                name="serving_size"
+              />
+            </div>
+            <div class="form-group">
+              <label for="calories">Calories</label>
+              <input
+                type="number"
+                class="form-control"
+                id="calories"
+                name="calories"
+              />
+            </div>
+            <div class="form-group">
+              <label for="total_fat">Total Fat (g)</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="total_fat"
+                name="total_fat"
+              />
+            </div>
+            <div class="form-group">
+              <label for="total_carbohydrate">Total Carbohydrate (g)</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="total_carbohydrate"
+                name="total_carbohydrate"
+              />
+            </div>
+            <div class="form-group">
+              <label for="total_sugars">Total Sugars (g)</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="total_sugars"
+                name="total_sugars"
+              />
+            </div>
+            <div class="form-group">
+              <label for="total_protein">Total Protein (g)</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="total_protein"
+                name="total_protein"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitForm">
+              Add Food
+            </button>
+          </form>
+
+          <!-- Bootstrap Alert for Notifications -->
+          <div
+            class="alert alert-success mt-3"
+            id="modalAlert"
+            style="display: none"
+          >
+            Food item added successfully!
           </div>
-          <div class="modal-body">
-              <form id="foodForm">
-                  <!-- Form Fields Here -->
-                  <div class="form-group">
-                      <label for="name">Food Name</label>
-                      <input type="text" class="form-control" id="name" name="name" required />
-                  </div>
-                  <div class="form-group">
-                      <label for="serving_size">Serving Size (g)</label>
-                      <input type="text" class="form-control" id="serving_size" name="serving_size" />
-                  </div>
-                  <div class="form-group">
-                      <label for="calories">Calories</label>
-                      <input type="number" class="form-control" id="calories" name="calories" />
-                  </div>
-                  <div class="form-group">
-                      <label for="total_fat">Total Fat (g)</label>
-                      <input type="number" step="0.01" class="form-control" id="total_fat" name="total_fat" />
-                  </div>
-                  <div class="form-group">
-                      <label for="total_carbohydrate">Total Carbohydrate (g)</label>
-                      <input type="number" step="0.01" class="form-control" id="total_carbohydrate" name="total_carbohydrate" />
-                  </div>
-                  <div class="form-group">
-                      <label for="total_sugars">Total Sugars (g)</label>
-                      <input type="number" step="0.01" class="form-control" id="total_sugars" name="total_sugars" />
-                  </div>
-                  <div class="form-group">
-                      <label for="total_protein">Total Protein (g)</label>
-                      <input type="number" step="0.01" class="form-control" id="total_protein" name="total_protein" />
-                  </div>
-                  <button type="submit" class="btn btn-primary" id="submitForm">Add Food</button>
-              </form>
-
-              <!-- Bootstrap Alert for Notifications -->
-              <div class="alert alert-success mt-3" id="modalAlert" style="display: none;">
-                  Food item added successfully!
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-
-
-
-
-<!-- Browse Food Modal -->
-<div class="modal fade" id="browseFoodModal" tabindex="-1" role="dialog" aria-labelledby="browseFoodModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="browseFoodModalLabel">Browse Food Items</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table class="table table-bordered" id="foodDataTable">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Serving Size</th>
-              <th>Calories</th>
-              <th>Total Fat</th>
-              <th>Total Carbohydrate</th>
-              <th>Total Sugars</th>
-              <th>Total Protein</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Data will be populated here dynamically -->
-          </tbody>
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
-<!-- Edit Food Item Modal -->
-<div class="modal fade" id="editFoodModal" tabindex="-1" role="dialog" aria-labelledby="editFoodModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editFoodModalLabel">Edit Food Item</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="editFoodForm">
+  <!-- Browse Food Modal -->
+  <div
+    class="modal fade"
+    id="browseFoodModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="browseFoodModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="browseFoodModalLabel">
+            Browse Food Items
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         <div class="modal-body">
-          <input type="hidden" id="editFoodId" />
-          <div class="form-group">
-            <label for="editName">Name</label>
-            <input type="text" class="form-control" id="editName" />
-          </div>
-          <div class="form-group">
-            <label for="editServingSize">Serving Size</label>
-            <input type="text" class="form-control" id="editServingSize" />
-          </div>
-          <div class="form-group">
-            <label for="editCalories">Calories</label>
-            <input type="number" class="form-control" id="editCalories" />
-          </div>
-          <div class="form-group">
-            <label for="editTotalFat">Total Fat</label>
-            <input type="text" class="form-control" id="editTotalFat" />
-          </div>
-          <div class="form-group">
-            <label for="editTotalCarbohydrate">Total Carbohydrate</label>
-            <input type="text" class="form-control" id="editTotalCarbohydrate" />
-          </div>
-          <div class="form-group">
-            <label for="editTotalSugars">Total Sugars</label>
-            <input type="text" class="form-control" id="editTotalSugars" />
-          </div>
-          <div class="form-group">
-            <label for="editTotalProtein">Total Protein</label>
-            <input type="text" class="form-control" id="editTotalProtein" />
-          </div>
+          <table class="table table-bordered" id="foodDataTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Serving Size</th>
+                <th>Calories</th>
+                <th>Total Fat</th>
+                <th>Total Carbohydrate</th>
+                <th>Total Sugars</th>
+                <th>Total Protein</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be populated here dynamically -->
+            </tbody>
+          </table>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
-</div>
 
-
-
+  <!-- Edit Food Item Modal -->
+  <div
+    class="modal fade"
+    id="editFoodModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="editFoodModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editFoodModalLabel">Edit Food Item</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="editFoodForm">
+          <div class="modal-body">
+            <input type="hidden" id="editFoodId" />
+            <div class="form-group">
+              <label for="editName">Name</label>
+              <input type="text" class="form-control" id="editName" />
+            </div>
+            <div class="form-group">
+              <label for="editServingSize">Serving Size</label>
+              <input type="text" class="form-control" id="editServingSize" />
+            </div>
+            <div class="form-group">
+              <label for="editCalories">Calories</label>
+              <input type="number" class="form-control" id="editCalories" />
+            </div>
+            <div class="form-group">
+              <label for="editTotalFat">Total Fat</label>
+              <input type="text" class="form-control" id="editTotalFat" />
+            </div>
+            <div class="form-group">
+              <label for="editTotalCarbohydrate">Total Carbohydrate</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editTotalCarbohydrate"
+              />
+            </div>
+            <div class="form-group">
+              <label for="editTotalSugars">Total Sugars</label>
+              <input type="text" class="form-control" id="editTotalSugars" />
+            </div>
+            <div class="form-group">
+              <label for="editTotalProtein">Total Protein</label>
+              <input type="text" class="form-control" id="editTotalProtein" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script type="text/javascript">
     // Pass the selected dates from Flask to JavaScript
     var selectedStartDate = "{{ selected_start_date.isoformat() }}";
     var selectedEndDate = "{{ selected_end_date.isoformat() }}";
   </script>
-  
+
   <script type="text/javascript">
-    var grandTotalData = JSON.parse('{{ grand_total | tojson | safe }}');
+    var grandTotalData = JSON.parse("{{ grand_total | tojson | safe }}");
   </script>
-  
+
   <script type="text/javascript">
     // Pass the daily macros data from Flask to JavaScript
-    var dailyMacrosData = JSON.parse('{{ daily_macros | tojson | safe }}');
+    var dailyMacrosData = JSON.parse("{{ daily_macros | tojson | safe }}");
   </script>
-  
+
   <script src="{{ url_for('static', filename='js/nutrition/home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/home-menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/add-food.js') }}"></script>
-
-
-
 
   <style>
     /* Custom CSS for spacing between accordion items */

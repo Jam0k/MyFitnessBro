@@ -20,7 +20,7 @@
         // Use AJAX to submit the form data
         $.ajax({
             type: "POST",
-            url: "/nutrition/create-new-food-item",
+            url: "create-new-food-item",
             data: formData,
             processData: false,
             contentType: false,
