@@ -3,6 +3,8 @@
 <div class="container mt-4">
   <h1>Nutrition Dashboard</h1>
   <hr>
+  <p class="lead">Menu Selection</p>
+
     <div class="row">
         <!-- Primary Buttons in Grid -->
         <div class="col">
@@ -71,32 +73,8 @@
 
 <hr>
 
-<p class="lead">Nutrition Summary</p>
-<div class="row">
-  {% for key, value in grand_total.items() %}
-  <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-    <div class="card text-center">
-      <div class="card-body">
-        <h5 class="card-title">{{ key.replace('_', ' ').title() }}</h5>
-        {% if key == 'calories' %}
-          <p class="card-text">{{ value }}kcal</p>
-        {% else %}
-          <p class="card-text">{{ value }}g</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-</div>
-    <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#macrosModal">
-      <i class="fas fa-chart-pie"></i> View Breakdown
-    </button>
 
-    <!-- Button to Open Line Chart Modal -->
-<button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#lineChartModal">
-  <i class="fas fa-chart-line"></i> View Line Chart
-</button>
+
 
 <hr>
 
@@ -167,6 +145,16 @@
       <p>No goals set yet.</p>
     {% endif %}
   </div>
+  <br>
+      <!-- Button to Open Modal -->
+      <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#macrosModal">
+        <i class="fas fa-chart-pie"></i> View Breakdown
+      </button>
+  
+      <!-- Button to Open Line Chart Modal -->
+  <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#lineChartModal">
+    <i class="fas fa-chart-line"></i> View Line Chart
+  </button>
   <hr>
     <!-- Modal for Pie Chart -->
     <div class="modal fade" id="macrosModal" tabindex="-1" role="dialog" aria-labelledby="macrosModalLabel" aria-hidden="true">
@@ -306,11 +294,12 @@
           <thead>
             <tr>
               <th>Food Name</th>
+              <th>Serving Size (g)</th>
               <th>Calories</th>
-              <th>Protein</th>
-              <th>Carbohydrates</th>
-              <th>Sugar</th>
-              <th>Fats</th>
+              <th>Protein (g)</th>
+              <th>Carbohydrates (g)</th>
+              <th>Sugar (g)</th>
+              <th>Fats (g)</th>
               <th>Select</th>
             </tr>
           </thead>

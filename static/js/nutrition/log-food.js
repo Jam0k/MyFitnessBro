@@ -14,6 +14,7 @@ $(document).ready(function() {
                 data: response, // Directly use the response array
                 columns: [
                     { data: 'name' },
+                    { data: 'serving_size' },
                     { data: 'calories' },
                     { data: 'total_protein' },
                     { data: 'total_carbohydrate' },
