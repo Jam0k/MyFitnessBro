@@ -173,11 +173,6 @@ def mealsAndFoods():
 # Define food routes
 
 
-@nutrition_blueprint.route("/meals-and-foods/create-food")
-def createFood():
-    return render_template("nutrition/meals-and-food/food/create-food.html")
-
-
 @nutrition_blueprint.route("/create-new-food-item", methods=["POST"])
 def createNewFoodItem():
     try:

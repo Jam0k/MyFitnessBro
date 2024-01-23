@@ -16,56 +16,56 @@ $(document).ready(function () {
     function updateDateFilter() {
         var newStartDate = $('#startDateFilter').val();
         var newEndDate = $('#endDateFilter').val();
-        window.location.href = '/nutrition/tracking?start_date=' + newStartDate + '&end_date=' + newEndDate;
+        window.location.href = '/nutrition?start_date=' + newStartDate + '&end_date=' + newEndDate;
     }
-    
-        // Loop through each table with an ID that starts with 'mealTypeTable'
+
+    // Initialize DataTables on tables with IDs starting with 'mealTypeTable'
     $("table[id^='mealTypeTable']").each(function () {
-        // Initialize DataTables on each table
         $(this).DataTable();
     });
-    
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
-    var ctx = document.getElementById('grandTotalPieChart').getContext('2d');
+    var grandTotalPieChartElement = document.getElementById('grandTotalPieChart');
 
-    // Remove 'calories' from the grandTotalData
-    delete grandTotalData.calories;
+    if (grandTotalPieChartElement) {
+        var ctx = grandTotalPieChartElement.getContext('2d');
 
-    // Prepare the labels and data arrays
-    var labels = Object.keys(grandTotalData);
-    var dataValues = Object.values(grandTotalData);
+        // Remove 'calories' from the grandTotalData
+        delete grandTotalData.calories;
 
-    var chartData = {
-        labels: labels,
-        datasets: [{
-            label: 'Grand Totals',
-            data: dataValues,
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)'
-            ],
-            borderWidth: 1
-        }]
-    };
+        // Prepare the labels and data arrays
+        var labels = Object.keys(grandTotalData);
+        var dataValues = Object.values(grandTotalData);
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: chartData,
-        options: {
-            responsive: true
-            // You can add more options here if needed
-        }
-    });
+        var chartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Grand Totals',
+                data: dataValues,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true
+                // Add more options here if needed
+            }
+        });
+    }
 });
-
