@@ -15,8 +15,8 @@
 
     <!-- Food Sub Menu -->
     <div id="foodSubMenu" class="sub-menu" style="display: none;">
-        <a href="{{ url_for('nutrition.addFood') }}" class="btn btn-secondary btn-block">Log Food</a>
-        <a href="{{ url_for('nutrition.createFood') }}" class="btn btn-secondary btn-block">Create Food</a>
+      <button class="btn btn-secondary btn-block" data-toggle="modal" data-target="#logFoodModal">Log Food</button>
+      <a href="{{ url_for('nutrition.createFood') }}" class="btn btn-secondary btn-block">Create Food</a>
         <a href="{{ url_for('nutrition.browseFood') }}" class="btn btn-secondary btn-block">Browse Food</a>
         <button class="btn btn-danger btn-block" onclick="hideSubMenu('foodSubMenu')">Back</button>
     </div>
@@ -34,6 +34,26 @@
 
 
     <hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- Start Date Selector for Filtering -->
@@ -267,6 +287,75 @@
   {% endfor %}
 </div>
 
+<!-- Log Food Modal -->
+<div class="modal fade" id="logFoodModal" tabindex="-1" role="dialog" aria-labelledby="logFoodModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logFoodModalLabel">Log Food Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="logFoodAlert" class="alert alert-success" style="display: none;" role="alert">
+          Food item logged successfully!
+      </div>
+        <!-- DataTable for selecting a food item -->
+        <table id="foodItemsTable" class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Food Name</th>
+              <th>Calories</th>
+              <th>Protein</th>
+              <th>Carbohydrates</th>
+              <th>Sugar</th>
+              <th>Fats</th>
+              <th>Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows will be populated dynamically using JavaScript -->
+          </tbody>
+        </table>
+
+        <!-- Display selected food item name -->
+        <div id="selectedFoodItemDisplay" class="mt-3"></div>
+
+        <!-- Log Food Item Form -->
+        <form id="logFoodForm" class="mt-4">
+          <!-- Hidden field for selected food item ID -->
+          <input type="hidden" id="selectedFoodItemId">
+
+          <div class="form-group">
+            <label for="servingCount">Serving Count</label>
+            <input type="number" class="form-control" id="servingCount" min="0.01" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="logDate">Date</label>
+            <input type="date" class="form-control" id="logDate" required>
+          </div>
+          <div class="form-group">
+            <label for="mealType">Meal Type</label>
+            <select class="form-control" id="mealType" required>
+              <option value="">Select Meal Type</option>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" form="logFoodForm" class="btn btn-primary">Log Food</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <script type="text/javascript">
   // Pass the selected dates from Flask to JavaScript
@@ -326,26 +415,10 @@
 </script>
 
 
-<script>
-  function showSubMenu(subMenuId, currentBtnId) {
-      // Hide all primary buttons
-      document.getElementById('btnFood').style.display = 'none';
-      document.getElementById('btnMeals').style.display = 'none';
+<script src="{{ url_for('static', filename='js/nutrition/home-menu.js') }}"></script>
 
-      // Show the sub menu
-      document.getElementById(subMenuId).style.display = 'block';
-  }
 
-  function hideSubMenu(subMenuId) {
-      // Show all primary buttons
-      document.getElementById('btnFood').style.display = 'block';
-      document.getElementById('btnMeals').style.display = 'block';
-
-      // Hide the sub menu
-      document.getElementById(subMenuId).style.display = 'none';
-  }
-</script>
-
+<script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
 
 <style>
   /* Custom CSS for spacing between accordion items */

@@ -72,18 +72,24 @@ $(document).ready(function() {
             meal_type: mealType
         };
 
-        // AJAX request to log the food item
-        $.ajax({
-            url: "/nutrition/meals-and-foods/log-food", // Replace with your actual endpoint
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(logData),
-            success: function(response) {
-                alert("Food item logged successfully");
-            },
-            error: function(error) {
-                alert("Error logging food item: " + error.responseText);
-            }
-        });
+// AJAX request to log the food item
+$.ajax({
+    url: "/nutrition/meals-and-foods/log-food", // Replace with your actual endpoint
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(logData),
+    success: function(response) {
+        // Show success alert
+        $('#logFoodAlert').show();
+
+        // Hide the alert after 2 seconds (2000 milliseconds)
+        setTimeout(function() {
+            $('#logFoodAlert').hide();
+        }, 2000);
+    },
+    error: function(error) {
+        alert("Error logging food item: " + error.responseText);
+    }
+});
     });
 });
