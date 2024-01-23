@@ -324,6 +324,7 @@
             Food item logged successfully!
           </div>
           <!-- DataTable for selecting a food item -->
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
           <table id="foodItemsTable" class="table table-bordered table-hover">
             <thead>
               <tr>
@@ -341,6 +342,7 @@
               <!-- Rows will be populated dynamically using JavaScript -->
             </tbody>
           </table>
+          </div>
 
           <!-- Display selected food item name -->
           <div id="selectedFoodItemDisplay" class="mt-3"></div>
@@ -488,6 +490,64 @@
       </div>
     </div>
   </div>
+
+
+
+
+    <!-- Browse Food Modal -->
+    <div class="modal fade" id="browseFoodModal" tabindex="-1" role="dialog" aria-labelledby="browseFoodModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="browseFoodModalLabel">Browse Food Items</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <table class="table table-bordered">
+                      <thead>
+                          <tr>
+                              <th>Name</th>
+                              <th>Serving Size</th>
+                              <th>Calories</th>
+                              <th>Total Fat</th>
+                              <th>Total Carbohydrate</th>
+                              <th>Total Sugars</th>
+                              <th>Total Protein</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for food in food_items %}
+                          <tr>
+                              <td>{{ food.name }}</td>
+                              <td>{{ food.serving_size }}</td>
+                              <td>{{ food.calories }}</td>
+                              <td>{{ food.total_fat }}</td>
+                              <td>{{ food.total_carbohydrate }}</td>
+                              <td>{{ food.total_sugars }}</td>
+                              <td>{{ food.total_protein }}</td>
+                          </tr>
+                          {% else %}
+                          <tr>
+                              <td colspan="7">No food items found.</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
 
   <script type="text/javascript">
     // Pass the selected dates from Flask to JavaScript
