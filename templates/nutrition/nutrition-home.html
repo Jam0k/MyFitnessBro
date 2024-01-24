@@ -683,8 +683,8 @@
 
                   <!-- Date Picker -->
                   <div class="form-group">
-                      <label for="logDate">Date</label>
-                      <input type="date" class="form-control" id="logDate" name="logDate" value="{{ today }}">
+                    <label for="logDateMeal">Date</label>
+                    <input type="date" class="form-control" id="logDateMeal" required />
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -716,9 +716,9 @@
   <script src="{{ url_for('static', filename='js/nutrition/home.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/home-menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nutrition/log-meal.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/add-food.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/nutrition/log-meal.js') }}"></script>
 
 
   <style>
