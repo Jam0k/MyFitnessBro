@@ -16,7 +16,7 @@ $(document).ready(function () {
     function updateDateFilter() {
         var newStartDate = $('#startDateFilter').val();
         var newEndDate = $('#endDateFilter').val();
-        window.location.href = '/nutrition/tracking?start_date=' + newStartDate + '&end_date=' + newEndDate;
+        window.location.href = '/nutrition/?start_date=' + newStartDate + '&end_date=' + newEndDate;
     }
 
     // Initialize DataTables on tables with IDs starting with 'mealTypeTable'
