@@ -59,11 +59,13 @@
 
   <!-- Meals Sub Menu -->
   <div id="mealSubMenu" class="sub-menu" style="display: none">
-    <a
-      href="{{ url_for('nutrition.addMeal') }}"
+    <button
       class="btn btn-light btn-block"
-      ><i class="fa-solid fa-plus"></i> Log Meal</a
+      data-toggle="modal"
+      data-target="#logMealModal"
     >
+    <i class="fa-solid fa-plus"></i> Log Meal
+    </button>
     <a
       href="{{ url_for('nutrition.createMeal') }}"
       class="btn btn-light btn-block"
@@ -632,6 +634,70 @@
     </div>
   </div>
 
+
+<!-- Log Meal Modal -->
+<div class="modal fade" id="logMealModal" tabindex="-1" role="dialog" aria-labelledby="logMealModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="logMealModalLabel">Log Meal</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <!-- DataTable for selecting a meal -->
+              <table id="mealsTable" class="display" style="width: 100%; height: 100%;">
+                  <thead>
+                      <tr>
+                          <th>Meal Name</th>
+                          <th>Food Items</th>
+                          <th>Select</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <!-- Rows will be populated dynamically using JavaScript -->
+                  </tbody>
+              </table>
+
+              <!-- Display selected meal name -->
+              <div id="selectedMealDisplay" class="mt-3"></div>
+
+              <!-- Log Meal Form -->
+              <form id="logMealForm" class="mt-4">
+                  <!-- Hidden field for selected meal ID -->
+                  <input type="hidden" id="selectedMealId">
+
+                  <!-- Meal Type -->
+                  <div class="form-group">
+                      <label for="mealMealType">Meal Type</label>
+                      <select id="mealMealType" class="form-control">
+                        <option value="">Select Meal Type</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snack">Snack</option>
+                    </select>
+                    
+                  </div>
+
+                  <!-- Date Picker -->
+                  <div class="form-group">
+                      <label for="logDate">Date</label>
+                      <input type="date" class="form-control" id="logDate" name="logDate" value="{{ today }}">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+
+          </div>
+      </div>
+  </div>
+</div>
+
+
   <script type="text/javascript">
     // Pass the selected dates from Flask to JavaScript
     var selectedStartDate = "{{ selected_start_date.isoformat() }}";
@@ -652,6 +718,8 @@
   <script src="{{ url_for('static', filename='js/nutrition/log-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/add-food.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nutrition/log-meal.js') }}"></script>
+
 
   <style>
     /* Custom CSS for spacing between accordion items */

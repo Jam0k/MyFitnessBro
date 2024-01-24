@@ -60,12 +60,12 @@ $(document).ready(function() {
             return;
         }
 
-        var mealType = $("#mealType").val();
+        var mealMealType = $("#mealMealType").val();
         var logDate = $("#logDate").val();
 
         var logData = {
             meal_id: selectedMealId,
-            meal_type: mealType,
+            meal_type: mealMealType,
             log_date: logDate
         };
 
