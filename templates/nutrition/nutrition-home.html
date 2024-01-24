@@ -47,7 +47,7 @@
       data-toggle="modal"
       data-target="#browseFoodModal"
     >
-    <i class="fa-regular fa-eye"></i> Browse Food
+    <i class="fa-regular fa-eye"></i> Browse Foods
     </button>
     <button
       class="btn btn-danger btn-block"
@@ -71,13 +71,15 @@
       data-toggle="modal"
       data-target="#createMealModal"
     >
-    <i class="fa-solid fa-plus"></i> Create Meal
+    <i class="fa-solid fa-paintbrush"></i> Create Meal
     </button>
-    <a
-      href="{{ url_for('nutrition.browseMeal') }}"
+    <button
       class="btn btn-light btn-block"
-      ><i class="fa-regular fa-eye"></i> Browse Meal</a
+      data-toggle="modal"
+      data-target="#browseMealsModal"
     >
+    <i class="fa-regular fa-eye"></i> Browse Meals
+    </button>
     <button
       class="btn btn-danger btn-block"
       onclick="hideSubMenu('mealSubMenu')"
@@ -756,6 +758,49 @@
 
 
 
+<!-- Browse Meals Modal -->
+<div class="modal fade" id="browseMealsModal" tabindex="-1" role="dialog" aria-labelledby="browseMealsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="browseMealsModalLabel">Browse Meals</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <table id="mealsTableModal" class="table" style="width: 100%; height: 100%;">
+                  <thead>
+                      <tr>
+                          <th>Meal Name</th>
+                          <th>Food Items</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for meal in meals %}
+                      <tr>
+                          <td>{{ meal.name }}</td>
+                          <td>{{ meal.food_items }}</td>
+                          <td>
+                              <!-- Update the button IDs or data attributes as needed -->
+                              <button type="button" class="btn btn-info show-macros-btn" data-id="{{ meal.id }}">Show Macros</button>
+                              <button type="button" class="btn btn-primary edit-meal-btn" data-id="{{ meal.id }}">Edit</button>
+                              <button type="button" class="btn btn-danger delete-meal-btn" data-id="{{ meal.id }}">Delete</button>
+                          </td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
   <script type="text/javascript">
     // Pass the selected dates from Flask to JavaScript
     var selectedStartDate = "{{ selected_start_date.isoformat() }}";
@@ -778,6 +823,8 @@
   <script src="{{ url_for('static', filename='js/nutrition/browse-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/add-food.js') }}"></script>
   <script src="{{ url_for('static', filename='js/nutrition/create-meal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/nutrition/browse-meal.js') }}"></script>
+
 
 
   <style>
