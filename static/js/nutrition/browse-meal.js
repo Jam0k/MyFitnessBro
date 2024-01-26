@@ -75,19 +75,21 @@ $(document).ready(function () {
         $("#editMealName").val(mealData.name);
         var foodItemsList = $("#editFoodItemsList");
         foodItemsList.empty(); // Clear existing items
-
+    
         mealData.food_items.forEach(function (item) {
             var foodItemHtml = `
-                <div class="list-group-item">
+                <div class="list-group-item existing-food-item-row" data-food-id="${item.id}">
                     <div class="d-flex justify-content-between align-items-center">
                         ${item.name} (Serving Size: ${item.serving_size})
                         <input type="number" class="form-control ml-2" style="width: 80px;" 
                                value="${item.serving_count}" step="0.01" data-food-id="${item.id}">
+                        <button type="button" class="btn btn-danger delete-existing-food-item-btn ml-2">Delete</button>
                     </div>
                 </div>`;
             foodItemsList.append(foodItemHtml);
         });
     }
+    
 
     // Handle form submission for editing a meal
     $("#editMealForm").on("submit", function (e) {
@@ -106,8 +108,9 @@ $(document).ready(function () {
         var updatedMealData = {
             name: updatedMealName,
             food_items: updatedFoodItems,
-            deleted_food_items: deletedFoodItemIds
+            deleted_food_items: deletedFoodItemIds // Include this field in your AJAX call
         };
+        
 
         // AJAX call to update the meal
         $.ajax({
@@ -133,16 +136,12 @@ $(document).ready(function () {
     }
 
     // Handle delete button click for existing food items in edit modal
-    $("#editMealContent").on("click", ".delete-existing-food-item-btn", function () {
+    $(document).on("click", ".delete-existing-food-item-btn", function () {
         var row = $(this).closest(".existing-food-item-row");
         var foodId = row.data("food-id");
-        if (confirm("Are you sure you want to remove this item from the meal?")) {
-            deletedFoodItemIds.push(foodId);
-            row.fadeOut(300, function () {
-                $(this).remove();
-            });
-        }
-    });
+        deletedFoodItemIds.push(foodId); // Add to the list of items to delete
+        row.remove(); // Directly remove the row
+    });    
 
     // Other event handlers or functions...
 });
